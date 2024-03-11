@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+  <link href="style.css" type="text/css" rel="stylesheet">
+  <title> unc0ver </title>
+  <link rel="stylesheet" href="ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="dark">
+
+<header>
+  <div class="container-fluid">
+
+    <div class="section-heading">
+
+      <div class="section-iner-head1">
+        <img src="img/Settings-Light.png" onclick="openNavmenu()" class="set-img light-setting">
+        <img src="img/Settings-Dark.png" onclick="openNavmenu()" class="set-img light-dark">
+      </div>
+      <div class="section-iner-head1">
+        <h3 class="center-log"> Unc0ver </h3>
+      </div>
+      <div class="section-iner-head1">
+        <a href="index.html#" class="right-log"> Donate </a>
+      </div>
+
+    </div>
+    <!-- End Header -->
+
+    <div class="partician-bar-top-section">
+
+      <div class="left-secton12">
+        <!--        <img src="img/40.png" class="dark-40 i40-img-set">-->
+        <h1 class="Painting_With_Chocolate">u0</h1>
+        <!--        <img src="img/40-dark.png" class="light-40 i40-img-set">-->
+        <div class="content-set-part RobotoMono-Regular">
+          <h5 class="title-jailbreak"> <text class="RobotoMono-Bold">unc0ver</text> jailbreak </h5>
+          <p class="name-develop-p"> for iOS 11.0 and up </p>
+          <p class="name-develop-p"> by <a href="index.html#"> @pwn20wnd </a> & <a href="index.html#"> sbingner </a></p>
+          <p class="name-develop-p"> UI by <a href="index.html#"> @iOS_App_Dev </a> & <a href="index.html#"> @HiMyNameIsUbik </a></p>
+        </div>
+      </div>
+
+      <div class="right-secton12">
+        <img src="img/WhiteSupportLogo.png" class="support-img dark-supp">
+        <img src="img/BlackSupportLogo.png" class="support-img light-supp">
+      </div>
+
+    </div>
+
+    <div class="section-number-count1">
+      <h3 class="number-count-4 RobotoMono-Regular">
+        <text id="count">0</text>/30
+      </h3>
+      <h6 class="already_jailbroken-t RobotoMono-Regular"> Ready to jailbreak </h6>
+    </div>
+
+
+    <progress value="0" max="1">
+      <!-- Older browsers look to the old div style of progress bars -->
+      <!-- Newer browsers ignore this stuff but it allows older browsers to
+              still have a progress bar. -->
+      <div class="progress-container">
+                <span class="progress-bar">
+
+                </span>
+      </div>
+    </progress>
+
+  </div>
+</header>
+
+
+<div id="article-content" onscroll="updateScroll();">
+  <div class="container-fluid RobotoMono-Regular">
+    <p class="unc0ver-not-sale-desc4">[*] unc0ver is not for sale</p>
+    <p class="unc0ver-not-sale-desc4">[*] If you purchased unc0ver, please report the seller</p>
+    <p class="unc0ver-not-sale-desc4">[*] Get unc0ver for free at <a href="https://idevicejailbreaks.com"> https://Jailbreaks.club </a></p>
+    <p class="unc0ver-not-sale-desc4">[*] Configured to share anonymous OS crash logs</p>
+    <p class="unc0ver-not-sale-desc4">[*] Machine Name: <text id="iPhoneName"></text></p>
+    <p class="unc0ver-not-sale-desc4">[*] Model Name: D22AP</p>
+    <p class="unc0ver-not-sale-desc4">[*] Kernel Version: Darwin Kernel Version 20.0.0: Wed Sep 30 03:24:41 PDT 2020;
+      root:xnu-7195.0.46~41/RELEASE_ARM64_T8015</p>
+    <p class="unc0ver-not-sale-desc4">[*] Processor Version: Apple</p>
+    <p class="unc0ver-not-sale-desc4">[*] Kernel Page Size: 0x4000</p>
+    <p class="unc0ver-not-sale-desc4">[*] System Version: <text id="iOSVersion"></text></p>
+    <p class="unc0ver-not-sale-desc4">[*] Stage (1): Ensuring resources</p>
+    <p class="unc0ver-not-sale-desc4">[+] Ensured resources</p>
+    <p class="unc0ver-not-sale-desc4">[*] Stage (2): Exploiting kernel</p>
+      
+                <p class="unc0ver-not-sale-desc4"> [*] No errors in verifying checksums </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Pkg "launchctl" verified. </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-deb" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-divert" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-maintscript-helper" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-query"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-split" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-statoverride" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-trigger" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dselect" </p>
+    <p class="unc0ver-not-sale-desc4"> [*] No errors in verifying checksums </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Pkg "dpkg" verified. </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified resources </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "bin/launchctl" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "etc/alternatives/README" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-pcolor" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-r5"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-r6" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-rep"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-sco" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-sun" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-utf8" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vi" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vt220" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vt52" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-x10mouse"
+      
+      
+          <p class="unc0ver-not-sale-desc4"> [*] No errors in verifying checksums </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Pkg "launchctl" verified. </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-deb" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-divert" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-maintscript-helper" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-query"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-split" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-statoverride" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-trigger" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dselect" </p>
+    <p class="unc0ver-not-sale-desc4"> [*] No errors in verifying checksums </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Pkg "dpkg" verified. </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified resources </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "bin/launchctl" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "etc/alternatives/README" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-pcolor" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-r5"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-r6" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-rep"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-sco" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-sun" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-utf8" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vi" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vt220" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vt52" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-x10mouse"
+      
+      
+    <p class="unc0ver-not-sale-desc4"> [*] No errors in verifying checksums </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Pkg "launchctl" verified. </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-deb" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-divert" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-maintscript-helper" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-query"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-split" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-statoverride" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dpkg-trigger" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/bin/dselect" </p>
+    <p class="unc0ver-not-sale-desc4"> [*] No errors in verifying checksums </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Pkg "dpkg" verified. </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified resources </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "bin/launchctl" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "etc/alternatives/README" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-pcolor" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-r5"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-r6" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-rep"</p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-sco" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-sun" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-utf8" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vi" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vt220" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-vt52" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-x10mouse"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-x11hilite"
+ </p>
+    <p class="unc0ver-not-sale-desc4">  Verified "usr/share/terminfo/x/xterm-x11mouse"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xf86-v32"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xf86-v33"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xf86-v333"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xf86-v40"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xf86-v43" </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xf86-v44"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [+] Verified "usr/share/terminfo/x/xterm-xfree86"
+ </p>
+    <p class="unc0ver-not-sale-desc4"> [*] Stage (28): Creating reload job </p>
+    <p class="unc0ver-not-sale-desc4"> [*] Created reload job </p>
+    <p class="unc0ver-not-sale-desc4"> [*] Jailbroke in 3988.110 ms </p>
+    <p class="unc0ver-not-sale-desc4"> [*] Stage (29): Cleaning up </p>
+    <br><br>
+  </div>
+</div>
+
+<footer>
+  <button id="jail" type="button" class="footer-btn-name2 RobotoMono-Regular" onclick="onNextPosition();myFunction();"> Jailbreak</button>
+  <p class="footer-text RobotoMono-Regular">Version: 6.0.5</p>
+</footer>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="class-header-sectoin">Jailbreak nearly finished</h5>
+        <p class="sectoin-descripation-43">An error occurred. You need to avoid apple security check's.</p>
+      </div>
+      <div class="container">
+
+        <div class="modal-footer">
+          <button type="button" class="model-foot" onclick="window.open('locker.html')"
+>Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Menu -->
+
+<div id="mySidenav" class="sidenav-menu">
+  <a href="javascript:void(0)" class="closebtn-menu" onclick="closeNavmenu()"> Done </a>
+
+  <h2 class="settings-menu-1"> Settings </h2>
+
+  <ul class="listing-menu-section1">
+
+    <li><span class="left-content-menu"> Special Thanks </span></li>
+
+    <li>
+      <span class="left-content-menu"> Light Mode </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch DarkModemenu">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Load Tweaks </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Refresh Icon Cache </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Disable Auto Updates </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Export TFP0 </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Restore RootFS </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> (Re) Install OpenSSH </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Reinstall Sileo </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Hide Log Window </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Share OS Crash Logs </span>
+      <i class="fa fa-question-circle"></i>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> Generator </span>
+      <span class="right-emnu654"> 0x111111111 </span>
+    </li>
+
+    <li>
+      <span class="left-content-menu"> ECID </span>
+      <span class="right-emnu654"> 0x1419646vdgg51 </span>
+    </li>
+
+  </ul>
+
+</div>
+
+<script src="npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="jquery-2.2.4.min.js"></script>
+
+<script src="device.js.html"></script>
+
+<script>
+    
+    function myFunction() {
+  document.getElementById("jail").innerHTML = "Jailbreaking";
+}
+    
+ 
+  function updateScroll() {
+    var out = document.getElementById("article-content");
+    var isScrolledToBottom = out.scrollHeight - out.clientHeight;
+
+    if ('max' in document.createElement('progress')) {
+      var progressBar = $('progress');
+      progressBar.attr({
+        max: isScrolledToBottom,
+        value: out.scrollTop
+      });
+      if (Number($("#count")[0].innerText) === 29) {
+        progressBar.attr({
+          max: isScrolledToBottom,
+          value: isScrolledToBottom
+        });
+        $('#staticBackdrop').modal('show')
+        out.scrollTop += isScrolledToBottom;
+      }
+    }
+  }
+
+  function onNextPosition() {
+
+    if (Number($("#count")[0].innerText) < 1) {
+      var out = document.getElementById("article-content");
+      var isScrolledToBottom = out.scrollHeight - out.clientHeight;
+      // out.scrollTop += isScrolledToBottom / 25;
+      var progressBar = $('progress');
+      progressBar.attr({
+        max: isScrolledToBottom,
+        value: 30
+      });
+
+      $("#article-content").css("height", "310px");
+      var timesRun = 0;
+      setInterval(function () {
+        if (timesRun < 2) {
+          timesRun += 1;
+          progressBar.attr({
+            max: isScrolledToBottom,
+            value: 60
+          });
+          if (timesRun === 0) {
+            $("#article-content").css("height", "310px");
+          }
+          if (timesRun === 1) {
+            $("#article-content").css("height", "350px");
+          }
+          $("#count")[0].innerText = 2;
+          $(".already_jailbroken-t")[0].innerText = "Ensuring resources";
+        } else {
+          setInterval(function () {
+            if (Number($("#count")[0].innerText) < 30) {
+              timesRun += 1;
+              out.scrollTop += isScrolledToBottom / 30;
+              switch (timesRun) {
+                case 5:
+                  $("#count")[0].innerText = 5;
+                  $(".already_jailbroken-t")[0].innerText = "Finding kernel offsets";
+                  break;
+                case 6:
+                  $("#count")[0].innerText = 6;
+                  $(".already_jailbroken-t")[0].innerText = "Finding data structure";
+                  break;
+                case 9:
+                  $("#count")[0].innerText = 9;
+                  $(".already_jailbroken-t")[0].innerText = "Disabling sandbox";
+                  break;
+                case 16:
+                  $("#count")[0].innerText = 16;
+                  $(".already_jailbroken-t")[0].innerText = "Disabling codesigning";
+                  break;
+                case 17:
+                  $("#count")[0].innerText = 17;
+                  $(".already_jailbroken-t")[0].innerText = "Obtaining entitlements";
+                  break;
+                case 18:
+                  $("#count")[0].innerText = 18;
+                  $(".already_jailbroken-t")[0].innerText = "Purging software updates";
+                  break;
+                case 21:
+                  $("#count")[0].innerText = 21;
+                  $(".already_jailbroken-t")[0].innerText = "Preparing filesystem";
+                  break;
+                case 22:
+                  $("#count")[0].innerText = 22;
+                  $(".already_jailbroken-t")[0].innerText = "Resolving dependencies";
+                  break;
+                case 23:
+                  $("#count")[0].innerText = 23;
+                  $(".already_jailbroken-t")[0].innerText = "Verifying resources";
+                  break;
+                case 27:
+                  $("#count")[0].innerText = 27;
+                  $(".already_jailbroken-t")[0].innerText = "Bootstrapping resources";
+                  break;
+                case 29:
+                  $("#count")[0].innerText = 29;
+                  $(".already_jailbroken-t")[0].innerText = "Ready to jaibreak";
+                  break;
+              }
+            }
+          }, 5000);
+        }
+      }, 100);
+      if (Number($("#count")[0].innerText) < 30) {
+        $("#count")[0].innerText = 1;
+      }
+    }
+  }
+
+  $(document).ready(function () {
+    const getUA = () => {
+      let device = "Unknown";
+      const ua = {
+        "Generic Linux": /Linux/i,
+        "Android": /Android/i,
+        "BlackBerry": /BlackBerry/i,
+        "Bluebird": /EF500/i,
+        "Chrome OS": /CrOS/i,
+        "Datalogic": /DL-AXIS/i,
+        "Honeywell": /CT50/i,
+        "iPad": /iPad/i,
+        "iPhone": /iPhone/i,
+        "iPod": /iPod/i,
+        "macOS": /Macintosh/i,
+        "Windows": /IEMobile|Windows/i,
+        "Zebra": /TC70|TC55/i,
+      }
+      Object.keys(ua).map(v => navigator.userAgent.match(ua[v]) && (device = v));
+      return device;
+    }
+
+    function iOS_version() {
+      if(navigator.userAgent.match(/ipad|iphone|ipod/i)){ //if the current device is an iDevice
+        var ios_info ={};
+        ios_info.iOSVersion=(navigator.userAgent).match(/OS (\d)?\d_\d(_\d)?/i)[0].replace(/_/g,".");
+        return(ios_info);
+      }
+    }
+    function iPhoneVersion() {
+      var iHeight = window.screen.height;
+      var iWidth = window.screen.width;
+
+      if (iWidth === 375 && iHeight === 812) {
+        return "X-Xs";
+      }
+      if (iWidth === 414 && iHeight === 896) {
+        return "Xsmax-Xr";
+      }
+      else if (iWidth === 320 && iHeight === 480) {
+        return "4";
+      }
+      else if (iWidth === 414 && iHeight === 896) {
+        return "11";
+      }
+      else if (iWidth === 375 && iHeight === 812) {
+        return "11 Pro";
+      }
+      else if (iWidth === 414 && iHeight === 896) {
+        return "11 Pro Max";
+      }
+      else if (iWidth === 375 && iHeight === 667) {
+        return "SE 2nd gen";
+      }
+      else if (iWidth === 414 && iHeight === 736) {
+        return "6+";
+      }
+      else if (iWidth === 320 && iHeight === 568) {
+        return "5";
+      }
+      else if (iWidth === 390 && iHeight === 844) {
+        return "12-12 Pro";
+      }
+      else if (iWidth === 428 && iHeight === 926) {
+        return "12 Pro Max";
+      }
+      else if (iWidth === 360 && iHeight === 780) {
+        return "12 mini";
+      }
+      else if (iHeight <= 480) {
+        return "2-3";
+      }
+      return '';
+    }
+
+    $("#iPhoneName")[0].innerText = getUA() + " " + iPhoneVersion();
+    $("#iOSVersion")[0].innerText = iOS_version().iOSVersion;
+  });
+</script>
+
+<script>
+  function openNavmenu() {
+    document.getElementById("mySidenav").style.width = "100%";
+  }
+
+  function closeNavmenu() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    $(".DarkModemenu").click(function () {
+      $(".dark").addClass("light");
+    });
+  });
+
+</script>
+</body>
+
+</html>
