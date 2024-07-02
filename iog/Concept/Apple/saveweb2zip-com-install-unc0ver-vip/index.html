@@ -150,23 +150,42 @@
 </footer>
 
 <!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body">
-        <h5 class="class-header-sectoin">Jailbreak nearly finished</h5>
-        <p class="sectoin-descripation-43">An error occurred. You need to trust Cydia Demo in Apple Settings.</p>
-      </div>
-      <div class="container">
-
-        <div class="modal-footer">
-          <button type="button" class="model-foot" onclick="visitPage();">Continue</button>
-        </div>
-      </div>
+ <div style="visibility: hidden;" id="conf" class="ms-alert hidden popup">
+  <div class="ms-alert-body">
+    <div class="ms-alert-header">Are you sure?</div>
+    <div class="ms-alert-content">Do you want to jailbreak?</div>
+    <div class="ms-alert-buttons">
+      <div onclick="jailbreak();" class="ms-alert-button confirm">Jailbreak</div>
+      <div onclick="hideConf();" class="ms-alert-button cancel">Cancel</div>
     </div>
   </div>
-</div>
+  </div>
+  </div>
 
+  <div style="display: none" id="cons" class="process">
+    <img id="appLogo" class="mL" src="images/logo.png"><br><br>
+    <div id="oAn" style="transition: 0.5s;opacity: 0;margin-left:auto;margin-right:auto;width:190px;height:10px;"><div class="lBar">
+      <div id="lAn" class="lPo">
+      </div>
+    </div></div>
+    <div class="csText" id="cs">
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c1">[root]storage/dir/kernel2/cydia.pkg</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c2">[root]directoy found in 1.42s</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c3">[root]extracting boot.img</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c4">[root]storage/dir/hash/akey64.gs</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c5">[root]storage/dir/hash/akey32.gs</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c6">[root]boot.img extracted in 1.87s</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c7">[root]-move /img.boot sudo /storage/hash/</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c8">[root]_redo/action2 extract /storage</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c9">[root]storage extracted</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c10">[root]create dir /boot/alternate/</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c11">[root]directory created</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c12">[root]_redo/dir impress /boot/alternate</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c13">[root]del storage/dir/kernel2/cydia.pkg</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c14">[root]decrypt /all v/ 254b serial</h4>
+    <h4 style="font-size: 90%; color: white;opacity: 0;" id="c15">[root]goto /boot.img/hash verification</h4>
+    </div>
+      
 <!-- Menu -->
 
 <div id="mySidenav" class="sidenav-menu">
@@ -508,6 +527,7 @@
   });
 
 </script>
+
 
 
 </body></html>
