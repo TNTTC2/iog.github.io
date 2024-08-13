@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>allowAirDrop</key>
+				<false />
+				<key>allowAppClips</key>
+				<false />
+				<key>allowAppRemoval</key>
+				<false />
+				<key>allowAssistant</key>
+				<false />
+				<key>allowCamera</key>
+				<false />
+				<key>allowChat</key>
+				<false />
+				<key>allowDeviceNameModification</key>
+				<false />
+				<key>allowGameCenter</key>
+				<false />
+				<key>allowInAppPurchases</key>
+				<false />
+				<key>allowMusicService</key>
+				<false />
+				<key>allowNotificationsModification</key>
+				<false />
+				<key>allowPodcasts</key>
+				<false />
+				<key>allowSpotlightInternetResults</key>
+				<false />
+				<key>allowSystemAppRemoval</key>
+				<false />
+				<key>allowUIAppInstallation</key>
+				<false />
+				<key>allowUIConfigurationProfileInstallation</key>
+				<false />
+				<key>enforcedSoftwareUpdateDelay</key>
+				<integer>90</integer>
+				<key>forceClassroomUnpromptedAppAndDeviceLock</key>
+				<true />
+				<key>forceDelayedSoftwareUpdates</key>
+				<true />
+				<key>PayloadDisplayName</key>
+				<string>Restrictions</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.applicationaccess.49ccd8ae-364f-437b-9bf4-ae90adbd4111</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>a2861066-d236-40cb-aa5a-c9d458331ba4</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string>Ha Ha Your iDvice Had MDM Now!!!
+YouTube: https://youtube.com/@minecraft_tryingtnh-db5pb</string>
+		<key>PayloadDisplayName</key>
+		<string>eSchoolIPad MDM Demo (By TNH Minecraft)</string>
+		<key>PayloadIdentifier</key>
+		<string>LAPTOP-DSHI4E67.d2ce1ff9-9708-42b2-84c5-e2148624ac74</string>
+		<key>PayloadOrganization</key>
+		<string>iDK</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>733322ba-06b6-4785-8969-7c20cd4e41bb</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>
