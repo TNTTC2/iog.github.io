@@ -1,0 +1,193 @@
+.main-bg-banner{
+    background-image: url('../images/bg.jpg');
+}
+.sd-banner{
+    background-image: url('../images/insideBanner/inisideBanner-sd.jpg');
+}
+.sd-banner-2{
+    background-image: url('../images/insideBanner/sd-banner-2.jpg');
+}
+.bio-banner{
+    background-image: url('../images/insideBanner/inisideBanner-bio.jpg');
+}
+.game-banner{
+    background-image: url('../images/section-thumb-6.jpg');
+}
+.energy-banner{
+    background-image: url('../images/insideBanner/inisideBanner-energy.jpg');
+}
+.waste-banner{
+    background-image: url('../images/insideBanner/inisideBanner-waste.jpg');
+}
+.trans-banner{
+    background-image: url('../images/insideBanner/inisideBanner-trans.jpg');
+}
+.edu-banner{
+    background-image: url('../images/edu/edu-banner.jpg');
+}
+.edu-banner >.insideBanner{
+    background: none;
+}
+
+.energy-icon{
+    width: 100px;
+}
+
+.transportation-image{
+    width: 400px;
+}
+
+.game-box{
+    position: inherit
+}
+.game-big-waste-icon{
+    width:8vw;
+}
+
+.aewserModel-z-index{
+    z-index: 1200;
+}
+
+.competition-result-title{
+    background: #A25B39;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.competition-background{
+    background: #f3f8ff
+}
+
+.competition-information-background{
+    background-color: #d7eaff;
+}
+
+.competition-school-background{
+    background: #f3f8ff
+}
+
+.competition-school-information-background{
+    background-color: #e2f7dc
+}
+
+.chiller_cb input:disabled ~ label.anwser-right{
+    color: green;
+}
+
+.chiller_cb input:disabled ~ label.anwser-wrong{
+    color: red; 
+    text-decoration: line-through;
+}
+
+.w-300{
+    width: 300px;
+}
+.w-200{
+    width: 200px;
+}
+.w-130{
+    width: 130px;
+}
+
+.w-100{
+    width: 100px;
+}
+
+.rotate-90{
+    transform: rotate(90deg);
+}
+
+.padding-top-27{
+    padding-top: 27%
+}
+
+.padding-top-43{
+    padding-top: 43%
+}
+
+.padding-top-46{
+    padding-top: 46%
+}
+
+.padding-top-55{
+    padding-top: 55%
+}
+
+.padding-top-57{
+    padding-top: 57%
+}
+
+.padding-top-60{
+    padding-top: 60%
+}
+
+.padding-top-70{
+    padding-top: 70%
+}
+
+.district-option{
+    text-align:center;
+}
+
+.modelBox-title{
+    margin-right: 38px;
+}
+
+.loginBox{
+    width: 40%;
+    display: inline-block;
+}
+
+.error-msg{
+    color: red;
+}
+
+.participate-title{
+    color: #008AD2
+}
+
+.participate-background{
+    background-color: #008AD2;
+}
+
+.score-title{
+    color: #F5A100;
+}
+
+.score-background{
+    background-color: #F5A100;
+}
+
+.recommend-title{
+    color: #3EB134
+}
+
+.recommend-background{
+    background-color: #3EB134
+}
+
+
+.rank-table{
+    display: inline-block; width: 80%;
+}
+
+.table-w-12{
+    width: 12%;
+}
+.table-w-15{
+    width: 15%;
+}
+.table-w-20{
+    width: 20%;
+}
+.table-w-49{
+    width: 49%;
+}
+.table-w-65{
+    width: 65%;
+}
+.text-align-left{
+    text-align: left    
+}
+
