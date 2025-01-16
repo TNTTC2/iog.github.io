@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>allowAccountModification</key>
+				<false />
+				<key>allowActivityContinuation</key>
+				<false />
+				<key>allowAirDrop</key>
+				<false />
+				<key>allowAirPrint</key>
+				<false />
+				<key>allowAppCellularDataModification</key>
+				<false />
+				<key>allowAppClips</key>
+				<false />
+				<key>allowAppInstallation</key>
+				<false />
+				<key>allowApplePersonalizedAdvertising</key>
+				<false />
+				<key>allowAppRemoval</key>
+				<false />
+				<key>allowAssistant</key>
+				<false />
+				<key>allowAutoCorrection</key>
+				<false />
+				<key>allowAutoDim</key>
+				<false />
+				<key>allowAutoUnlock</key>
+				<false />
+				<key>allowBluetoothModification</key>
+				<false />
+				<key>allowBookstore</key>
+				<false />
+				<key>allowBookstoreErotica</key>
+				<false />
+				<key>allowCamera</key>
+				<false />
+				<key>allowCellularPlanModification</key>
+				<false />
+				<key>allowChat</key>
+				<false />
+				<key>allowCloudBackup</key>
+				<false />
+				<key>allowCloudDocumentSync</key>
+				<false />
+				<key>allowCloudKeychainSync</key>
+				<false />
+				<key>allowCloudPhotoLibrary</key>
+				<false />
+				<key>allowCloudPrivateRelay</key>
+				<false />
+				<key>allowContinuousPathKeyboard</key>
+				<false />
+				<key>allowDefinitionLookup</key>
+				<false />
+				<key>allowDeviceNameModification</key>
+				<false />
+				<key>allowDiagnosticSubmission</key>
+				<false />
+				<key>allowDictation</key>
+				<false />
+				<key>allowEnablingRestrictions</key>
+				<false />
+				<key>allowEnterpriseAppTrust</key>
+				<false />
+				<key>allowEnterpriseBookBackup</key>
+				<false />
+				<key>allowEnterpriseBookMetadataSync</key>
+				<false />
+				<key>allowEraseContentAndSettings</key>
+				<false />
+				<key>allowESIMModification</key>
+				<false />
+				<key>allowExplicitContent</key>
+				<false />
+				<key>allowFilesNetworkDriveAccess</key>
+				<false />
+				<key>allowFilesUSBDriveAccess</key>
+				<false />
+				<key>allowFindMyDevice</key>
+				<false />
+				<key>allowFindMyFriends</key>
+				<false />
+				<key>allowFindMyFriendsModification</key>
+				<false />
+				<key>allowFingerprintForUnlock</key>
+				<false />
+				<key>allowGameCenter</key>
+				<false />
+				<key>allowGlobalBackgroundFetchWhenRoaming</key>
+				<false />
+				<key>allowHostPairing</key>
+				<false />
+				<key>allowInAppPurchases</key>
+				<false />
+				<key>allowiPhoneWidgetsOnMac</key>
+				<false />
+				<key>allowiTunes</key>
+				<false />
+				<key>allowKeyboardShortcuts</key>
+				<false />
+				<key>allowLiveVoicemail</key>
+				<false />
+				<key>allowLockScreenControlCenter</key>
+				<false />
+				<key>allowLockScreenNotificationsView</key>
+				<false />
+				<key>allowLockScreenTodayView</key>
+				<false />
+				<key>allowMailPrivacyProtection</key>
+				<false />
+				<key>allowManagedAppsCloudSync</key>
+				<false />
+				<key>allowMarketplaceAppInstallation</key>
+				<false />
+				<key>allowMusicService</key>
+				<false />
+				<key>allowNews</key>
+				<false />
+				<key>allowNFC</key>
+				<false />
+				<key>allowNotificationsModification</key>
+				<false />
+				<key>allowOpenFromManagedToUnmanaged</key>
+				<false />
+				<key>allowOpenFromUnmanagedToManaged</key>
+				<false />
+				<key>allowOTAPKIUpdates</key>
+				<false />
+				<key>allowPairedWatch</key>
+				<false />
+				<key>allowPassbookWhileLocked</key>
+				<false />
+				<key>allowPasscodeModification</key>
+				<false />
+				<key>allowPasswordAutoFill</key>
+				<false />
+				<key>allowPasswordProximityRequests</key>
+				<false />
+				<key>allowPasswordSharing</key>
+				<false />
+				<key>allowPersonalHotspotModification</key>
+				<false />
+				<key>allowPhotoStream</key>
+				<false />
+				<key>allowPodcasts</key>
+				<false />
+				<key>allowPredictiveKeyboard</key>
+				<false />
+				<key>allowProximitySetupToNewDevice</key>
+				<false />
+				<key>allowRadioService</key>
+				<false />
+				<key>allowRapidSecurityResponseInstallation</key>
+				<false />
+				<key>allowRapidSecurityResponseRemoval</key>
+				<false />
+				<key>allowRemoteScreenObservation</key>
+				<false />
+				<key>allowSafari</key>
+				<false />
+				<key>allowScreenShot</key>
+				<false />
+				<key>allowSharedDeviceTemporarySession</key>
+				<false />
+				<key>allowSharedStream</key>
+				<false />
+				<key>allowSiriServerLogging</key>
+				<false />
+				<key>allowSpellCheck</key>
+				<false />
+				<key>allowSpotlightInternetResults</key>
+				<false />
+				<key>allowSystemAppRemoval</key>
+				<false />
+				<key>allowUIConfigurationProfileInstallation</key>
+				<false />
+				<key>allowUntrustedTLSPrompt</key>
+				<false />
+				<key>allowUSBRestrictedMode</key>
+				<false />
+				<key>allowVoiceDialing</key>
+				<false />
+				<key>allowVPNCreation</key>
+				<false />
+				<key>allowWallpaperModification</key>
+				<false />
+				<key>allowWebDistributionAppInstallation</key>
+				<false />
+				<key>enforcedSoftwareUpdateDelay</key>
+				<integer>90</integer>
+				<key>forceDelayedSoftwareUpdates</key>
+				<true />
+				<key>PayloadDisplayName</key>
+				<string>Restrictions #1</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.applicationaccess.88efe61e-ec64-4d6e-baa5-2f518e6e8bb1</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>88efe61e-ec64-4d6e-baa5-2f518e6e8bb1</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string>DO NOT INSTALL THIS PORFILE ON YOUR OWN DEVICE!!!
+Porfile made by TNH Minecraft</string>
+		<key>PayloadDisplayName</key>
+		<string>iBlock EVERYTHING!!!</string>
+		<key>PayloadIdentifier</key>
+		<string>LAPTOP-DSHI4E67.bc4dd9cb-b5b2-4002-b05e-7440d719df92</string>
+		<key>PayloadOrganization</key>
+		<string>DO NOT INSTALL THIS PORFILE ON YOUR OWN DEVICE!!!</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>bc4dd9cb-b5b2-4002-b05e-7440d719df92</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>
