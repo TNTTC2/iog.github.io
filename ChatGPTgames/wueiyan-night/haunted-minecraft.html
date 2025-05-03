@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Herobrine 詛咒：迷失的世界</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: black;
+      color: red;
+      padding: 20px;
+    }
+    .scene {
+      max-width: 600px;
+      margin: auto;
+    }
+    .choice {
+      background-color: red;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+    .choice:hover {
+      background-color: darkred;
+    }
+    .glitch {
+      font-family: monospace;
+      font-size: 1.5em;
+      animation: flicker 0.2s infinite alternate;
+      white-space: pre-wrap;
+      text-align: center;
+    }
+    @keyframes flicker {
+      0% { opacity: 1; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.3; transform: scale(1.05) rotate(1deg); }
+      100% { opacity: 1; transform: scale(0.95) rotate(-1deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="game"></div>
+
+  <script>
+    const scenes = {
+      homepage: {
+        text: "本網頁遊戲由 ChatGPT AI 生成製作，並由 TNH Minecraft 討論想法。\n你在森林中醒來，四周一片死寂。天空泛著紅光，空氣中彌漫著灰燼。",
+        choices: [
+          { text: "向前走", next: "path1" },
+          { text: "坐下等待救援", next: "badEnd1" },
+          { text: "亂碼之路", next: "secretGlitch" },
+          { text: "進入連點幻境", next: "clickChallenge" }
+        ]
+      },
+      path1: {
+        text: "你遇到一棟廢棄的木屋，門微微敞開。",
+        choices: [
+          { text: "進入木屋", next: "cabin" },
+          { text: "繞過它", next: "woods" }
+        ]
+      },
+      cabin: {
+        text: "你進入木屋，牆上畫著奇怪的符號，一本發光的書躺在桌上。",
+        choices: [
+          { text: "閱讀書本", next: "curse" },
+          { text: "轉身逃跑", next: "badEnd2" }
+        ]
+      },
+      woods: {
+        text: "你在林中迷路，四周漸漸黑了下來。",
+        choices: [
+          { text: "點燃火把", next: "safeCamp" },
+          { text: "繼續走", next: "herobrineAppears" }
+        ]
+      },
+      curse: {
+        text: "你啟動了某種儀式，Herobrine 的眼睛從書中盯住你。",
+        choices: [
+          { text: "抵抗", next: "goodEnd" },
+          { text: "接受命運", next: "virusScreen" }
+        ]
+      },
+      secretGlitch: {
+        text: "你跌入一個閃爍的虛空，畫面開始扭曲...",
+        choices: [
+          { text: "繼續", next: "virusScreen" }
+        ]
+      },
+      herobrineAppears: {
+        text: "Herobrine 出現在你眼前，他的雙眼閃爍著白光。",
+        choices: [
+          { text: "逃跑", next: "badEnd3" },
+          { text: "挑戰他", next: "goodEnd" }
+        ]
+      },
+      safeCamp: {
+        text: "你度過了安全的一夜，清晨出現了一道光。",
+        choices: [
+          { text: "前往光源", next: "goodEnd" }
+        ]
+      },
+      badEnd1: {
+        text: "你靜靜等待，但從未有人來。你被黑霧吞噬。",
+        choices: [
+          { text: "重新開始", next: "virusScreen" }
+        ]
+      },
+      badEnd2: {
+        text: "你逃跑時絆倒，地面裂開將你吞沒。",
+        choices: [
+          { text: "重新開始", next: "virusScreen" }
+        ]
+      },
+      badEnd3: {
+        text: "你逃不掉，Herobrine 伸手穿透了你。",
+        choices: [
+          { text: "重新開始", next: "virusScreen" }
+        ]
+      },
+      goodEnd: {
+        text: "你成功驅逐了詛咒，一道光芒將你送回現實。",
+        choices: [
+          { text: "重新開始", next: "virusScreen" }
+        ]
+      },
+      clickChallenge: {
+        text: "你進入了 Herobrine 創造的幻境，只有不停點擊才能離開！\n點擊下面的按鈕 15 次來逃脫。",
+        counter: 0,
+        clicksNeeded: 15,
+        render: function () {
+          const el = document.getElementById("game");
+          el.innerHTML = `<div>${this.text}<br><br><button class="choice" onclick="clickEscape()">快點我！ (${this.counter}/${this.clicksNeeded})</button></div>`;
+        }
+      },
+      virusScreen: {
+        text: `
+          <div class="glitch">
+            ████████ VIRUS.EXE LOADED ████████<br>
+            HEROBRINE 控制了你的裝置<br>
+            █ ERROR CODE 0x000H3R0 █<br>
+            █████ SYSTEM FAILURE █████<br>
+            ██▌▌▌▌▌▌▌██ █ ▓ ▓ ▓ ▓ ▓ ▓ ▓ █ █ ▌▌▌▌▌<br>
+            你已進入 HEROBRINE 的世界<br>
+            靈魂轉移中... █ █ █ █ █ █<br><br>
+            <button class="choice" onclick="render('homepage')">...重新開機？</button>
+          </div>`,
+        choices: []
+      }
+    };
+
+    function render(scene) {
+      const el = document.getElementById("game");
+      const s = scenes[scene];
+
+      if (typeof s.render === 'function') {
+        s.render();
+        return;
+      }
+
+      el.innerHTML = `<div>${s.text}</div>`;
+      if (s.choices.length > 0) {
+        s.choices.forEach(c =>
+          el.innerHTML += `<button class="choice" onclick="render('${c.next}')">${c.text}</button>`
+        );
+      }
+    }
+
+    function clickEscape() {
+      const s = scenes["clickChallenge"];
+      s.counter++;
+      if (s.counter >= s.clicksNeeded) {
+        render("goodEnd");
+      } else {
+        s.render();
+      }
+    }
+
+    render("homepage");
+  </script>
+</body>
+</html>

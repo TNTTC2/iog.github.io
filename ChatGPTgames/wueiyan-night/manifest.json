@@ -1,7 +1,7 @@
 {
   "name": "無眼之夜：Herobrine 的詛咒",
   "short_name": "無眼之夜",
-  "start_url": "./wueiyan-night.html",
+  "start_url": "./haunted-minecraft.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ff0000",
