@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Herobrine的詛咒</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+    }
+    #game-text {
+      white-space: pre-wrap;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #0f0;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Herobrine的詛咒</h1>
+  <div id="game-text">你醒來發現自己身處一個陌生的Minecraft世界，四周瀰漫著詭異的氣息。</div>
+  <div id="choices"></div>
+
+  <script>
+    const text = document.getElementById('game-text');
+    const choices = document.getElementById('choices');
+
+    function setScene(sceneText, buttons) {
+      text.innerText = sceneText;
+      choices.innerHTML = '';
+      buttons.forEach(btn => {
+        const b = document.createElement('button');
+        b.innerText = btn.text;
+        b.className = 'btn';
+        b.onclick = btn.action;
+        choices.appendChild(b);
+      });
+    }
+
+    function startGame() {
+      setScene(
+        "你聽到遠處傳來低語聲，似乎在呼喚你的名字。\n你要怎麼做？",
+        [
+          { text: '前往聲音的方向', action: approachSound },
+          { text: '尋找武器防身', action: findWeapon }
+        ]
+      );
+    }
+
+    // 以下是其他場景函數（略過內容不變）
+    function approachSound() {
+      setScene("你走近聲音的來源，突然，一雙純白的眼睛在黑暗中閃現。\nHerobrine出現了！", [
+        { text: '與他對峙', action: confrontHerobrine },
+        { text: '轉身逃跑', action: runAway }
+      ]);
+    }
+    function findWeapon() {
+      setScene("你找到一把鐵劍，感到稍微安心。\n背後傳來腳步聲。", [
+        { text: '轉身查看', action: turnAround },
+        { text: '躲起來觀察', action: hideAndObserve }
+      ]);
+    }
+    function confrontHerobrine() {
+      setScene("你舉起武器準備戰鬥，但Herobrine凝視著你。\n他開口說：'你終於來了...'", [
+        { text: '詢問他的意圖', action: askIntent },
+        { text: '發起攻擊', action: attackHerobrine }
+      ]);
+    }
+    function runAway() {
+      setScene("你逃跑但景色開始扭曲，Herobrine再次出現。", [
+        { text: '面對他', action: confrontHerobrine }
+      ]);
+    }
+    function turnAround() {
+      setScene("你看到一個身影消失，只留下紙條：'逃不掉的...'", [
+        { text: '撿起紙條', action: pickUpNote },
+        { text: '追上身影', action: chaseFigure }
+      ]);
+    }
+    function hideAndObserve() {
+      setScene("Herobrine在原地徘徊，好像在尋找什麼。", [
+        { text: '悄悄接近', action: sneakUp },
+        { text: '保持距離觀察', action: keepObserving }
+      ]);
+    }
+    function askIntent() {
+      setScene("Herobrine說：'世界需要新的主宰。'\n你感到一股力量湧入體內。", [
+        { text: '接受力量', action: acceptPower },
+        { text: '拒絕並反抗', action: rejectPower }
+      ]);
+    }
+    function attackHerobrine() {
+      setScene("你衝上去，但Herobrine瞬間消失，出現在你背後。\n你視線模糊...", [
+        { text: '重新開始', action: startGame }
+      ]);
+    }
+    function pickUpNote() {
+      setScene("紙條寫著：'面對恐懼才能解脫。'", [
+        { text: '繼續前進', action: approachSound }
+      ]);
+    }
+    function chaseFigure() {
+      setScene("你追到一個祭壇，Herobrine正在等待。", [
+        { text: '與他對話', action: askIntent },
+        { text: '準備戰鬥', action: attackHerobrine }
+      ]);
+    }
+    function sneakUp() {
+      setScene("'你以為可以躲得過我？'", [
+        { text: '道歉並求饒', action: apologize },
+        { text: '拔劍攻擊', action: attackHerobrine }
+      ]);
+    }
+    function keepObserving() {
+      setScene("Herobrine在地上畫符號，似乎是儀式。", [
+        { text: '打斷儀式', action: interruptRitual },
+        { text: '記下符號離開', action: recordAndLeave }
+      ]);
+    }
+    function acceptPower() {
+      setScene("你接受力量，成為新的主宰。", [
+        { text: '重新開始', action: startGame }
+      ]);
+    }
+    function rejectPower() {
+      setScene("你拒絕他，他消失了，一切恢復平靜。", [
+        { text: '重新開始', action: startGame }
+      ]);
+    }
+    function apologize() {
+      setScene("'勇氣可嘉，但還不夠。'\n你被傳送回原點。", [
+        { text: '重新開始', action: startGame }
+      ]);
+    }
+    function interruptRitual() {
+      setScene("你打斷儀式，世界開始崩塌。", [
+        { text: '重新開始', action: startGame }
+      ]);
+    }
+    function recordAndLeave() {
+      setScene("你記下符號，悄悄離開現場。", [
+        { text: '重新開始', action: startGame }
+      ]);
+    }
+
+    // 確保一切載入後再開始
+    window.onload = startGame;
+  </script>
+</body>
+</html>
