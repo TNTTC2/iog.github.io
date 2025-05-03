@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>凋零風暴：終結</title>
+  <style>
+    body {
+      background-image: url('https://wallpapers.com/images/hd/wither-storm-unleashed-in-a-minecraft-world-3s2bjx4on1c0ceci.jpg');
+      background-size: cover;
+      background-position: center;
+      color: #0f0;
+      font-family: monospace, sans-serif;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      box-sizing: border-box;
+      background-repeat: no-repeat;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #game-text {
+      flex: 1;
+      white-space: pre-wrap;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    #choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      background: rgba(34, 34, 34, 0.8);
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 15px;
+      font-size: 1.2em;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: #0f0;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>《凋零風暴：終結》</h1>
+  <div id="game-text">你面前是天空中盤旋的巨大凋零風暴。它正在吞噬一整座城鎮。</div>
+  <div id="choices"></div>
+
+  <script>
+    const text = document.getElementById('game-text');
+    const choices = document.getElementById('choices');
+
+    function setScene(sceneText, buttons) {
+      text.innerText = sceneText;
+      choices.innerHTML = '';
+      buttons.forEach(btn => {
+        const b = document.createElement('button');
+        b.innerText = btn.text;
+        b.className = 'btn';
+        b.onclick = btn.action;
+        choices.appendChild(b);
+      });
+    }
+
+    function startGame() {
+      setScene(
+        "你手中握著『指令方塊炸彈』。\n你的隊友正掩護你靠近凋零風暴的核心。",
+        [
+          { text: '衝上去', action: approachStorm },
+          { text: '猶豫一下', action: hesitate }
+        ]
+      );
+    }
+
+    function approachStorm() {
+      setScene(
+        "你猛然衝刺，凋零風暴注意到了你！\n\n它釋放觸手攻擊你！點下面那顆綠色大按鈕逃命！",
+        [
+          { text: '逃命！', action: trackEscapePress }
+        ]
+      );
+    }
+
+    function trackEscapePress() {
+      let presses = 0;
+      function updateEscapeText() {
+        setScene(
+          `你被觸手追著跑！點這顆鍵 ${10 - presses} 次逃命！`,
+          [
+            { text: '點我逃命！', action: () => {
+                presses++;
+                if (presses >= 10) {
+                  plantBomb();
+                } else {
+                  updateEscapeText();
+                }
+              }
+            }
+          ]
+        );
+      }
+      updateEscapeText();
+    }
+
+    function hesitate() {
+      setScene(
+        "你猶豫了一秒，凋零風暴吐出一團能量波！你被擊中，生命值剩下一半！",
+        [
+          { text: '現在衝', action: approachStorm },
+          { text: '躲起來', action: cowardEnd }
+        ]
+      );
+    }
+
+    function plantBomb() {
+      setScene(
+        "你終於抵達核心！\n你將指令方塊炸彈塞進核心中……",
+        [
+          { text: '引爆！', action: explodeStorm }
+        ]
+      );
+    }
+
+    function cowardEnd() {
+      setScene(
+        "你選擇逃跑。\n\n凋零風暴吞噬了整個村莊，包括你那一點點勇氣。",
+        [
+          { text: '重新來過', action: startGame }
+        ]
+      );
+    }
+
+    function explodeStorm() {
+      setScene(
+        "轟——！！！\n\n凋零風暴的核心爆裂，它發出最後一聲咆哮後瓦解。\n\n你成為傳說，NPC們將你稱為『點點王者』。",
+        [
+          { text: '再玩一次', action: startGame }
+        ]
+      );
+    }
+
+    startGame();
+  </script>
+</body>
+</html>

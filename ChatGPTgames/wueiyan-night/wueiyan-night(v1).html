@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff0000">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="無眼之夜" />
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/2/26/Herobrine_face.png" />
+  <link rel="manifest" href="manifest.json">
+  <title>無眼之夜：Herobrine 的詛咒</title>
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: monospace;
+      text-align: center;
+      margin: 0;
+      padding: 2em;
+    }
+    button {
+      background-color: red;
+      color: black;
+      border: none;
+      padding: 1em 2em;
+      font-size: 1.2em;
+      margin: 1em;
+      cursor: pointer;
+    }
+    .scene {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>無眼之夜：Herobrine 的詛咒</h1>
+  <div id="scene1" class="scene active">
+    <p>你在一個詭異的伺服器中醒來，四周空無一人，但遠處的霧中，好像有雙白色的眼睛在看著你。</p>
+    <button onclick="nextScene('scene2')">探索</button>
+  </div>
+  <div id="scene2" class="scene">
+    <p>你發現一棟廢棄的木屋，門是開著的，地板上有一串紅石軌跡。</p>
+    <button onclick="nextScene('scene3')">進入木屋</button>
+  </div>
+  <div id="scene3" class="scene">
+    <p>屋內牆上刻著「HeRoBrInE wAs HeRe」，地板突然塌陷，你掉入地底...</p>
+    <button onclick="nextScene('scene4')">繼續</button>
+  </div>
+  <div id="scene4" class="scene">
+    <p>地底密室滿是骷髏，螢幕開始閃爍。Herobrine 出現了……</p>
+    <button onclick="endGame()">逃跑</button>
+  </div>
+  <div id="end" class="scene">
+    <h2>你的系統被入侵。</h2>
+    <p>Herobrine 正在下載你的靈魂……</p>
+    <p style="font-size: 0.8em;">（開玩笑的，別報警）</p>
+  </div>
+
+  <script>
+    function nextScene(id) {
+      document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function endGame() {
+      document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+      document.getElementById('end').classList.add('active');
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>
+</html>

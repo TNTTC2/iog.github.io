@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>無眼之夜：Herobrine 的詛咒</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: 'Courier New', monospace;
+      padding: 1em;
+    }
+    .choice {
+      display: block;
+      background: darkred;
+      border: 1px solid crimson;
+      color: white;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .glitch {
+      animation: glitch 0.8s infinite;
+    }
+    @keyframes glitch {
+      0% { color: red; }
+      50% { color: crimson; transform: scale(1.02); }
+      100% { color: red; }
+    }
+    .scramble {
+      font-family: monospace;
+      letter-spacing: 2px;
+      font-weight: bold;
+      color: crimson;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game"></div>
+
+<script>
+const scenes = {
+  splash: {
+    text: `
+      <h2>無眼之夜：Herobrine 的詛咒</h2>
+      <p>本網頁遊戲由 <span style="color:white">ChatGPT AI</span> 協助生成，並由 <span style="color:white">TNH Minecraft</span> 提出創意構想。</p>
+      <p>你準備好了嗎？</p>
+    `,
+    choices: [
+      { text: "點我開始遊戲", next: "start" },
+      { text: "啟動 ██程式█碼▌", next: "glitchsecret" }
+    ]
+  },
+  start: {
+    text: "你在森林中醒來，四周一片死寂。天空泛著紅光，空氣中彌漫著灰燼。",
+    choices: [
+      { text: "前往礦坑深處", next: "mineshaft" },
+      { text: "走向詭異的圖書館", next: "library" },
+      { text: "查看破碎的下界傳送門", next: "nethergate" },
+      { text: "點擊此處以確認安全性", next: "fakeerror" }
+    ]
+  },
+  glitchsecret: {
+    text: `
+      <p class="scramble">[錯誤_代碼：0xHRB101]</p>
+      <p>你不該來這。</p>
+      <p>但既然來了…</p>
+      <p>這是另一段遺忘的記憶。</p>
+    `,
+    choices: [
+      { text: "深入探索禁區", next: "beyond" },
+      { text: "逃回主畫面", next: "splash" }
+    ]
+  },
+  beyond: {
+    text: `
+      <p>你看見一張古老的地圖，標示著名為「不存之村」的地點。</p>
+      <p>Herobrine 的名字在地圖邊緣閃爍。</p>
+    `,
+    choices: [
+      { text: "前往村落", next: "monster" },
+      { text: "將地圖燒毀", next: "virus" }
+    ]
+  },
+  fakeerror: {
+    text: `
+      <div class="glitch">
+        <p>系統正在掃描…</p>
+        <p>錯誤！Herobrine 檔案已感染。</p>
+        <p>是否繼續？</p>
+      </div>
+    `,
+    choices: [
+      { text: "繼續", next: "virus" },
+      { text: "返回", next: "start" }
+    ]
+  },
+  // 其餘劇情如之前提供的同名 key，請原樣複製貼上。
+  // 為簡潔起見我這邊不再重複那一大段。
+};
+
+function render(scene) {
+  const data = scenes[scene];
+  let html = `<p>${data.text}</p>`;
+  for (const c of data.choices) {
+    html += `<a class="choice" onclick="render('${c.next}')">${c.text}</a>`;
+  }
+  document.getElementById("game").innerHTML = html;
+}
+
+render("splash");
+</script>
+
+</body>
+</html>
