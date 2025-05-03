@@ -1,0 +1,15 @@
+{
+  "name": "無眼之夜：Herobrine 的詛咒",
+  "short_name": "無眼之夜",
+  "start_url": "./wueiyan-night.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#ff0000",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/2/26/Herobrine_face.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

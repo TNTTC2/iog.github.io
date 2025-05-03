@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff0000">
+  <link rel="manifest" href="manifest.json">
+  <title>無眼之夜：Herobrine 的詛咒</title>
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: monospace;
+      text-align: center;
+      padding: 2em;
+      margin: 0;
+    }
+    button {
+      background-color: red;
+      color: black;
+      border: none;
+      padding: 1em 2em;
+      margin: 1em;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    .scene {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>無眼之夜：Herobrine 的詛咒</h1>
+
+  <div id="scene1" class="scene active">
+    <p>你在一個詭異的伺服器醒來，遠方出現閃爍的白色眼睛。</p>
+    <button onclick="nextScene('scene2')">探索</button>
+    <button onclick="nextScene('scene_abandon')">立即登出</button>
+  </div>
+
+  <div id="scene2" class="scene">
+    <p>你來到一棟木屋前。氣氛詭異，門自動打開。</p>
+    <button onclick="nextScene('scene3')">進入木屋</button>
+    <button onclick="nextScene('scene_runaway')">逃離這裡</button>
+  </div>
+
+  <div id="scene3" class="scene">
+    <p>屋內地板塌陷，你掉入地底密室。</p>
+    <button onclick="nextScene('scene4')">調查密室</button>
+    <button onclick="nextScene('scene_sacrifice')">把一顆鑽石丟進岩漿</button>
+  </div>
+
+  <div id="scene4" class="scene">
+    <p>Herobrine 突然出現：「你闖入了我的領域…」</p>
+    <button onclick="nextScene('end_fight')">與他戰鬥</button>
+    <button onclick="nextScene('end_surrender')">跪下投降</button>
+  </div>
+
+  <!-- 結局們 -->
+
+  <div id="scene_abandon" class="scene">
+    <h2>你選擇了登出。</h2>
+    <p>但Herobrine跟著你進入了現實。</p>
+    <button onclick="nextScene('virus')">重新開始</button>
+  </div>
+
+  <div id="scene_runaway" class="scene">
+    <h2>你逃出了森林</h2>
+    <p>卻發現自己在原地打轉……Herobrine已經鎖定你。</p>
+    <button onclick="nextScene('virus')">重新開始</button>
+  </div>
+
+  <div id="scene_sacrifice" class="scene">
+    <h2>獻祭成功</h2>
+    <p>你獲得了暫時的自由，但耳邊傳來低語：「我們還會再見……」</p>
+    <button onclick="nextScene('virus')">重新開始</button>
+  </div>
+
+  <div id="end_fight" class="scene">
+    <h2>你拔出劍，對決 Herobrine！</h2>
+    <p>你被瞬間秒殺，頭顱還被用來裝飾他的牆。</p>
+    <button onclick="nextScene('virus')">重新開始</button>
+  </div>
+
+  <div id="end_surrender" class="scene">
+    <h2>你低下頭，服從了。</h2>
+    <p>Herobrine 將你改造成他的僕人，在伺服器中無限巡邏。</p>
+    <button onclick="nextScene('virus')">重新開始</button>
+  </div>
+
+  <!-- 假病毒畫面 -->
+  <div id="virus" class="scene">
+    <h2 style="color:lime;">[系統錯誤]</h2>
+    <p style="color:white;">你的伺服器已被 Herobrine 控制。</p>
+    <p style="color:white;">正在導出記憶體... 78%... 錯誤：靈魂不明</p>
+    <p style="color:lime;">請立即關閉此頁面。</p>
+    <button onclick="location.reload()">返回主畫面</button>
+  </div>
+
+  <script>
+    function nextScene(id) {
+      document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>
+</html>

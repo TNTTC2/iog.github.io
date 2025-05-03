@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>無眼之夜：Herobrine 的詛咒</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: 'Courier New', monospace;
+      padding: 1em;
+    }
+    .choice {
+      display: block;
+      background: darkred;
+      border: 1px solid crimson;
+      color: white;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .glitch {
+      animation: glitch 0.8s infinite;
+    }
+    @keyframes glitch {
+      0% { color: red; }
+      50% { color: crimson; transform: scale(1.02); }
+      100% { color: red; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="game"></div>
+
+<script>
+const scenes = {
+  start: {
+    text: "你在森林中醒來，四周一片死寂。天空泛著紅光，空氣中彌漫著灰燼。",
+    choices: [
+      { text: "前往礦坑深處", next: "mineshaft" },
+      { text: "走向詭異的圖書館", next: "library" },
+      { text: "查看破碎的下界傳送門", next: "nethergate" }
+    ]
+  },
+  mineshaft: {
+    text: "你踏入破舊的礦坑，牆上浮現出模糊的名字：HEROBRINE。",
+    choices: [
+      { text: "繼續深入", next: "deepmine" },
+      { text: "立刻撤退", next: "loop" }
+    ]
+  },
+  library: {
+    text: "圖書館充滿灰塵，書本開始自行翻頁。",
+    choices: [
+      { text: "閱讀浮動的書本", next: "reveal" },
+      { text: "放火燒掉圖書館", next: "fire" }
+    ]
+  },
+  nethergate: {
+    text: "破碎的傳送門似乎曾被人試圖重建，週圍刻滿符文。",
+    choices: [
+      { text: "拼湊傳送門", next: "summon" },
+      { text: "挖掘附近地面", next: "trap" }
+    ]
+  },
+  deepmine: {
+    text: "你越走越深，聽到腳步聲越來越近。你已經不再孤單。",
+    choices: [
+      { text: "轉身逃跑", next: "loop" },
+      { text: "停下來，等待來者", next: "infected" }
+    ]
+  },
+  reveal: {
+    text: "你讀到了一段詛咒文字，雙眼刺痛，一道聲音在你腦中低語。",
+    choices: [
+      { text: "服從聲音", next: "cult" },
+      { text: "拒絕誘惑", next: "virus" }
+    ]
+  },
+  fire: {
+    text: "火焰吞噬了書本，也點燃了你。你最後看見一雙發光的白眼。",
+    choices: [
+      { text: "重新開始", next: "start" }
+    ]
+  },
+  summon: {
+    text: "傳送門亮起紅光，你回不了頭了。",
+    choices: [
+      { text: "踏入傳送門", next: "monster" }
+    ]
+  },
+  trap: {
+    text: "你踩中機關，掉入一個封閉空間。牆上浮現：『你不該來這。』",
+    choices: [
+      { text: "重新開始", next: "start" }
+    ]
+  },
+  cult: {
+    text: "你跪下。你的眼睛變白。你已經不是你。",
+    choices: [
+      { text: "重新開始", next: "virus" }
+    ]
+  },
+  loop: {
+    text: "你發現自己又回到了起點，天空更紅，空氣更冷。",
+    choices: [
+      { text: "嘗試其他方向", next: "library" },
+      { text: "接受命運", next: "virus" }
+    ]
+  },
+  infected: {
+    text: "你感覺一股力量侵入你的身體，視線開始扭曲。",
+    choices: [
+      { text: "接受變化", next: "monster" },
+      { text: "嘗試抵抗", next: "virus" }
+    ]
+  },
+  monster: {
+    text: "你已經失去了人性。你是新一代的 Herobrine。",
+    choices: [
+      { text: "重新開始", next: "virus" }
+    ]
+  },
+  virus: {
+    text: `
+      <div class="glitch">
+        <p>== [ 系統錯誤：感染擴散 ] ==<br>
+        Herobrine 已取得控制權。<br>
+        你不再是你。<br>
+        正在重新配置你的世界…<br><br>
+        [ ████████░░░░░░░░░░ ] 42%<br><br>
+        請勿關閉裝置。</p>
+      </div>
+    `,
+    choices: [
+      { text: "回到開始", next: "start" }
+    ]
+  }
+};
+
+function render(scene) {
+  const data = scenes[scene];
+  let html = `<p>${data.text}</p>`;
+  for (const c of data.choices) {
+    html += `<a class="choice" onclick="render('${c.next}')">${c.text}</a>`;
+  }
+  document.getElementById("game").innerHTML = html;
+}
+
+render("start");
+</script>
+
+</body>
+</html>
