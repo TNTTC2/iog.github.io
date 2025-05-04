@@ -43,7 +43,7 @@
       border: none; border-radius: 5px; background-color: #fff;
       user-select: none; touch-action: none;
     }
-    /* 方塊素材庫存 (只顯示可收集的方塊) */
+    /* 方塊素材庫存 (僅用於可收集的方塊) */
     #inventoryUI {
       position: fixed; top: 60px; left: 50%;
       transform: translateX(-50%);
@@ -57,7 +57,7 @@
       cursor: pointer;
       user-select: none;
     }
-    /* 合成後的物品庫存，包含武器、工具、蘋果、鐵桶等 */
+    /* 合成後的物品庫存 (包含武器、工具、蘋果、鐵桶、火把等) */
     #iteminventory {
       position: fixed; top: 120px; left: 50%;
       transform: translateX(-50%);
@@ -88,7 +88,7 @@
       flex-direction: column;
       gap: 8px;
     }
-    /* 右下控制區：攻擊、跳躍、放置 */
+    /* 右下控制區：跳躍、攻擊、放置 */
     #rightControls {
       position: fixed; bottom: 10px; right: 10px;
       z-index: 10;
@@ -179,7 +179,7 @@
   <!-- 方塊素材庫存 -->
   <div id="inventoryUI"></div>
   
-  <!-- 合成後的物品庫存（包含劍、鎬、蘋果、鐵桶等） -->
+  <!-- 物品物品欄 (合成後的物品庫存) -->
   <div id="iteminventory"></div>
   
   <!-- 血量顯示 -->
@@ -273,10 +273,10 @@
     const moveSpeed = 4;
     const jumpVelocity = -12;
     
-    // 玩家屬性（增加水中相關計時屬性）
+    // 玩家屬性（出生點將透過 findSpawnPoint 設定）
     const player = {
-      x: tileSize * 2,
-      y: (groundLevel - 1) * tileSize,
+      x: 0,
+      y: 0,
       width: tileSize,
       height: tileSize,
       vx: 0,
@@ -291,7 +291,7 @@
       lastWaterDamageTime: null
     };
     
-    // 玩家武器補正 (預設 0，合成劍後會依品項增加傷害)
+    // 玩家武器補正（預設 0，合成劍後增加攻擊力）
     let playerWeaponBonus = 0;
     
     let moveDirection = 0;
@@ -299,15 +299,15 @@
     let lastLavaDamageTime = Date.now();
     let lastVoidDamageTime = Date.now();
     
-    // 全域集合：區塊資料、怪物、投射物
+    // 全域集合：世界方塊、怪物、投射物
     let worldData = [];
     let entities = [];
     let projectiles = [];
     
-    // 方塊破壞工具需求
+    // 可破壞方塊工具要求
     const blockRequirements = {
       "grass": 0,
-      "leaf": 0,
+      "leaf": 0, // 雖然樹葉會出現，但玩家不與其碰撞
       "wood": 0,
       "ice": 0,
       "stone": 1,
@@ -317,16 +317,15 @@
       "diamond": 2,
       "bedrock": Infinity
     };
-    // 可收集之方塊類型
-    const collectibleTypes = ["grass", "wood", "stone", "iron", "gold", "diamond", "coal"];
+    // 可收集方塊類型（不含樹葉，因為玩家可穿過樹葉）
+    const collectibleTypes = ["grass", "stone", "wood", "coal", "iron", "gold", "diamond"];
     
     // 一般庫存（方塊素材）
     let inventory = {};
-    // 合成後的物品庫存（存放武器、工具、蘋果、鐵桶）
+    // 合成後的物品庫存（包含武器、工具、蘋果、鐵桶、火把等）
     let itemInventory = {};
     
     /* —— 合成配方 —— */
-    // 預設已有部分武器與工具配方，加上火把與鐵桶
     const recipes = [
       { name: "木劍", materials: {"wood": 2}, isTool: true, toolLevel: 1, type: "sword" },
       { name: "木鎬", materials: {"wood": 3}, isTool: true, toolLevel: 1, type: "pickaxe" },
@@ -338,8 +337,10 @@
       { name: "黃金鎬", materials: {"gold": 3}, isTool: true, toolLevel: 1, type: "pickaxe" },
       { name: "鑽石劍", materials: {"diamond": 2}, isTool: true, toolLevel: 3, type: "sword" },
       { name: "鑽石鎬", materials: {"diamond": 3}, isTool: true, toolLevel: 3, type: "pickaxe" },
-      { name: "火把", materials: {"coal": 1, "wood": 1}, isTool: false },
+      // 將火把配方調整為工具，並指定 type 為 "torch"
+      { name: "火把", materials: {"coal": 1, "wood": 1}, isTool: true, type: "torch" },
       { name: "鐵桶", materials: {"iron": 3}, isTool: true, type: "bucket" }
+      // 蘋果由破壞樹葉時掉落
     ];
     
     /* —— 日夜交替 —— */
@@ -355,7 +356,6 @@
       const b = Math.floor(40 + intensity * (235 - 40));
       document.body.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
     }
-    // 判斷是否夜晚：當 intensity < 0.5 為夜晚
     function isNight() {
       let intensity = (Math.sin(dayTime) + 1) / 2;
       return intensity < 0.5;
@@ -368,12 +368,13 @@
         for (let col = 0; col < worldCols; col++) {
           let x = col * tileSize;
           let y = row * tileSize;
-          if (row < groundLevel)
+          if (row < groundLevel) {
+            // 天空區，不生成任何方塊
             continue;
-          else if (row === groundLevel) {
+          } else if (row === groundLevel) {
             // 地表為草地
             worldData.push({ x: x, y: y, type: "grass", color: "#00FF00" });
-            // 隨機生成簡單樹木（木頭+葉子）
+            // 隨機生成樹木：生成木頭與葉子，樹葉屬於可收集但非固體對玩家碰撞
             if (Math.random() < 0.2 && row - 1 >= 0) {
               worldData.push({ x: x, y: y - tileSize, type: "wood", color: "#8B4513" });
               worldData.push({ x: x - tileSize, y: y - tileSize, type: "leaf", color: "#228B22" });
@@ -414,6 +415,21 @@
       }
     }
     
+    // 從天空區隨機尋找一個空格作為玩家出生點（確保不重疊任何方塊）
+    function findSpawnPoint() {
+      let maxAttempts = 100;
+      while(maxAttempts > 0) {
+        let col = Math.floor(Math.random() * worldCols);
+        let row = Math.floor(Math.random() * groundLevel);  // 選取天空區
+        let x = col * tileSize;
+        let y = row * tileSize;
+        let occupied = worldData.some(block => block.x === x && block.y === y);
+        if(!occupied) return {x, y};
+        maxAttempts--;
+      }
+      return {x: tileSize, y: tileSize};
+    }
+    
     // 更新相機使玩家置中
     let cameraX = 0, cameraY = 0;
     function updateCamera() {
@@ -421,7 +437,7 @@
       cameraY = player.y - canvas.height/2;
     }
     
-    // 畫出太陽／月亮（固定軌道）
+    // 畫出太陽／月亮
     function drawSunMoon() {
       const intensity = (Math.sin(dayTime) + 1) / 2;
       const color = intensity >= 0.5 ? "yellow" : "white";
@@ -438,33 +454,43 @@
       ctx.fill();
     }
     
-    // 畫出世界中的所有方塊
+    // 畫出世界中所有方塊（所有方塊皆繪製，樹葉仍呈現，但非玩家碰撞固體）
     function drawWorld() {
       for (const block of worldData) {
-        // 如果是火把，額外畫出照明效果
-        if(block.type === "torch"){
-          ctx.fillStyle = block.color;
-          ctx.fillRect(block.x - cameraX, block.y - cameraY, tileSize, tileSize);
-          // 畫周圍 11x11 固格區域照明 (周圍5格)
-          ctx.fillStyle = "rgba(255,165,0,0.2)";
-          ctx.fillRect(block.x - cameraX - 5*tileSize, block.y - cameraY - 5*tileSize, 11*tileSize, 11*tileSize);
-        } else {
-          ctx.fillStyle = block.color;
-          ctx.fillRect(block.x - cameraX, block.y - cameraY, tileSize, tileSize);
-        }
+        ctx.fillStyle = block.color;
+        ctx.fillRect(block.x - cameraX, block.y - cameraY, tileSize, tileSize);
       }
     }
     
-    // 畫出玩家，受傷時呈紅色
+    // 畫出玩家
     function drawPlayer() {
-      if (player.injured && (Date.now() - player.injuredTime < 500))
+      if(player.injured && (Date.now() - player.injuredTime < 500))
         ctx.fillStyle = "red";
       else
         ctx.fillStyle = "#0000FF";
       ctx.fillRect(player.x - cameraX, player.y - cameraY, player.width, player.height);
     }
     
-    // 怪物物理更新 (包含碰撞、落地、熔岩與虛空傷害)
+    // 用於檢查怪物移動後是否與固體方塊碰撞（包含 "leaf" 仍視為固體對怪物）
+    function mobCollides(newX, newY, w, h) {
+      for (const block of worldData) {
+        if(["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock", "leaf"].includes(block.type)) {
+          if(rectIntersect(newX, newY, w, h, block.x, block.y, tileSize, tileSize))
+            return true;
+        }
+      }
+      return false;
+    }
+    
+    // 矩形碰撞判定
+    function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
+      return !(x2 >= x1 + w1 ||
+               x2 + w2 <= x1 ||
+               y2 >= y1 + h1 ||
+               y2 + h2 <= y1);
+    }
+    
+    // 更新怪物物理（僅更新垂直，怪物不會穿越或攀爬固體）
     function updateMobPhysics(mob) {
       mob.vy = mob.vy || 0;
       mob.vy += gravity;
@@ -473,7 +499,7 @@
       if(mob.fallStartY === undefined)
         mob.fallStartY = mob.y;
       for (const block of worldData) {
-        if(!["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock"].includes(block.type))
+        if(!["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock", "leaf"].includes(block.type))
           continue;
         if(rectIntersect(mob.x, newY, mob.width, mob.height, block.x, block.y, tileSize, tileSize)) {
           collision = true;
@@ -487,133 +513,45 @@
           mob.hp -= Math.floor(fallDistance) - 3;
         }
         mob.fallStartY = mob.y;
-        mob.vy = -10;
+        mob.vy = 0;
       } else {
         mob.onGround = false;
         mob.y = newY;
       }
-      // 熔岩傷害
-      if(isMobInLava(mob)) {
-        let now = Date.now();
-        mob.lastLavaDamageTime = mob.lastLavaDamageTime || now;
-        if(now - mob.lastLavaDamageTime >= 1000) {
-          mob.hp -= 1;
-          mob.lastLavaDamageTime = now;
-        }
-      }
-      // 虛空傷害
-      if(mob.y > bedrockStart * tileSize) {
-        let now = Date.now();
-        mob.lastVoidDamageTime = mob.lastVoidDamageTime || now;
-        if(now - mob.lastVoidDamageTime >= 1000) {
-          mob.hp -= 5;
-          mob.lastVoidDamageTime = now;
-        }
-      }
-      // 避免怪物之間重疊
-      for (let other of entities) {
-        if(other !== mob && rectIntersect(mob.x, mob.y, mob.width, mob.height, other.x, other.y, other.width, other.height)) {
-          if(mob.x < other.x)
-            mob.x -= 1;
-          else
-            mob.x += 1;
-        }
-      }
     }
     
-    function isMobInLava(mob) {
-      for (const block of worldData) {
-        if(block.type === "lava")
-          if(rectIntersect(mob.x, mob.y, mob.width, mob.height, block.x, block.y, tileSize, tileSize))
-            return true;
-      }
-      return false;
-    }
-    
-    // 更新所有怪物行為
-    function updateEntities() {
-      if(!isNight()) { entities = []; return; }
-      for (let mob of entities) {
-        updateMobPhysics(mob);
-        if(mob.type === "zombie") {
-          let dx = player.x - mob.x;
-          let dy = player.y - mob.y;
-          let dist = Math.sqrt(dx*dx + dy*dy);
-          if(dist > 0) {
-            mob.x += (dx/dist) * 0.5;
-            mob.y += (dy/dist) * 0.5;
-          }
-          if(rectIntersect(mob.x, mob.y, mob.width, mob.height, player.x, player.y, player.width, player.height)) {
-            let now = Date.now();
-            if(now - mob.lastAttackTime >= 1000) {
-              player.health -= 0.5;
-              mob.lastAttackTime = now;
-              player.injured = true;
-              player.injuredTime = now;
-            }
-          }
-        } else if(mob.type === "skeleton") {
-          let dx = player.x - mob.x;
-          let dy = player.y - mob.y;
-          let dist = Math.sqrt(dx*dx + dy*dy);
-          if(dist < 150 && dist > 0) {
-            mob.x -= (dx/dist) * 0.4;
-            mob.y -= (dy/dist) * 0.4;
-          }
-          if(dist < 300) {
-            let now = Date.now();
-            if(now - mob.lastArrowTime >= 1000) {
-              mob.lastArrowTime = now;
-              let arrowSpeed = 5;
-              let adx = player.x - mob.x;
-              let ady = player.y - mob.y;
-              let aDist = Math.sqrt(adx*adx + ady*ady);
-              let arrow = {
-                x: mob.x + mob.width/2,
-                y: mob.y + mob.height/2,
-                vx: (adx/aDist)*arrowSpeed,
-                vy: (ady/aDist)*arrowSpeed,
-                width: tileSize/2,
-                height: tileSize/2,
-                damage: 0.5,
-                type: "arrow"
-              };
-              projectiles.push(arrow);
-            }
-          }
-        }
-        if(mob.injured && (Date.now() - mob.injuredTime >= 500))
-          mob.injured = false;
-        if(mob.hp <= 0) {
-          // 掉落邏輯，殭屍掉 "rotten"，骷髏掉 "bone"
-          if(mob.type === "zombie")
-            addToInventory("rotten", 1);
-          else if(mob.type === "skeleton")
-            addToInventory("bone", 1);
-          // 移除死亡怪物
-          entities.splice(entities.indexOf(mob), 1);
-        }
-      }
-    }
-    
-    // 更新投射物（箭）的邏輯
+    // 更新投射物（箭）：箭沿固定方向前進，不會追蹤玩家；若與固體碰撞則消失
     function updateProjectiles() {
       for (let i = projectiles.length - 1; i >= 0; i--) {
         let proj = projectiles[i];
         proj.x += proj.vx;
         proj.y += proj.vy;
+        let collided = false;
+        for (const block of worldData) {
+          if(["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock", "leaf"].includes(block.type)) {
+            if(rectIntersect(proj.x, proj.y, proj.width, proj.height, block.x, block.y, tileSize, tileSize)) {
+              collided = true;
+              break;
+            }
+          }
+        }
+        if(collided) {
+          projectiles.splice(i, 1);
+          continue;
+        }
         if(rectIntersect(proj.x, proj.y, proj.width, proj.height, player.x, player.y, player.width, player.height)) {
           player.health -= proj.damage;
           player.injured = true;
           player.injuredTime = Date.now();
-          projectiles.splice(i,1);
+          projectiles.splice(i, 1);
           continue;
         }
-        if(proj.x < 0 || proj.x > canvas.width+cameraX || proj.y < 0 || proj.y > canvas.height+cameraY)
-          projectiles.splice(i,1);
+        if(proj.x < 0 || proj.x > canvas.width + cameraX || proj.y < 0 || proj.y > canvas.height + cameraY)
+          projectiles.splice(i, 1);
       }
     }
     
+    // 畫出怪物與箭
     function drawEntities() {
       for (let mob of entities) {
         if(mob.injured)
@@ -629,7 +567,6 @@
         ctx.fillRect(mob.x - cameraX, mob.y - cameraY, mob.width, mob.height);
       }
     }
-    
     function drawProjectiles() {
       for (let proj of projectiles) {
         ctx.fillStyle = "#000000";
@@ -637,29 +574,20 @@
       }
     }
     
-    function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
-      return !(x2 >= x1+w1 ||
-               x2+w2 <= x1 ||
-               y2 >= y1+h1 ||
-               y2+h2 <= y1);
-    }
-    
     /* —— 玩家物理更新 —— */
     function updatePhysics() {
-      // 水平方向移動
+      // 較玩家的移動碰撞，不視 "leaf" 為固體（玩家可穿過樹葉）
       let newX = player.x + moveDirection * moveSpeed;
       let horizontalCollision = false;
       const tol = 2;
-      
       for (const block of worldData) {
-        if(!["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock", "torch"].includes(block.type))
+        if(!["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock"].includes(block.type))
           continue;
-        if(player.y+player.height <= block.y || player.y >= block.y+tileSize)
+        if(player.y + player.height <= block.y || player.y >= block.y + tileSize)
           continue;
-        // 若碰到床岩直接阻擋
-        if(block.type==="bedrock") { horizontalCollision = true; break; }
+        if(block.type === "bedrock") { horizontalCollision = true; break; }
         let leftEdge = Math.max(newX, block.x);
-        let rightEdge = Math.min(newX+player.width, block.x+tileSize);
+        let rightEdge = Math.min(newX + player.width, block.x + tileSize);
         let overlap = rightEdge - leftEdge;
         if(overlap > tol) { horizontalCollision = true; break; }
       }
@@ -669,10 +597,10 @@
       player.vy += gravity;
       let newY = player.y + player.vy;
       let verticalCollision = false;
-      for(const block of worldData) {
-        if(!["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock", "torch"].includes(block.type))
+      for (const block of worldData) {
+        if(!["grass", "stone", "wood", "deepStone", "coal", "iron", "gold", "diamond", "bedrock"].includes(block.type))
           continue;
-        if(player.x+player.width <= block.x || player.x >= block.x+tileSize)
+        if(player.x + player.width <= block.x || player.x >= block.x + tileSize)
           continue;
         if(rectIntersect(player.x, newY, player.width, player.height, block.x, block.y, tileSize, tileSize)) {
           verticalCollision = true;
@@ -688,14 +616,11 @@
         }
       }
       
-      // 如果玩家接觸水面，執行水中效果
+      // 水中效果：重置掉落計算並減緩下落速度
       if(isPlayerInWater()){
-        if(!player.waterStartTime) {
+        if(!player.waterStartTime)
           player.waterStartTime = Date.now();
-        }
-        // 重置掉落傷害
         player.fallStartY = player.y;
-        // 降低下落速度
         player.vy *= 0.9;
         let waterDuration = (Date.now() - player.waterStartTime) / 1000;
         if(waterDuration > 10) {
@@ -711,25 +636,24 @@
         player.lastWaterDamageTime = null;
       }
       
-      // 若無碰撞則更新位置
       player.y = newY;
       if(!verticalCollision) player.onGround = false;
       
-      // 計算掉落傷害（只有在非水中時）
+      // 掉落傷害（僅在非水中）
       if(player.onGround && !isPlayerInWater()){
-        if(player.fallStartY!==null) {
-          let fallDistance = (player.y - player.fallStartY)/tileSize;
+        if(player.fallStartY !== null) {
+          let fallDistance = (player.y - player.fallStartY) / tileSize;
           if(fallDistance > 3)
-            player.health -= Math.floor(fallDistance)-3;
+            player.health -= Math.floor(fallDistance) - 3;
           player.fallStartY = null;
         }
       } else {
-        if(player.fallStartY===null)
+        if(player.fallStartY === null)
           player.fallStartY = player.y;
       }
       
       // 熔岩傷害
-      if(isPlayerInLava()) {
+      if(isPlayerInLava()){
         let now = Date.now();
         if(now - lastLavaDamageTime >= 1000) {
           player.health -= 1;
@@ -738,7 +662,7 @@
       }
       
       // 虛空傷害
-      if(player.y > bedrockStart * tileSize) {
+      if(player.y > bedrockStart * tileSize){
         let now = Date.now();
         if(now - lastVoidDamageTime >= 1000) {
           player.health -= 10;
@@ -747,19 +671,16 @@
       }
     }
     
-    // 判斷玩家在水中
     function isPlayerInWater(){
       for(const block of worldData){
-        if(block.type==="water" && rectIntersect(player.x, player.y, player.width, player.height, block.x, block.y, tileSize, tileSize))
+        if(block.type === "water" && rectIntersect(player.x, player.y, player.width, player.height, block.x, block.y, tileSize, tileSize))
           return true;
       }
       return false;
     }
-    
-    // 判斷玩家是否在熔岩中
     function isPlayerInLava(){
       for(const block of worldData){
-        if(block.type==="lava" && rectIntersect(player.x, player.y, player.width, player.height, block.x, block.y, tileSize, tileSize))
+        if(block.type === "lava" && rectIntersect(player.x, player.y, player.width, player.height, block.x, block.y, tileSize, tileSize))
           return true;
       }
       return false;
@@ -791,7 +712,6 @@
           case "coal": btn.style.backgroundColor = "#2F4F4F"; break;
           default: btn.style.backgroundColor = "#fff";
         }
-        // 點擊後可切換成選定的放置方塊
         if(collectibleTypes.includes(item))
           btn.onclick = () => { selectBlock(item); };
         container.appendChild(btn);
@@ -804,7 +724,7 @@
       console.log("選取素材: " + material);
     }
     
-    /* —— 物品庫存系統 (包含合成後工具、蘋果、鐵桶等) —— */
+    /* —— 物品庫存系統 —— */
     function addToItemInventory(item, count) {
       itemInventory[item] = (itemInventory[item] || 0) + count;
       updateItemInventoryUI();
@@ -816,7 +736,6 @@
         if(itemInventory[item] <= 0) continue;
         const btn = document.createElement("button");
         btn.innerText = item + " x" + itemInventory[item];
-        // 為各物品設置專屬顏色
         switch(item) {
           case "木劍": btn.style.backgroundColor = "#CD853F"; break;
           case "石劍": btn.style.backgroundColor = "#A9A9A9"; break;
@@ -830,7 +749,6 @@
           case "鑽石鎬": btn.style.backgroundColor = "#00FFFF"; break;
           case "蘋果":
             btn.style.backgroundColor = "#FF6347";
-            // 點擊使用蘋果，恢復5 HP
             btn.onclick = () => {
               if(player.health < 10) {
                 player.health += 5;
@@ -843,11 +761,12 @@
             };
             break;
           case "鐵桶": btn.style.backgroundColor = "#FFFFFF"; break;
+          case "火把":
+            btn.style.backgroundColor = "#F5DEB3";
+            btn.onclick = toggleTorchEffect;
+            break;
           default: btn.style.backgroundColor = "#fff";
         }
-        // 非蘋果和鐵桶等道具，點擊時不做動作
-        if(!btn.onclick)
-          btn.onclick = () => {};
         container.appendChild(btn);
       }
     }
@@ -888,10 +807,10 @@
           delete inventory[mat];
       }
       if(recipe.isTool) {
-        if(recipe.toolLevel > player.toolLevel)
+        if(recipe.toolLevel && recipe.toolLevel > player.toolLevel)
           player.toolLevel = recipe.toolLevel;
-        // 對於劍或鎬，放入物品庫存
-        if(recipe.type === "sword" || recipe.type === "pickaxe" || recipe.type === "bucket") {
+        // 對於 sword、pickaxe、bucket、及 torch 等加入物品庫存
+        if(["sword", "pickaxe", "bucket", "torch"].includes(recipe.type)) {
           addToItemInventory(recipe.name, 1);
           if(recipe.type === "sword") {
             if(recipe.name === "木劍" || recipe.name === "黃金劍")
@@ -908,7 +827,6 @@
           addToInventory(recipe.name, 1);
         }
       } else {
-        // 非工具項目（例如火把）直接加入一般庫存
         addToInventory(recipe.name, 1);
       }
       updateInventoryUI();
@@ -916,6 +834,12 @@
     }
     
     /* —— 破壞與放置 —— */
+    function getPlayerGrid() {
+      const col = Math.floor((player.x + player.width/2) / tileSize);
+      const row = Math.floor((player.y + player.height/2) / tileSize);
+      return {col, row};
+    }
+    
     function destroyBlockDir(direction) {
       let grid = getPlayerGrid();
       if(direction === "up") grid.row--;
@@ -924,14 +848,13 @@
       if(direction === "right") grid.col++;
       let blockX = grid.col * tileSize;
       let blockY = grid.row * tileSize;
-      for(let i=0; i<worldData.length; i++){
+      for(let i = 0; i < worldData.length; i++){
         if(worldData[i].x === blockX && worldData[i].y === blockY){
-          // 禁止破壞基岩
-          if(worldData[i].type==="bedrock"){
+          if(worldData[i].type === "bedrock"){
             console.log("基岩無法破壞");
             return;
           }
-          // 如果是水或熔岩，則需檢查玩家是否擁有鐵桶
+          // 水或熔岩要求必須擁有鐵桶
           if(worldData[i].type === "water" || worldData[i].type === "lava"){
             if(!itemInventory["鐵桶"] || itemInventory["鐵桶"] <= 0) {
               console.log("需要鐵桶才能破壞水或熔岩！");
@@ -942,22 +865,19 @@
               return;
             }
           }
-          // 葉子破壞時有機率掉落蘋果
+          // 葉子破壞有機率掉落蘋果
           if(worldData[i].type === "leaf"){
-            if(Math.random() < 0.5){
+            if(Math.random() < 0.5)
               addToItemInventory("蘋果", 1);
-            }
           }
-          // 檢查工具需求
           const req = blockRequirements[worldData[i].type];
           if(req !== undefined && player.toolLevel < req){
             console.log("工具等級不足，無法破壞 " + worldData[i].type);
             return;
           }
-          if(collectibleTypes.includes(worldData[i].type)){
+          if(collectibleTypes.includes(worldData[i].type))
             addToInventory(worldData[i].type, 1);
-          }
-          worldData.splice(i,1);
+          worldData.splice(i, 1);
           break;
         }
       }
@@ -971,52 +891,18 @@
       if(direction === "right") grid.col++;
       let blockX = grid.col * tileSize;
       let blockY = grid.row * tileSize;
-      // 只有該位置無方塊且無火把時才能放置
-      if(!worldData.some(b => b.x===blockX && b.y===blockY)){
-        // 火把特殊處理：如果選取的是 "torch"
-        if(selectedBlock === "torch"){
-          if(inventory["torch"]>0){
-            // 放置火把：設定火把顏色為較亮的木質色
-            worldData.push({
-              x: blockX,
-              y: blockY,
-              type: "torch",
-              color: "#F5DEB3"
-            });
-            // 扣除火把庫存
-            inventory["torch"]--;
-            if(inventory["torch"]<=0){
-              delete inventory["torch"];
-              if(selectedBlock==="torch") selectedBlock=null;
-            }
-            // 清除火把周圍 5 格 (11x11 區域) 的怪物
-            let range = 5 * tileSize;
-            entities = entities.filter(mob => {
-              return !(
-                mob.x >= blockX - range &&
-                mob.x <= blockX + range &&
-                mob.y >= blockY - range &&
-                mob.y <= blockY + range
-              );
-            });
-            updateInventoryUI();
-            return;
-          } else {
-            console.log("沒有足夠的火把素材！");
-            return;
-          }
-        }
-        // 一般方塊放置（扣除對應庫存）
+      // 僅當該位置無方塊時
+      if(!worldData.some(b => b.x === blockX && b.y === blockY)){
         if(selectedBlock && inventory[selectedBlock] > 0){
           let type = selectedBlock;
           let color = "#fff";
           switch(selectedBlock){
-            case "wood": color="#8B4513"; break;
-            case "stone": color="#808080"; break;
-            case "iron": color="#FFF8E1"; break;
-            case "gold": color="#FFD700"; break;
-            case "diamond": color="#00FFFF"; break;
-            case "grass": color="#00FF00"; break;
+            case "wood": color = "#8B4513"; break;
+            case "stone": color = "#808080"; break;
+            case "iron": color = "#FFF8E1"; break;
+            case "gold": color = "#FFD700"; break;
+            case "diamond": color = "#00FFFF"; break;
+            case "grass": color = "#00FF00"; break;
             default: break;
           }
           worldData.push({ x: blockX, y: blockY, type: type, color: color });
@@ -1032,17 +918,11 @@
       }
     }
     
-    function getPlayerGrid() {
-      const col = Math.floor((player.x+player.width/2)/tileSize);
-      const row = Math.floor((player.y+player.height/2)/tileSize);
-      return {col, row};
-    }
-    
     /* —— 玩家攻擊 —— */
     function playerAttack() {
       let centerX = player.x + player.width/2;
       let centerY = player.y + player.height/2;
-      let attackRange = 9 * tileSize; // 9格邊長
+      let attackRange = 9 * tileSize;
       let attackDamage = 0.5 + playerWeaponBonus;
       for(let i = entities.length - 1; i >= 0; i--){
         let mob = entities[i];
@@ -1052,9 +932,9 @@
           mob.injured = true;
           mob.injuredTime = Date.now();
           if(mob.hp <= 0) {
-            if(mob.type==="zombie")
+            if(mob.type === "zombie")
               addToInventory("rotten", 1);
-            else if(mob.type==="skeleton")
+            else if(mob.type === "skeleton")
               addToInventory("bone", 1);
             entities.splice(i, 1);
           }
@@ -1062,11 +942,11 @@
       }
     }
     
-    /* —— 怪物生成與火把 —— */
+    /* —— 怪物生成 —— */
     function spawnMobs() {
-      if(isNight() && entities.length < 5 && Math.random()<0.005) {
-        let mobType = (Math.random()<0.5) ? "zombie" : "skeleton";
-        let spawnX = player.x + (Math.random()*500 - 250);
+      if(isNight() && entities.length < 5 && Math.random() < 0.005) {
+        let mobType = (Math.random() < 0.5) ? "zombie" : "skeleton";
+        let spawnX = player.x + (Math.random() * 500 - 250);
         let spawnY = player.y;
         let mob = {
           x: spawnX,
@@ -1075,15 +955,118 @@
           height: tileSize,
           type: mobType,
           hp: 10,
-          speed: (mobType==="zombie") ? 0.5 : 0.4,
           injured: false,
           injuredTime: 0,
           vy: 0
         };
-        if(mobType==="zombie") mob.lastAttackTime = 0;
-        else if(mobType==="skeleton") mob.lastArrowTime = 0;
+        if(mobType === "zombie") {
+          mob.lastAttackTime = 0;
+        } else if(mobType === "skeleton") {
+          mob.lastArrowTime = 0;
+        }
         entities.push(mob);
       }
+    }
+    
+    /* —— 更新怪物行為 —— */
+    function updateEntities() {
+      if(!isNight()) { entities = []; return; }
+      for(let mob of entities) {
+        updateMobPhysics(mob);
+        if(mob.type === "zombie") {
+          let dx = player.x - mob.x;
+          let dy = player.y - mob.y;
+          let dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist > 0) {
+            let newX = mob.x + (dx/dist)*0.5;
+            let newY = mob.y + (dy/dist)*0.5;
+            if(!mobCollides(newX, mob.y, mob.width, mob.height))
+              mob.x = newX;
+            if(!mobCollides(mob.x, newY, mob.width, mob.height))
+              mob.y = newY;
+          }
+          if(rectIntersect(mob.x, mob.y, mob.width, mob.height, player.x, player.y, player.width, player.height)) {
+            let now = Date.now();
+            if(now - mob.lastAttackTime >= 1000) {
+              player.health -= 0.5;
+              mob.lastAttackTime = now;
+              player.injured = true;
+              player.injuredTime = now;
+            }
+          }
+        } else if(mob.type === "skeleton") {
+          let dx = player.x - mob.x;
+          let dy = player.y - mob.y;
+          let dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < 150 && dist > 0) {
+            let newX = mob.x - (dx/dist)*0.4;
+            let newY = mob.y - (dy/dist)*0.4;
+            if(!mobCollides(newX, mob.y, mob.width, mob.height))
+              mob.x = newX;
+            if(!mobCollides(mob.x, newY, mob.width, mob.height))
+              mob.y = newY;
+          }
+          if(dist < 300) {
+            let now = Date.now();
+            if(now - mob.lastArrowTime >= 1000) {
+              mob.lastArrowTime = now;
+              let arrowSpeed = 5;
+              let adx = player.x - mob.x;
+              let ady = player.y - mob.y;
+              let aDist = Math.sqrt(adx*adx + ady*ady);
+              // 箭只計算一次方向，之後不會追蹤玩家
+              let arrow = {
+                x: mob.x + mob.width/2,
+                y: mob.y + mob.height/2,
+                vx: (adx/aDist)*arrowSpeed,
+                vy: (ady/aDist)*arrowSpeed,
+                width: tileSize/2,
+                height: tileSize/2,
+                damage: 0.5,
+                type: "arrow"
+              };
+              projectiles.push(arrow);
+            }
+          }
+        }
+        if(mob.injured && (Date.now() - mob.injuredTime >= 500))
+          mob.injured = false;
+        if(mob.hp <= 0) {
+          if(mob.type === "zombie")
+            addToInventory("rotten", 1);
+          else if(mob.type === "skeleton")
+            addToInventory("bone", 1);
+          entities.splice(entities.indexOf(mob), 1);
+        }
+      }
+    }
+    
+    /* —— 火把效果 —— */
+    let torchEffectOn = false;
+    function toggleTorchEffect() {
+      if(!torchEffectOn) {
+        // 開啟火把效果：消滅玩家周圍 5 格 (11×11) 內的所有怪物（箭除外）
+        let radius = 5 * tileSize;
+        entities = entities.filter(mob => {
+          return (mob.x < player.x - radius ||
+                  mob.x > player.x + radius ||
+                  mob.y < player.y - radius ||
+                  mob.y > player.y + radius);
+        });
+        torchEffectOn = true;
+      } else {
+        torchEffectOn = false;
+      }
+      updateItemInventoryUI();
+    }
+    function drawTorchOverlay() {
+      let radiusTiles = 5;
+      let overlayX = player.x - radiusTiles * tileSize - cameraX;
+      let overlayY = player.y - radiusTiles * tileSize - cameraY;
+      let overlayWidth = (2 * radiusTiles + 1) * tileSize;
+      let overlayHeight = (2 * radiusTiles + 1) * tileSize;
+      ctx.fillStyle = "rgba(255,165,0,0.2)";
+      ctx.fillRect(overlayX, overlayY, overlayWidth, overlayHeight);
     }
     
     /* —— 主遊戲循環 —— */
@@ -1092,7 +1075,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       ctx.save();
-      ctx.setTransform(1,0,0,1,0,0);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       drawSunMoon();
       ctx.restore();
       
@@ -1105,6 +1088,10 @@
       updateProjectiles();
       drawEntities();
       drawProjectiles();
+      
+      if(torchEffectOn){
+        drawTorchOverlay();
+      }
       
       drawPlayer();
       updateInterface();
@@ -1121,16 +1108,17 @@
       document.getElementById("deathScreen").style.display = "flex";
     }
     
-    // 主頁面返回開始畫面並停止遊戲循環
+    // 返回主頁面（停止遊戲循環並顯示開始畫面）
     function goToHomePage() {
       gameOver = true;
       document.getElementById("startScreen").style.display = "flex";
     }
     
-    // 重新開始：重置玩家、庫存、怪物等
+    // 遊戲重新開始：重置玩家、庫存、怪物、投射物、火把效果與世界
     function restartGame() {
-      player.x = tileSize * 2;
-      player.y = (groundLevel - 1) * tileSize;
+      let spawn = findSpawnPoint();
+      player.x = spawn.x;
+      player.y = spawn.y;
       player.vy = 0;
       player.health = 10;
       player.fallStartY = null;
@@ -1140,6 +1128,7 @@
       gameOver = false;
       player.injured = false;
       document.getElementById("deathScreen").style.display = "none";
+      torchEffectOn = false;
       generateWorld();
       lastLavaDamageTime = Date.now();
       lastVoidDamageTime = Date.now();
@@ -1164,12 +1153,12 @@
     }
     
     window.addEventListener("keydown", e => {
-      if(e.key==="ArrowLeft") moveLeft();
-      if(e.key==="ArrowRight") moveRight();
-      if(e.key===" " || e.key==="ArrowUp") jump();
+      if(e.key === "ArrowLeft") moveLeft();
+      if(e.key === "ArrowRight") moveRight();
+      if(e.key === " " || e.key === "ArrowUp") jump();
     });
     window.addEventListener("keyup", e => {
-      if(e.key==="ArrowLeft" || e.key==="ArrowRight") stopMoving();
+      if(e.key === "ArrowLeft" || e.key === "ArrowRight") stopMoving();
     });
     
     function startGame() {
