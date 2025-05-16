@@ -1,0 +1,20 @@
+{
+  "name": "香橙越獄",
+  "short_name": "香橙越獄",
+  "start_url": "香橙越獄.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#ff6600",
+  "icons": [
+    {
+      "src": "https://tnttc2.github.io/iog.github.io/香橙越獄/香橙越獄app.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://tnttc2.github.io/iog.github.io/香橙越獄/香橙越獄app.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

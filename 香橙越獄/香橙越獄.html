@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="https://tnttc2.github.io/iog.github.io/香橙越獄/香橙越獄icon.png" />
+  <title>香橙越獄體驗版</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #ff6600;
+      font-family: sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: none;
+    }
+
+    .version {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #f5f5dc;
+      font-size: 16px;
+      text-decoration: none;
+      pointer-events: none;
+    }
+
+    .byline {
+      position: absolute;
+      top: 35px;
+      left: 10px;
+      font-size: 14px;
+      color: #f5f5dc;
+    }
+
+    .byline a {
+      color: #f5f5dc;
+      text-decoration: underline;
+    }
+
+    .title {
+      position: absolute;
+      top: 40px;
+      right: 20px;
+      transform: rotate(30deg);
+      font-size: 36px;
+      font-weight: bold;
+      color: #f5f5dc;
+      line-height: 1.2;
+      text-align: right;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    .logo {
+      position: absolute;
+      top: 75px;
+      left: 20px;
+      width: 80px;
+      height: 80px;
+    }
+
+    main {
+      position: absolute;
+      top: 180px;
+      left: 0;
+      right: 0;
+      bottom: 80px;
+      overflow-y: scroll;
+      background-color: #ffeedd;
+      padding: 10px 20px;
+      z-index: 2;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .line {
+      display: none;
+      color: black;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    button {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: black;
+      color: white;
+      font-size: 20px;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .blackout {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      color: white;
+      font-size: 18px;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+      z-index: 999;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .black-line {
+      display: none;
+      font-size: 16px;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="version">開發版0000000001</div>
+  <div class="byline">By <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">TNH Minecraft and ChatGPT-4o</a></div>
+
+  <div class="title">香橙越獄<br>體驗版</div>
+  <img class="logo" src="https://tnttc2.github.io/iog.github.io/香橙越獄/香橙越獄icon.png" alt="logo" />
+
+  <main id="content">
+    <div class="line">^_^正在檢測系統</div>
+    <div class="line">^_^正在檢測裝置硬件</div>
+    <div class="line">^_^正在檢測系統版本代碼</div>
+    <div class="line">^_^正在檢測Wi-Fi密碼</div>
+    <div class="line">^_^正在檢測藍牙裝置</div>
+    <div class="line">^_^正在檢測私密模式瀏覽記錄</div>
+    <div class="line">^_^正在檢測Apple ID及所有密碼</div>
+    <div class="line">^_^正在檢測相片存取權</div>
+    <div class="line">^_^正在檢測相機存取權</div>
+    <div class="line">^_^正在檢測咪高峰存取權</div>
+    <div class="line">^_^正在生成惡意圖片</div>
+    <div class="line">^_^正在崩潰裝置系統</div>
+    <div class="line">^_^正在準備重新啟動</div>
+    <div class="line">^_^恭喜你！你已經完成越獄程序！</div>
+    <div class="line">^_^請確保Recycle裝置！修補惡意漏洞</div>
+  </main>
+
+  <button id="startBtn" onclick="startJailbreak()">立體越獄！</button>
+
+  <div class="blackout" id="blackout">
+    <div class="black-line">沒有錯</div>
+    <div class="black-line">你已經Recycle了你的裝置了</div>
+    <div class="black-line">非常環保的</div>
+    <div class="black-line">當然</div>
+    <div class="black-line">你也同時遺失了你的裝置所有權限了</div>
+    <div class="black-line">不用擔心</div>
+    <div class="black-line">我們會誠心為你</div>
+    <div class="black-line">默哀1秒鐘</div>
+  </div>
+
+  <script>
+    let index = 0;
+    let started = false;
+    let lines = document.querySelectorAll('.line');
+    let btn = document.getElementById('startBtn');
+    let blackout = document.getElementById('blackout');
+    let blackLines = document.querySelectorAll('.black-line');
+
+    function startJailbreak() {
+      if (started) return;
+      started = true;
+      btn.innerText = "體緊越獄";
+      btn.disabled = true;
+
+      let interval = setInterval(() => {
+        if (index < lines.length) {
+          lines[index].style.display = 'block';
+          index++;
+        } else {
+          clearInterval(interval);
+          btn.innerText = "Recycle裝置";
+          btn.disabled = false;
+          btn.onclick = activateBlackout;
+        }
+      }, 1000);
+    }
+
+    function activateBlackout() {
+      document.body.style.overflow = 'hidden';
+      blackout.style.display = 'flex';
+      btn.style.display = 'none';
+
+      let i = 0;
+      const showNext = () => {
+        if (i < blackLines.length) {
+          blackLines[i].style.display = 'block';
+          i++;
+          setTimeout(showNext, 1000);
+        }
+      };
+      showNext();
+    }
+  </script>
+</body>
+</html>
