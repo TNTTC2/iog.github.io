@@ -1,7 +1,7 @@
 {
   "name": "香橙越獄",
   "short_name": "香橙越獄",
-  "start_url": "香橙越獄.html",
+  "start_url": "./香橙越獄.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ff6600",
