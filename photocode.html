@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>自動生成 QR Code</title>
+  <!-- 引入 QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>上傳圖片並生成 Base64 QR Code</h1>
+  <!-- 檔案上傳控制項，只接受圖片 -->
+  <input type="file" id="imageInput" accept="image/*">
+  <!-- 自動顯示 QR Code 的容器 -->
+  <div id="qrcode"></div>
+
+  <script>
+    // 當檔案上傳時自動觸發
+    document.getElementById("imageInput").addEventListener("change", function() {
+      let file = this.files[0];
+      if (!file) return;  // 若未選擇檔案則不進行處理
+      
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        // e.target.result 包含了圖片的 Data URL (含 Base64 編碼)
+        let base64Data = e.target.result;
+
+        // 清空先前可能生成的 QR Code
+        document.getElementById("qrcode").innerHTML = "";
+
+        // 利用 QRCode.js 自動產生並插入 QR Code
+        new QRCode(document.getElementById("qrcode"), {
+          text: base64Data,     // 使用 Base64 資料作為生成內容
+          width: 256,
+          height: 256,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      };
+
+      // 讀取檔案內容為 Data URL 格式
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
