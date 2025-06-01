@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>自動生成 QR Code</title>
+  <title>確認上傳檔案生成 QR Code</title>
   <!-- 引入 QRCode.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -13,39 +13,52 @@
     #qrcode {
       margin-top: 20px;
     }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
   <h1>上傳圖片並生成 Base64 QR Code</h1>
-  <!-- 檔案上傳控制項，只接受圖片 -->
+  <!-- 先選擇圖片 -->
   <input type="file" id="imageInput" accept="image/*">
-  <!-- 自動顯示 QR Code 的容器 -->
+  <!-- 按鈕確認上傳檔案 -->
+  <button id="uploadBtn">確認上傳檔案</button>
+  <!-- 顯示 QR Code 的區塊 -->
   <div id="qrcode"></div>
 
   <script>
-    // 當檔案上傳時自動觸發
-    document.getElementById("imageInput").addEventListener("change", function() {
-      let file = this.files[0];
-      if (!file) return;  // 若未選擇檔案則不進行處理
+    document.getElementById("uploadBtn").addEventListener("click", function() {
+      const fileInput = document.getElementById("imageInput");
       
-      let reader = new FileReader();
-      reader.onload = function(e) {
-        // e.target.result 包含了圖片的 Data URL (含 Base64 編碼)
-        let base64Data = e.target.result;
+      // 檢查是否有選擇檔案
+      if (fileInput.files.length === 0) {
+        alert("請先選擇一個檔案！");
+        return;
+      }
 
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        // 取得轉換後的 Data URL（包含 base64 編碼）
+        const base64Data = e.target.result;
+        
         // 清空先前可能生成的 QR Code
         document.getElementById("qrcode").innerHTML = "";
 
-        // 利用 QRCode.js 自動產生並插入 QR Code
+        // 使用 QRCode.js 生成 QR Code
         new QRCode(document.getElementById("qrcode"), {
-          text: base64Data,     // 使用 Base64 資料作為生成內容
+          text: base64Data,
           width: 256,
           height: 256,
           correctLevel: QRCode.CorrectLevel.H
         });
       };
 
-      // 讀取檔案內容為 Data URL 格式
+      // 讀取檔案內容並轉換成 Data URL
       reader.readAsDataURL(file);
     });
   </script>
