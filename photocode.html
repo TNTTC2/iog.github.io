@@ -2,6 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>支援 iOS 6.1.6 的上傳與 QR Code 生成</title>
   <!-- 引入 QRCode.js 庫 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -9,6 +10,12 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+    }
+    button {
+      cursor: pointer;
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
     }
     #base64Display {
       width: 100%;
@@ -18,33 +25,27 @@
     #qrcode {
       margin-top: 20px;
     }
-    button {
-      margin-top: 10px;
-      padding: 8px 16px;
-      font-size: 16px;
-    }
   </style>
 </head>
 <body>
   <h1>上傳圖片生成 Base64 編碼與 QR Code</h1>
-  
   <!-- 檔案上傳選擇 -->
   <input type="file" id="imageInput" accept="image/*"><br>
-  <!-- 確認上傳檔案按鈕（內建 onclick 事件） -->
-  <button id="uploadBtn" onclick="handleUpload();">確認上傳檔案</button><br>
+  <!-- 確認上傳檔案按鈕 (同時支援 onclick 與 ontouchend) -->
+  <button id="uploadBtn" onclick="handleUpload();" ontouchend="handleUpload();">確認上傳檔案</button><br>
   <!-- 顯示 Base64 編碼 -->
   <label for="base64Display">Base64 編碼:</label>
   <textarea id="base64Display" readonly></textarea><br>
-  <!-- 轉為 QR Code 按鈕 -->
-  <button id="generateQRBtn" onclick="handleGenerateQR();">轉為 QR Code</button>
+  <!-- 轉為 QR Code 按鈕 (同時支援 onclick 與 ontouchend) -->
+  <button id="generateQRBtn" onclick="handleGenerateQR();" ontouchend="handleGenerateQR();">轉為 QR Code</button>
   <!-- 顯示 QR Code 區塊 -->
   <div id="qrcode"></div>
   
   <script>
-    // 使用 var 變數以確保在舊版 iOS 支援
-    var base64Data = "";  // 用來儲存上傳後的 Base64 資料
-
-    // 處理上傳檔案並顯示 Base64 編碼
+    // 儲存上傳後的 Base64 資料（部分情況下可能不更新，因此生成 QR Code 時直接從 textarea 讀取）
+    var base64Data = "";
+    
+    // 處理檔案上傳並顯示 Base64 編碼
     function handleUpload() {
       var fileInput = document.getElementById("imageInput");
       if (!fileInput.files || fileInput.files.length === 0) {
@@ -66,37 +67,30 @@
       
       reader.readAsDataURL(file);
     }
-
+    
     // 處理從 Base64 編碼生成並顯示 QR Code
     function handleGenerateQR() {
+      // 從 textarea 讀取最新的內容
+      base64Data = document.getElementById("base64Display").value;
       if (!base64Data) {
         alert("尚未取得 Base64 編碼，請先上傳檔案！");
         return;
       }
       
-      // 清空先前的 QR Code 顯示
-      document.getElementById("qrcode").innerHTML = "";
+      // 清空先前可能生成的 QR Code 顯示
+      var qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
       
-      // 利用 QRCode.js 生成 QR Code
-      new QRCode(document.getElementById("qrcode"), {
-        text: base64Data,
-        width: 256,
-        height: 256,
-        correctLevel: QRCode.CorrectLevel.H
-      });
+      // 略延遲以確保 iOS 6.1.6 可以處理後續生成（延遲 100 毫秒）
+      setTimeout(function() {
+        new QRCode(qrContainer, {
+          text: base64Data,
+          width: 256,
+          height: 256,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }, 100);
     }
-    
-    // 為了確保在部分舊版 iOS（例如 iOS 6.1.6）上點擊事件能正常運作，
-    // 除了內建的 onclick 屬性，也額外註冊 touchend 事件
-    document.getElementById("uploadBtn").ontouchend = function(e) {
-      e.preventDefault();
-      handleUpload();
-    };
-    
-    document.getElementById("generateQRBtn").ontouchend = function(e) {
-      e.preventDefault();
-      handleGenerateQR();
-    };
   </script>
 </body>
 </html>
