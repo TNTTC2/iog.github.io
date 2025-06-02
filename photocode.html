@@ -2,50 +2,72 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
+  <!-- 為相容行動裝置，設定 viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>支援 iOS 6.1.6 的上傳與 QR Code 生成</title>
-  <!-- 引入 QRCode.js 庫 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <title>最小尺寸 QR Code 生成 (無壓縮、附進度條)</title>
+  <!-- 引入 qrcode-generator 庫 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-    button {
-      cursor: pointer;
-      margin-top: 10px;
-      padding: 8px 16px;
-      font-size: 16px;
-    }
-    #base64Display {
+    textarea {
       width: 100%;
       height: 150px;
       margin-top: 10px;
     }
-    #qrcode {
+    button {
+      cursor: pointer;
+      padding: 8px 16px;
+      font-size: 16px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    progress {
+      width: 100%;
+      margin-top: 10px;
+    }
+    /* 讓生成的 QR Code 影像按原始大小顯示 */
+    #qrcode img {
+      display: block;
       margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>上傳圖片生成 Base64 編碼與 QR Code</h1>
-  <!-- 檔案上傳選擇 -->
+  <h1>最小尺寸 QR Code 生成 (無壓縮、附進度條)</h1>
+  
+  <!-- 檔案上傳區：用戶可選擇上傳圖片 -->
   <input type="file" id="imageInput" accept="image/*"><br>
-  <!-- 確認上傳檔案按鈕 (同時支援 onclick 與 ontouchend) -->
-  <button id="uploadBtn" onclick="handleUpload();" ontouchend="handleUpload();">確認上傳檔案</button><br>
-  <!-- 顯示 Base64 編碼 -->
-  <label for="base64Display">Base64 編碼:</label>
-  <textarea id="base64Display" readonly></textarea><br>
-  <!-- 轉為 QR Code 按鈕 (同時支援 onclick 與 ontouchend) -->
-  <button id="generateQRBtn" onclick="handleGenerateQR();" ontouchend="handleGenerateQR();">轉為 QR Code</button>
-  <!-- 顯示 QR Code 區塊 -->
+  <button id="uploadBtn" onclick="handleUpload();" ontouchend="handleUpload();">
+    確認上傳檔案
+  </button><br>
+  <!-- 上傳進度條 -->
+  <progress id="uploadProgressBar" value="0" max="100" style="display:none;"></progress>
+  <br>
+  
+  <label for="base64Display">Base64 編碼 (可手動輸入或修改)：</label>
+  <textarea id="base64Display" placeholder="請在此貼上/輸入您的 Base64 資料"></textarea><br>
+  
+  <!-- 生成 QR Code 與生成影像按鈕 -->
+  <button id="generateQRBtn" onclick="handleGenerateQR();" ontouchend="handleGenerateQR();">
+    生成 QR Code
+  </button>
+  <button id="generateImageBtn" onclick="handleGenerateImage();" ontouchend="handleGenerateImage();">
+    生成 影像
+  </button><br>
+  
+  <!-- 編碼進度條 -->
+  <progress id="encodeProgressBar" value="0" max="100" style="display:none;"></progress>
+  
+  <!-- 顯示 QR Code 或影像的區塊 -->
   <div id="qrcode"></div>
   
   <script>
-    // 儲存上傳後的 Base64 資料（部分情況下可能不更新，因此生成 QR Code 時直接從 textarea 讀取）
     var base64Data = "";
     
-    // 處理檔案上傳並顯示 Base64 編碼
+    // 處理檔案上傳，不進行壓縮：直接用 FileReader 將檔案轉為 Data URL
     function handleUpload() {
       var fileInput = document.getElementById("imageInput");
       if (!fileInput.files || fileInput.files.length === 0) {
@@ -55,41 +77,105 @@
       
       var file = fileInput.files[0];
       var reader = new FileReader();
+      var uploadProgressBar = document.getElementById("uploadProgressBar");
+      uploadProgressBar.style.display = "block";
+      uploadProgressBar.value = 0;
+      
+      reader.onprogress = function(e) {
+        if (e.lengthComputable) {
+          var percent = Math.round((e.loaded / e.total) * 100);
+          uploadProgressBar.value = percent;
+        }
+      };
       
       reader.onload = function(e) {
         base64Data = e.target.result;
         document.getElementById("base64Display").value = base64Data;
+        uploadProgressBar.style.display = "none";
       };
       
       reader.onerror = function(e) {
         alert("讀取檔案失敗！");
+        uploadProgressBar.style.display = "none";
       };
       
       reader.readAsDataURL(file);
     }
     
-    // 處理從 Base64 編碼生成並顯示 QR Code
+    // 利用 textarea 中的 Base64 資料生成 QR Code，
+    // 修改部分：依序嘗試不同容錯等級（H、Q、M、L），成功後以最小尺寸圖片（cellSize=1, margin=0）顯示
     function handleGenerateQR() {
-      // 從 textarea 讀取最新的內容
       base64Data = document.getElementById("base64Display").value;
       if (!base64Data) {
-        alert("尚未取得 Base64 編碼，請先上傳檔案！");
+        alert("尚未取得 Base64 資料，請先上傳圖片或直接輸入！");
         return;
       }
       
-      // 清空先前可能生成的 QR Code 顯示
       var qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = "";
+      qrContainer.innerHTML = "<p>Generating QR Code... Please wait.</p>";
       
-      // 略延遲以確保 iOS 6.1.6 可以處理後續生成（延遲 100 毫秒）
-      setTimeout(function() {
-        new QRCode(qrContainer, {
-          text: base64Data,
-          width: 256,
-          height: 256,
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      }, 100);
+      var qr = null;
+      var found = false;
+      var chosenEC = "";
+      var ecLevels = ['H', 'Q', 'M', 'L'];
+      for (var i = 0; i < ecLevels.length && !found; i++) {
+        for (var typeNumber = 1; typeNumber <= 40; typeNumber++) {
+          try {
+            qr = qrcode(typeNumber, ecLevels[i]);
+            qr.addData(base64Data);
+            qr.make();
+            found = true;
+            chosenEC = ecLevels[i];
+            break;
+          } catch (e) {
+            continue;
+          }
+        }
+      }
+      
+      if (!found) {
+        alert("資料過大，無法生成 QR Code。請嘗試修改或縮小 Base64 資料！");
+        qrContainer.innerHTML = "";
+        return;
+      }
+      
+      console.log("QR Code generated with error correction level: " + chosenEC);
+      
+      // 模擬編碼進度條
+      var encodeProgressBar = document.getElementById("encodeProgressBar");
+      encodeProgressBar.style.display = "block";
+      encodeProgressBar.value = 0;
+      
+      // 模擬進度（延遲 100 毫秒左右，依次更新）
+      setTimeout(function(){
+        encodeProgressBar.value = 50;
+        setTimeout(function(){
+          encodeProgressBar.value = 100;
+          // 利用 createImgTag 生成最小尺寸 QR Code 影像
+          var imgTag = qr.createImgTag(1, 0);
+          qrContainer.innerHTML = imgTag;
+          encodeProgressBar.style.display = "none";
+        }, 50);
+      }, 50);
+    }
+    
+    // 根據 textarea 中的 Base64 資料直接生成影像
+    function handleGenerateImage() {
+      base64Data = document.getElementById("base64Display").value;
+      if (!base64Data) {
+        alert("尚未取得 Base64 資料，請上傳圖片或直接輸入！");
+        return;
+      }
+      
+      var imgContainer = document.getElementById("qrcode");
+      imgContainer.innerHTML = "";
+      
+      var imgEl = document.createElement("img");
+      imgEl.src = base64Data;
+      imgEl.alt = "生成的影像";
+      
+      imgContainer.appendChild(imgEl);
+      document.getElementById("encodeProgressBar").style.display = "none";
     }
   </script>
 </body>
