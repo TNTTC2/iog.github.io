@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNTExplorer 探索器</title>
+  <style>
+    /* 頁面背景：上方與下方為 #ED732E，中央為白色的漸層 */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(
+        to bottom,
+        #ED732E 0%, #ED732E 20%,
+        white 20%, white 80%,
+        #ED732E 80%, #ED732E 100%
+      );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    /* 中間黑色搜尋介面，置於最上層 */
+    .search-container {
+      background-color: #000;
+      color: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      z-index: 1;
+    }
+    
+    /* 標題與副標題 */
+    .search-container h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      font-size: 16px;
+      margin-bottom: 20px;
+      font-style: italic;
+      opacity: 0.8;
+    }
+    
+    /* 表單與輸入欄 */
+    .search-container form {
+      width: 100%;
+    }
+    .search-container input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+    
+    /* 按鈕列：左側為「翻譯」、右側為「搜尋」 */
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .button-row button {
+      width: 48%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    /* 「搜尋」按鈕 */
+    #searchButton {
+      background-color: #0073e6;
+      color: #fff;
+    }
+    #searchButton:hover {
+      background-color: #005bb5;
+    }
+    /* 「翻譯」按鈕，這裡以橙色系呈現 */
+    #translateButton {
+      background-color: #ED732E;
+      color: #fff;
+    }
+    #translateButton:hover {
+      background-color: #e06627;
+    }
+    
+    /* 頁面下方連結與版本號 */
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 16px;
+      color: white;
+    }
+    .footer a {
+      color: white;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .version {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <h1>TNTExplorer 探索器</h1>
+    <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
+    <form id="searchForm">
+      <input type="text" id="query" placeholder="請輸入查詢或網址..." required>
+      <div class="button-row">
+        <button type="button" id="translateButton">翻譯</button>
+        <button type="button" id="searchButton">搜尋</button>
+      </div>
+    </form>
+  </div>
+  
+  <div class="footer">
+    <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">回到Google產品服務</a>
+    <div class="version">版本號: 0.2</div>
+  </div>
+  
+  <script>
+    // 「搜尋」按鈕：透過 Google 搜尋
+    document.getElementById('searchButton').addEventListener('click', function() {
+      const query = document.getElementById('query').value.trim();
+      if(query !== "") {
+        const searchURL = "https://www.google.com/search?num=70&udm=14&q=" + encodeURIComponent(query);
+        window.open(searchURL, '_blank');
+      }
+    });
+    
+    // 「翻譯」按鈕：將輸入網址轉換成 Google 翻譯網址後導向
+    document.getElementById('translateButton').addEventListener('click', function() {
+      let url = document.getElementById('query').value.trim();
+      if(url !== "") {
+        // 如缺少 http/https 則自動補上
+        if(!url.startsWith("http://") && !url.startsWith("https://")) {
+          url = "https://" + url;
+        }
+        try {
+          const urlObj = new URL(url);
+          const originalHost = urlObj.hostname;
+          // 替換主機名稱的點，並加上 .translate.goog
+          const translatedHost = originalHost.replace(/\./g, "-") + ".translate.goog";
+          // 以新的主機名稱重構 URL（使用原本的 pathname，不帶原查詢參數）
+          const finalUrl = "https://" + translatedHost + urlObj.pathname +
+            "?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true";
+          window.open(finalUrl, '_blank');
+        } catch (e) {
+          console.error("無法解析網址", e);
+          alert("無效的網址格式");
+        }
+      }
+    });
+  </script>
+</body>
+</html>
