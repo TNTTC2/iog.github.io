@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNTExplorer 探索器</title>
+  <style>
+    /* 設定頁面背景為上方#ED732E、中間白色、下方#ED732E的漸層效果 */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(
+        to bottom,
+        #ED732E 0%, #ED732E 20%,
+        white 20%, white 80%,
+        #ED732E 80%, #ED732E 100%
+      );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    /* 搜尋介面的主要容器，背景為黑色 */
+    .search-container {
+      background-color: #000;
+      color: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      z-index: 1;
+    }
+    
+    /* 主標題與副標題 */
+    .search-container h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      font-size: 16px;
+      margin-bottom: 20px;
+      font-style: italic;
+      opacity: 0.8;
+    }
+    
+    /* 表單與搜尋框樣式 */
+    .search-container form {
+      display: flex;
+    }
+    .search-container input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+    }
+    .search-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #0073e6;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 0 8px 8px 0;
+    }
+    .search-container button:hover {
+      background-color: #005bb5;
+    }
+    
+    /* 頁面下方新增的連結樣式 */
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 16px;
+    }
+    .footer a {
+      color: white;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <h1>TNTExplorer 探索器</h1>
+    <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
+    <form id="searchForm">
+      <input type="text" id="query" placeholder="請輸入搜尋關鍵字..." required>
+      <button type="submit">搜尋</button>
+    </form>
+  </div>
+  
+  <div class="footer">
+    <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">回到Google產品服務</a>
+  </div>
+  
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var query = document.getElementById('query').value.trim();
+      if (query !== "") {
+        // 利用指定的 URL 模板將查詢字串填入，並在新分頁中打開搜尋結果
+        var searchURL = "https://www.google.com/search?num=70&udm=14&q=" + encodeURIComponent(query);
+        window.open(searchURL, '_blank');
+      }
+    });
+  </script>
+</body>
+</html>
