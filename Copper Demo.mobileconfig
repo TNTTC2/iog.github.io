@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>ConsentText</key>
+		<dict>
+			<key>default</key>
+			<string>v1</string>
+		</dict>
+		<key>HasRemovalPasscode</key>
+		<true />
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>PayloadDisplayName</key>
+				<string>Profile Removal</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.profileRemovalPassword.73eb9f32-5980-4651-8c72-0a66a470c9b7</string>
+				<key>PayloadType</key>
+				<string>com.apple.profileRemovalPassword</string>
+				<key>PayloadUUID</key>
+				<string>73eb9f32-5980-4651-8c72-0a66a470c9b7</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>RemovalPassword</key>
+				<string>terencengKinFungHim.tc2'sppD</string>
+			</dict>
+			<dict>
+				<key>allowAccountModification</key>
+				<false />
+				<key>allowAddingGameCenterFriends</key>
+				<false />
+				<key>allowAppCellularDataModification</key>
+				<false />
+				<key>allowAppRemoval</key>
+				<false />
+				<key>allowARDRemoteManagementModification</key>
+				<false />
+				<key>allowAutoUnlock</key>
+				<false />
+				<key>allowBluetoothModification</key>
+				<false />
+				<key>allowBluetoothSharingModification</key>
+				<false />
+				<key>allowCellularPlanModification</key>
+				<false />
+				<key>allowDefaultBrowserModification</key>
+				<false />
+				<key>allowDefaultCallingAppModification</key>
+				<false />
+				<key>allowDefaultMessagingAppModification</key>
+				<false />
+				<key>allowDeviceNameModification</key>
+				<false />
+				<key>allowEnablingRestrictions</key>
+				<false />
+				<key>allowESIMModification</key>
+				<false />
+				<key>allowFileSharingModification</key>
+				<false />
+				<key>allowFindMyFriendsModification</key>
+				<false />
+				<key>allowHostPairing</key>
+				<false />
+				<key>allowInAppPurchases</key>
+				<false />
+				<key>allowInternetSharingModification</key>
+				<false />
+				<key>allowLocalUserCreation</key>
+				<false />
+				<key>allowMarketplaceAppInstallation</key>
+				<false />
+				<key>allowMediaSharingModification</key>
+				<false />
+				<key>allowNotificationsModification</key>
+				<false />
+				<key>allowPassbookWhileLocked</key>
+				<false />
+				<key>allowPasscodeModification</key>
+				<false />
+				<key>allowPasswordAutoFill</key>
+				<false />
+				<key>allowPasswordSharing</key>
+				<false />
+				<key>allowPersonalHotspotModification</key>
+				<false />
+				<key>allowRapidSecurityResponseInstallation</key>
+				<false />
+				<key>allowRapidSecurityResponseRemoval</key>
+				<false />
+				<key>allowRCSMessaging</key>
+				<false />
+				<key>allowRemoteAppleEventsModification</key>
+				<false />
+				<key>allowStartupDiskModification</key>
+				<false />
+				<key>allowSystemAppRemoval</key>
+				<false />
+				<key>allowTimeMachineBackup</key>
+				<false />
+				<key>allowUIConfigurationProfileInstallation</key>
+				<false />
+				<key>allowWallpaperModification</key>
+				<false />
+				<key>allowWebDistributionAppInstallation</key>
+				<false />
+				<key>enforcedSoftwareUpdateDelay</key>
+				<integer>90</integer>
+				<key>enforcedSoftwareUpdateMajorOSDeferredInstallDelay</key>
+				<integer>90</integer>
+				<key>enforcedSoftwareUpdateMinorOSDeferredInstallDelay</key>
+				<integer>90</integer>
+				<key>enforcedSoftwareUpdateNonOSDeferredInstallDelay</key>
+				<integer>90</integer>
+				<key>forceDelayedAppSoftwareUpdates</key>
+				<true />
+				<key>forceDelayedMajorSoftwareUpdates</key>
+				<true />
+				<key>forceDelayedSoftwareUpdates</key>
+				<true />
+				<key>PayloadDisplayName</key>
+				<string>Restrictions #1</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.applicationaccess.3878100d-cf0e-42eb-ac1d-3c998e2bb5d6</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>3878100d-cf0e-42eb-ac1d-3c998e2bb5d6</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>safariAllowPopups</key>
+				<false />
+			</dict>
+			<dict>
+				<key>AssetTagInformation</key>
+				<string>Demo Display Copper Devices.</string>
+				<key>LockScreenFootnote</key>
+				<string>Demo Display Copper Devices.</string>
+				<key>PayloadDisplayName</key>
+				<string>Lock Screen Message</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.shareddeviceconfiguration.151d215f-ee8f-40fd-833c-dfd1d699f9c7</string>
+				<key>PayloadType</key>
+				<string>com.apple.shareddeviceconfiguration</string>
+				<key>PayloadUUID</key>
+				<string>151d215f-ee8f-40fd-833c-dfd1d699f9c7</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string>Demo Display Copper Devices.</string>
+		<key>PayloadDisplayName</key>
+		<string>Copper Demo</string>
+		<key>PayloadIdentifier</key>
+		<string>LAPTOP-DSHI4E67.65de6889-305b-4a28-bd50-ebb2e582cf59</string>
+		<key>PayloadOrganization</key>
+		<string>🔥TNH Minecraft</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>65de6889-305b-4a28-bd50-ebb2e582cf59</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>
