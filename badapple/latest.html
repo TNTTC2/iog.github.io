@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <!-- 禁止縮放 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- 主題顏色設定為紅色 -->
+  <meta name="theme-color" content="red">
+  <title>系統警告</title>
+  <style>
+    /* 禁止滾動及滾動條 */
+    html, body {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      /* 禁用大部分瀏覽器的觸控手勢 */
+      touch-action: none;
+    }
+    body {
+      background-color: black;
+      color: red;
+      text-align: center;
+      font-family: sans-serif;
+      padding-top: 50px;
+      /* 禁止用戶選取文字 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    p {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+    .large {
+      font-size: 4em;
+    }
+  </style>
+</head>
+<body>
+  <p>系統警告</p>
+  <p>此裝置由 SPY 蘋果管有</p>
+  <p class="large">🍎</p>
+  <p>你無法在到期之前</p>
+  <p>丟掉此蘋果</p>
+  <p>如果有任何不滿請清除你的裝置所有資料</p>
+  
+  <!-- JavaScript 禁止觸控滾動 -->
+  <script>
+    document.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+</body>
+</html>
