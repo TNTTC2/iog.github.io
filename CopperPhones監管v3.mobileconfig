@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>ConsentText</key>
+		<dict>
+			<key>default</key>
+			<string>ONLY MADE FOR：
+Copper XS Max
+Copper 12 Pro Max</string>
+		</dict>
+		<key>HasRemovalPasscode</key>
+		<true />
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>allowDeviceNameModification</key>
+				<false />
+				<key>allowEraseContentAndSettings</key>
+				<false />
+				<key>PayloadDisplayName</key>
+				<string>Restrictions #1</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.applicationaccess.bedd69f5-9c01-49f6-be50-c370d18d2c0b</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>bedd69f5-9c01-49f6-be50-c370d18d2c0b</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>PayloadDisplayName</key>
+				<string>Profile Removal</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.profileRemovalPassword.1266ec9f-679b-4011-a9d0-26d0cd617b13</string>
+				<key>PayloadType</key>
+				<string>com.apple.profileRemovalPassword</string>
+				<key>PayloadUUID</key>
+				<string>1266ec9f-679b-4011-a9d0-26d0cd617b13</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>RemovalPassword</key>
+				<string>terencengKinFungHim.tc2'sppD</string>
+			</dict>
+			<dict>
+				<key>AssetTagInformation</key>
+				<string>TNHdev123@outlook.com</string>
+				<key>LockScreenFootnote</key>
+				<string>🔥CopperPhones</string>
+				<key>PayloadDisplayName</key>
+				<string>Lock Screen Message</string>
+				<key>PayloadIdentifier</key>
+				<string>com.apple.shareddeviceconfiguration.f13aacae-ee96-4388-aedb-06f0543cef9f</string>
+				<key>PayloadType</key>
+				<string>com.apple.shareddeviceconfiguration</string>
+				<key>PayloadUUID</key>
+				<string>f13aacae-ee96-4388-aedb-06f0543cef9f</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string>CopperPhones監管v2</string>
+		<key>PayloadDisplayName</key>
+		<string>CopperPhones監管v3</string>
+		<key>PayloadIdentifier</key>
+		<string>io.tnttc2.github.CPM</string>
+		<key>PayloadOrganization</key>
+		<string>🔥TNH Minecraft</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>3df6e969-3400-405a-8e85-b82829d5eba7</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+		<key>TargetDeviceType</key>
+		<integer>1</integer>
+	</dict>
+</plist>
