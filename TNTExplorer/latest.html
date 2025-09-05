@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TNTExplorer 探索器</title>
+  
+  <!-- 主線版本 0.5.3：新增網頁 icon -->
+  <link rel="icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg" type="image/jpeg"/>
+  <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
+
   <style>
     /* 背景：上方與下方為 #ED732E，中間為白色漸層 */
     body, html {
@@ -46,7 +51,6 @@
       opacity: 0.8;
     }
 
-    /* 新增：搜尋引擎選單 */
     .engine-select {
       margin-bottom: 12px;
       text-align: left;
@@ -65,7 +69,6 @@
       outline: none;
     }
 
-    /* 輸入框 */
     .search-container input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -76,7 +79,6 @@
       outline: none;
     }
 
-    /* 按鈕列：翻譯 + 前往 */
     .button-row {
       display: flex;
       justify-content: space-between;
@@ -105,7 +107,6 @@
       background-color: #005bb5;
     }
 
-    /* 查看舊版網頁按鈕 */
     #archiveButton {
       width: 100%;
       padding: 12px;
@@ -120,7 +121,6 @@
       background-color: #c82333;
     }
 
-    /* 下方連結與版本號 */
     .footer {
       position: absolute;
       bottom: 20px;
@@ -166,16 +166,14 @@
 
   <div class="footer">
     <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">回到Google產品服務</a>
-    <div class="version">版本號: 0.5.2</div>
+    <div class="version">版本號: 0.5.3</div>
   </div>
 
   <script>
-    // URL 偵測：包含 "://" 或整串不以 "." 開頭且末尾含 .[非空格]
     function isLikelyURL(str) {
       return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(str);
     }
 
-    // 取得輸入 (for 翻譯、前往)，無輸入提示
     function getNonEmpty() {
       const v = document.getElementById('query').value.trim();
       if (!v) {
@@ -185,7 +183,6 @@
       return v;
     }
 
-    // 取得輸入 (for 舊版網頁)，非 URL 或空白提示
     function getValidURL() {
       const v = document.getElementById('query').value.trim();
       if (!v || !isLikelyURL(v)) {
@@ -195,7 +192,6 @@
       return v;
     }
 
-    // 「前往」邏輯
     function goAction() {
       const input = getNonEmpty();
       if (!input) return;
@@ -204,7 +200,6 @@
         if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
         window.open(url, '_blank');
       } else {
-        // 用戶選擇的搜尋引擎
         const template = document.getElementById('engine').value;
         const q = encodeURIComponent(input);
         const searchURL = template.replace('%s', q);
@@ -212,14 +207,12 @@
       }
     }
 
-    // Enter 鍵觸發「前往」
+    document.getElementById('goButton').addEventListener('click', goAction);
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
       goAction();
     });
-    document.getElementById('goButton').addEventListener('click', goAction);
 
-    // 「翻譯」邏輯
     document.getElementById('translateButton').addEventListener('click', function() {
       const input = getNonEmpty();
       if (!input) return;
@@ -242,7 +235,6 @@
       }
     });
 
-    // 「查看舊版網頁」邏輯
     document.getElementById('archiveButton').addEventListener('click', function() {
       const input = getValidURL();
       if (!input) return;
@@ -254,10 +246,10 @@
       window.open(archiveURL, '_blank');
     });
 
-    // 點擊輸入欄外部，取消焦點
     document.addEventListener('click', function(e) {
-      if (e.target.id !== 'query') {
-        document.getElementById('query').blur();
+      const input = document.getElementById('query');
+      if (e.target !== input) {
+        input.blur();
       }
     });
   </script>
