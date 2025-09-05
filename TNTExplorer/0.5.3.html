@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TNTExplorer 探索器</title>
+  
+  <!-- 主線版本 0.5.3：新增網頁 icon -->
+  <link rel="icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg" type="image/jpeg"/>
+  <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
+
+  <style>
+    /* 背景：上方與下方為 #ED732E，中間為白色漸層 */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(
+        to bottom,
+        #ED732E 0%,   #ED732E 20%,
+        white   20%,  white   80%,
+        #ED732E 80%,  #ED732E 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 黑色搜尋介面 */
+    .search-container {
+      background-color: #000;
+      color: #fff;
+      width: 90%;
+      max-width: 400px;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    .search-container h1 {
+      font-size: 28px;
+      margin: 0 0 5px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      margin: 0 0 20px;
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    .engine-select {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .engine-select label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .engine-select select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+
+    .search-container input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .button-row button {
+      width: 48%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #translateButton {
+      background-color: #28a745;
+      color: #fff;
+    }
+    #translateButton:hover {
+      background-color: #218838;
+    }
+    #goButton {
+      background-color: #0073e6;
+      color: #fff;
+    }
+    #goButton:hover {
+      background-color: #005bb5;
+    }
+
+    #archiveButton {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #dc3545;
+      color: #fff;
+      cursor: pointer;
+    }
+    #archiveButton:hover {
+      background-color: #c82333;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      text-align: center;
+      width: 100%;
+      font-size: 16px;
+      color: white;
+    }
+    .footer a {
+      color: white;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .version {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <h1>TNTExplorer 探索器</h1>
+    <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
+    <div class="engine-select">
+      <label for="engine">預設搜尋引擎</label>
+      <select id="engine">
+        <option value="https://www.google.com/search?num=70&udm=14&q=%s" selected>Google</option>
+        <option value="https://www.bing.com/search?q=%s">Bing</option>
+        <option value="https://www.youtube.com/results?search_query=%s">YouTube</option>
+      </select>
+    </div>
+    <form id="searchForm">
+      <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off"/>
+      <div class="button-row">
+        <button type="button" id="translateButton">翻譯</button>
+        <button type="button" id="goButton">前往</button>
+      </div>
+    </form>
+    <button id="archiveButton">查看舊版網頁</button>
+  </div>
+
+  <div class="footer">
+    <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">回到Google產品服務</a>
+    <div class="version">版本號: 0.5.3</div>
+  </div>
+
+  <script>
+    function isLikelyURL(str) {
+      return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(str);
+    }
+
+    function getNonEmpty() {
+      const v = document.getElementById('query').value.trim();
+      if (!v) {
+        alert("請輸入有效URL或想查詢的東西");
+        return null;
+      }
+      return v;
+    }
+
+    function getValidURL() {
+      const v = document.getElementById('query').value.trim();
+      if (!v || !isLikelyURL(v)) {
+        alert("請輸入有效URL");
+        return null;
+      }
+      return v;
+    }
+
+    function goAction() {
+      const input = getNonEmpty();
+      if (!input) return;
+      if (isLikelyURL(input)) {
+        let url = input;
+        if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+        window.open(url, '_blank');
+      } else {
+        const template = document.getElementById('engine').value;
+        const q = encodeURIComponent(input);
+        const searchURL = template.replace('%s', q);
+        window.open(searchURL, '_blank');
+      }
+    }
+
+    document.getElementById('goButton').addEventListener('click', goAction);
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      goAction();
+    });
+
+    document.getElementById('translateButton').addEventListener('click', function() {
+      const input = getNonEmpty();
+      if (!input) return;
+      if (isLikelyURL(input)) {
+        let url = input;
+        if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+        try {
+          const u = new URL(url);
+          const host = u.hostname.replace(/\./g, '-') + '.translate.goog';
+          const final = `https://${host}${u.pathname}` +
+            '?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true';
+          window.open(final, '_blank');
+        } catch {
+          alert("無效的網址格式");
+        }
+      } else {
+        const t = encodeURIComponent(input);
+        const tran = `https://translate.google.com/?sl=auto&tl=en&text=${t}&op=translate`;
+        window.open(tran, '_blank');
+      }
+    });
+
+    document.getElementById('archiveButton').addEventListener('click', function() {
+      const input = getValidURL();
+      if (!input) return;
+      let url = input;
+      if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+      const year = new Date().getFullYear();
+      const code = `${year}0000000000*`;
+      const archiveURL = `https://web.archive.org/web/${code}/${url}`;
+      window.open(archiveURL, '_blank');
+    });
+
+    document.addEventListener('click', function(e) {
+      const input = document.getElementById('query');
+      if (e.target !== input) {
+        input.blur();
+      }
+    });
+  </script>
+</body>
+</html>
