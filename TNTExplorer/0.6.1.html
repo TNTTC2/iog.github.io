@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TNTExplorer 探索器</title>
+  <!-- 版本 0.6.1 -->
+  <link rel="icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg" type="image/jpeg"/>
+  <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
+
+  <style>
+    /* 背景 */
+    body, html {
+      margin: 0; padding: 0; height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom,
+        #ED732E 0%, #ED732E 20%,
+        white 20%, white 80%,
+        #ED732E 80%, #ED732E 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+
+    /* 主搜尋區 */
+    .search-container {
+      background: #000; color: #fff;
+      width: 90%; max-width: 400px;
+      padding: 20px 30px; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      text-align: center; z-index: 1;
+    }
+    .search-container h1 { font-size: 28px; margin:0 0 5px; }
+    .subtitle { font-size:16px; margin:0 0 20px; opacity:0.8; font-style:italic; }
+
+    /* 搜尋引擎選單 */
+    .engine-select { text-align:left; margin-bottom:12px; }
+    .engine-select select {
+      width:100%; padding:8px; font-size:16px;
+      border:none; border-radius:6px; outline:none;
+    }
+
+    /* 搜尋列 + 記錄按鈕 */
+    .search-row {
+      display:flex; align-items:center; margin-bottom:10px;
+    }
+    .search-row input[type="text"] {
+      flex:1; padding:10px; font-size:16px;
+      border:none; border-radius:8px; outline:none;
+    }
+    #historyButton {
+      width:40px; height:40px; margin-left:5px;
+      background:yellow; border:none; border-radius:5px;
+      cursor:pointer; font-size:18px; line-height:1;
+    }
+
+    /* 操作按鈕列 */
+    .button-row {
+      display:flex; justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .button-row button {
+      width:48%; padding:10px; font-size:16px;
+      border:none; border-radius:8px; cursor:pointer;
+    }
+    #translateButton { background:#28a745; color:#fff; }
+    #goButton        { background:#0073e6; color:#fff; }
+    #translateButton:hover { background:#218838; }
+    #goButton:hover        { background:#005bb5; }
+
+    /* 舊版網頁 */
+    #archiveButton {
+      width:100%; padding:12px; font-size:16px;
+      border:none; border-radius:8px; background:#dc3545;
+      color:#fff; cursor:pointer;
+    }
+    #archiveButton:hover { background:#c82333; }
+
+    /* 歷史覆蓋層 */
+    .overlay {
+      display:none; position:fixed; top:0; left:0;
+      width:100%; height:100%; background:rgba(0,0,0,0.6);
+      align-items:center; justify-content:center;
+      z-index: 2;
+    }
+    .overlay.active { display:flex; }
+
+    /* 歷史面板 */
+    #historyContainer {
+      background:#000; color:#fff;
+      padding:20px; border-radius:8px;
+      width:90%; max-width:500px;
+      max-height:80%; overflow:auto;
+      position: relative;
+    }
+    /* 標題列 */
+    .history-header {
+      display:flex; justify-content:space-between;
+      align-items:center; margin-bottom:10px;
+    }
+    #closeHistory {
+      background:#6c757d; color:#fff;
+      border:none; border-radius:5px;
+      padding:6px 12px; cursor:pointer;
+    }
+    .history-title {
+      font-size:18px; font-weight:bold;
+    }
+
+    /* 歷史列表 */
+    #historyList { list-style:none; padding:0; margin:0; }
+    .history-item {
+      display:flex; justify-content:space-between;
+      align-items:center; margin-bottom:10px;
+    }
+    .history-item span { cursor:pointer; }
+    .history-item button {
+      background:#dc3545; color:#fff;
+      border:none; border-radius:5px;
+      padding:4px 8px; cursor:pointer;
+    }
+
+    /* 下方連結與版本 */
+    .footer {
+      position:absolute; bottom:20px; width:100%;
+      text-align:center; font-size:16px; color:#fff;
+    }
+    .footer a { color:#fff; text-decoration:none; }
+    .footer a:hover { text-decoration:underline; }
+    .version { margin-top:5px; font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <h1>TNTExplorer 探索器</h1>
+    <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
+    <div class="engine-select">
+      <label for="engine">預設搜尋引擎</label>
+      <select id="engine">
+        <option value="https://www.google.com/search?num=70&udm=14&q=%s" selected>Google</option>
+        <option value="https://www.bing.com/search?q=%s">Bing</option>
+        <option value="https://www.youtube.com/results?search_query=%s">YouTube</option>
+      </select>
+    </div>
+    <form id="searchForm">
+      <div class="search-row">
+        <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off"/>
+        <button type="button" id="historyButton">⧆</button>
+      </div>
+      <div class="button-row">
+        <button type="button" id="translateButton">翻譯</button>
+        <button type="button" id="goButton">前往</button>
+      </div>
+    </form>
+    <button id="archiveButton">查看舊版網頁</button>
+  </div>
+
+  <div id="historyOverlay" class="overlay">
+    <div id="historyContainer">
+      <div class="history-header">
+        <button id="closeHistory">關閉</button>
+        <span class="history-title">瀏覽記錄</span>
+      </div>
+      <ul id="historyList"></ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">回到Google產品服務</a>
+    <div class="version">版本號: 0.6.1</div>
+  </div>
+
+  <script>
+    function isLikelyURL(str) {
+      return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(str);
+    }
+
+    function getNonEmpty() {
+      const v = document.getElementById('query').value.trim();
+      if (!v) { alert("請輸入有效URL或想查詢的東西"); return null; }
+      return v;
+    }
+    function getValidURL() {
+      const v = document.getElementById('query').value.trim();
+      if (!v || !isLikelyURL(v)) { alert("請輸入有效URL"); return null; }
+      return v;
+    }
+
+    function loadHistory() {
+      return JSON.parse(localStorage.getItem('tntExplorerHistory')||'[]');
+    }
+    function saveHistory(arr) {
+      localStorage.setItem('tntExplorerHistory', JSON.stringify(arr));
+    }
+    function addHistory(item) {
+      const h = loadHistory(); h.push(item); saveHistory(h);
+    }
+    function renderHistory() {
+      const listEl = document.getElementById('historyList');
+      const hist = loadHistory();
+      listEl.innerHTML = '';
+      hist.forEach((text, idx) => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        const span = document.createElement('span');
+        span.textContent = text;
+        span.addEventListener('click', ()=> {
+          document.getElementById('query').value = text;
+          toggleHistory(false);
+        });
+        const btn = document.createElement('button');
+        btn.textContent = '清除';
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          hist.splice(idx,1);
+          saveHistory(hist);
+          renderHistory();
+        });
+        li.append(span, btn);
+        listEl.appendChild(li);
+      });
+    }
+    function toggleHistory(show) {
+      const ov = document.getElementById('historyOverlay');
+      if (show) { renderHistory(); ov.classList.add('active'); }
+      else    { ov.classList.remove('active'); }
+    }
+
+    function goAction() {
+      const input = getNonEmpty(); if (!input) return;
+      addHistory(input);
+      if (isLikelyURL(input)) {
+        const url = input.match(/^https?:\/\//i)? input : 'https://' + input;
+        window.open(url,'_blank');
+      } else {
+        const tmpl = document.getElementById('engine').value;
+        window.open(tmpl.replace('%s',encodeURIComponent(input)),'_blank');
+      }
+    }
+    function translateAction() {
+      const input = getNonEmpty(); if (!input) return;
+      addHistory(input);
+      if (isLikelyURL(input)) {
+        let url = input.match(/^https?:\/\//i)? input : 'https://' + input;
+        try {
+          const u = new URL(url);
+          const host = u.hostname.replace(/\./g,'-') + '.translate.goog';
+          const final = `https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`;
+          window.open(final,'_blank');
+        } catch { alert("無效的網址格式"); }
+      } else {
+        const tran = `https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(input)}&op=translate`;
+        window.open(tran,'_blank');
+      }
+    }
+    function archiveAction() {
+      const input = getValidURL(); if (!input) return;
+      addHistory(input);
+      const url = input.match(/^https?:\/\//i)? input : 'https://' + input;
+      const code = new Date().getFullYear() + '0000000000*';
+      window.open(`https://web.archive.org/web/${code}/${url}`, '_blank');
+    }
+
+    document.getElementById('goButton').addEventListener('click', goAction);
+    document.getElementById('searchForm').addEventListener('submit', e => { e.preventDefault(); goAction(); });
+    document.getElementById('translateButton').addEventListener('click', translateAction);
+    document.getElementById('archiveButton').addEventListener('click', archiveAction);
+    document.getElementById('historyButton').addEventListener('click', ()=>toggleHistory(true));
+    document.getElementById('historyOverlay').addEventListener('click', e => {
+      if (e.target.id==='historyOverlay') toggleHistory(false);
+    });
+    document.getElementById('closeHistory').addEventListener('click', ()=>toggleHistory(false));
+    document.addEventListener('click', e => {
+      if (e.target.id!=='query') document.getElementById('query').blur();
+    });
+  </script>
+</body>
+</html>
