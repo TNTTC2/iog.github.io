@@ -4,142 +4,112 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TNTExplorer 探索器</title>
-  
-  <!-- 主線版本 0.5.3：新增網頁 icon -->
+  <!-- 版本 0.6.0 -->
   <link rel="icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg" type="image/jpeg"/>
   <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
 
   <style>
-    /* 背景：上方與下方為 #ED732E，中間為白色漸層 */
+    /* 背景 */
     body, html {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
+      margin: 0; padding: 0; height: 100vh;
       font-family: Arial, sans-serif;
-      background: linear-gradient(
-        to bottom,
-        #ED732E 0%,   #ED732E 20%,
-        white   20%,  white   80%,
-        #ED732E 80%,  #ED732E 100%
-      );
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: linear-gradient(to bottom,
+        #ED732E 0%, #ED732E 20%,
+        white 20%, white 80%,
+        #ED732E 80%, #ED732E 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
     }
 
-    /* 黑色搜尋介面 */
+    /* 主搜尋區 */
     .search-container {
-      background-color: #000;
-      color: #fff;
-      width: 90%;
-      max-width: 400px;
-      padding: 20px 30px;
-      border-radius: 10px;
+      background: #000; color: #fff;
+      width: 90%; max-width: 400px;
+      padding: 20px 30px; border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-      text-align: center;
+      text-align: center; z-index: 1;
     }
+    .search-container h1 { font-size: 28px; margin:0 0 5px; }
+    .subtitle { font-size:16px; margin:0 0 20px; opacity:0.8; font-style:italic; }
 
-    .search-container h1 {
-      font-size: 28px;
-      margin: 0 0 5px;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      margin: 0 0 20px;
-      font-style: italic;
-      opacity: 0.8;
-    }
-
-    .engine-select {
-      margin-bottom: 12px;
-      text-align: left;
-    }
-    .engine-select label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
+    /* 搜尋引擎選單 */
+    .engine-select { text-align:left; margin-bottom:12px; }
     .engine-select select {
-      width: 100%;
-      padding: 8px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-      outline: none;
+      width:100%; padding:8px; font-size:16px;
+      border:none; border-radius:6px; outline:none;
     }
 
-    .search-container input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      outline: none;
+    /* 搜尋列 + 記錄按鈕 */
+    .search-row {
+      display:flex; align-items:center; margin-bottom:10px;
+    }
+    .search-row input[type="text"] {
+      flex:1; padding:10px; font-size:16px;
+      border:none; border-radius:8px; outline:none;
+    }
+    #historyButton {
+      width:40px; height:40px; margin-left:5px;
+      background:yellow; border:none; border-radius:5px;
+      cursor:pointer; font-size:18px; line-height:1;
     }
 
+    /* 操作按鈕列 */
     .button-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
+      display:flex; justify-content:space-between;
+      margin-bottom:10px;
     }
     .button-row button {
-      width: 48%;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      width:48%; padding:10px; font-size:16px;
+      border:none; border-radius:8px; cursor:pointer;
     }
-    #translateButton {
-      background-color: #28a745;
-      color: #fff;
-    }
-    #translateButton:hover {
-      background-color: #218838;
-    }
-    #goButton {
-      background-color: #0073e6;
-      color: #fff;
-    }
-    #goButton:hover {
-      background-color: #005bb5;
-    }
+    #translateButton { background:#28a745; color:#fff; }
+    #goButton        { background:#0073e6; color:#fff; }
+    #translateButton:hover { background:#218838; }
+    #goButton:hover        { background:#005bb5; }
 
+    /* 舊版網頁 */
     #archiveButton {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #dc3545;
-      color: #fff;
-      cursor: pointer;
+      width:100%; padding:12px; font-size:16px;
+      border:none; border-radius:8px; background:#dc3545;
+      color:#fff; cursor:pointer;
     }
-    #archiveButton:hover {
-      background-color: #c82333;
+    #archiveButton:hover { background:#c82333; }
+
+    /* 歷史覆蓋層 */
+    .overlay {
+      display:none; position:fixed; top:0; left:0;
+      width:100%; height:100%; background:rgba(0,0,0,0.6);
+      align-items:center; justify-content:center;
+    }
+    .overlay.active { display:flex; }
+    #historyContainer {
+      background:#000; color:#fff;
+      padding:20px; border-radius:8px;
+      width:90%; max-width:500px;
+      max-height:80%; overflow:auto;
+    }
+    #historyList { list-style:none; padding:0; margin:0; }
+    .history-item {
+      display:flex; justify-content:space-between;
+      align-items:center; margin-bottom:10px;
+    }
+    .history-item span {
+      cursor:pointer;
+    }
+    .history-item button {
+      background:#dc3545; color:#fff;
+      border:none; border-radius:5px;
+      padding:4px 8px; cursor:pointer;
     }
 
+    /* 下方連結與版本 */
     .footer {
-      position: absolute;
-      bottom: 20px;
-      text-align: center;
-      width: 100%;
-      font-size: 16px;
-      color: white;
+      position:absolute; bottom:20px; width:100%;
+      text-align:center; font-size:16px; color:#fff;
     }
-    .footer a {
-      color: white;
-      text-decoration: none;
-    }
-    .footer a:hover {
-      text-decoration: underline;
-    }
-    .version {
-      margin-top: 5px;
-      font-size: 14px;
-    }
+    .footer a { color:#fff; text-decoration:none; }
+    .footer a:hover { text-decoration:underline; }
+    .version { margin-top:5px; font-size:14px; }
   </style>
 </head>
 <body>
@@ -155,7 +125,10 @@
       </select>
     </div>
     <form id="searchForm">
-      <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off"/>
+      <div class="search-row">
+        <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off"/>
+        <button type="button" id="historyButton">⧆</button>
+      </div>
       <div class="button-row">
         <button type="button" id="translateButton">翻譯</button>
         <button type="button" id="goButton">前往</button>
@@ -164,16 +137,24 @@
     <button id="archiveButton">查看舊版網頁</button>
   </div>
 
+  <div id="historyOverlay" class="overlay">
+    <div id="historyContainer">
+      <ul id="historyList"></ul>
+    </div>
+  </div>
+
   <div class="footer">
     <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" target="_blank">回到Google產品服務</a>
-    <div class="version">版本號: 0.5.3</div>
+    <div class="version">版本號: 0.6.0</div>
   </div>
 
   <script>
+    // URL 偵測
     function isLikelyURL(str) {
       return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(str);
     }
 
+    // 取得輸入 (空白提示)
     function getNonEmpty() {
       const v = document.getElementById('query').value.trim();
       if (!v) {
@@ -182,7 +163,7 @@
       }
       return v;
     }
-
+    // 取得有效 URL (格式錯誤提示)
     function getValidURL() {
       const v = document.getElementById('query').value.trim();
       if (!v || !isLikelyURL(v)) {
@@ -191,66 +172,115 @@
       }
       return v;
     }
+    // LocalStorage 管理
+    function loadHistory() {
+      return JSON.parse(localStorage.getItem('tntExplorerHistory') || '[]');
+    }
+    function saveHistory(arr) {
+      localStorage.setItem('tntExplorerHistory', JSON.stringify(arr));
+    }
+    function addHistory(item) {
+      const list = loadHistory();
+      list.push(item);
+      saveHistory(list);
+    }
+    // 顯示／隱藏歷史面板
+    function toggleHistory(show) {
+      const overlay = document.getElementById('historyOverlay');
+      if (show) {
+        renderHistory();
+        overlay.classList.add('active');
+      } else {
+        overlay.classList.remove('active');
+      }
+    }
+    // 渲染歷史列表
+    function renderHistory() {
+      const listEl = document.getElementById('historyList');
+      const hist = loadHistory();
+      listEl.innerHTML = '';
+      hist.forEach((text, idx) => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        const span = document.createElement('span');
+        span.textContent = text;
+        span.addEventListener('click', () => {
+          document.getElementById('query').value = text;
+          toggleHistory(false);
+        });
+        const btn = document.createElement('button');
+        btn.textContent = '清除';
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          hist.splice(idx,1);
+          saveHistory(hist);
+          renderHistory();
+        });
+        li.append(span, btn);
+        listEl.appendChild(li);
+      });
+    }
 
+    // 「前往」邏輯
     function goAction() {
       const input = getNonEmpty();
       if (!input) return;
+      addHistory(input);
       if (isLikelyURL(input)) {
-        let url = input;
-        if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
-        window.open(url, '_blank');
+        let url = input.match(/^https?:\/\//i) ? input : 'https://' + input;
+        window.open(url,'_blank');
       } else {
-        const template = document.getElementById('engine').value;
-        const q = encodeURIComponent(input);
-        const searchURL = template.replace('%s', q);
-        window.open(searchURL, '_blank');
+        const tmpl = document.getElementById('engine').value;
+        window.open(tmpl.replace('%s', encodeURIComponent(input)), '_blank');
       }
     }
-
-    document.getElementById('goButton').addEventListener('click', goAction);
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      goAction();
-    });
-
-    document.getElementById('translateButton').addEventListener('click', function() {
+    // 「翻譯」
+    function translateAction() {
       const input = getNonEmpty();
       if (!input) return;
+      addHistory(input);
       if (isLikelyURL(input)) {
-        let url = input;
-        if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+        let url = input.match(/^https?:\/\//i) ? input : 'https://' + input;
         try {
           const u = new URL(url);
-          const host = u.hostname.replace(/\./g, '-') + '.translate.goog';
+          const host = u.hostname.replace(/\./g,'-') + '.translate.goog';
           const final = `https://${host}${u.pathname}` +
             '?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true';
-          window.open(final, '_blank');
+          window.open(final,'_blank');
         } catch {
           alert("無效的網址格式");
         }
       } else {
-        const t = encodeURIComponent(input);
-        const tran = `https://translate.google.com/?sl=auto&tl=en&text=${t}&op=translate`;
-        window.open(tran, '_blank');
+        addHistory(input);
+        const tran = `https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(input)}&op=translate`;
+        window.open(tran,'_blank');
       }
-    });
-
-    document.getElementById('archiveButton').addEventListener('click', function() {
+    }
+    // 「查看舊版網頁」
+    function archiveAction() {
       const input = getValidURL();
       if (!input) return;
-      let url = input;
-      if (!url.match(/^https?:\/\//i)) url = 'https://' + url;
+      addHistory(input);
+      let url = input.match(/^https?:\/\//i) ? input : 'https://' + input;
       const year = new Date().getFullYear();
       const code = `${year}0000000000*`;
-      const archiveURL = `https://web.archive.org/web/${code}/${url}`;
-      window.open(archiveURL, '_blank');
-    });
+      window.open(`https://web.archive.org/web/${code}/${url}`, '_blank');
+    }
 
-    document.addEventListener('click', function(e) {
-      const input = document.getElementById('query');
-      if (e.target !== input) {
-        input.blur();
-      }
+    // 綁定事件
+    document.getElementById('goButton').addEventListener('click', goAction);
+    document.getElementById('searchForm').addEventListener('submit', e => {
+      e.preventDefault(); goAction();
+    });
+    document.getElementById('translateButton').addEventListener('click', translateAction);
+    document.getElementById('archiveButton').addEventListener('click', archiveAction);
+    document.getElementById('historyButton').addEventListener('click', () => toggleHistory(true));
+    document.getElementById('historyOverlay').addEventListener('click', e => {
+      if (e.target.id === 'historyOverlay') toggleHistory(false);
+    });
+    // 點擊外部取消輸入焦點
+    document.addEventListener('click', e => {
+      if (e.target.id !== 'query') document.getElementById('query').blur();
     });
   </script>
 </body>
