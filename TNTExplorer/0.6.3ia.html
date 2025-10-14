@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TNTExplorer 分支 0.6.3(Internal a)</title>
+  <style>
+    :root{
+      --orange:#ED732E; --black:#000; --white:#fff;
+      --green:#28a745; --red:#dc3545; --yellow:#ffd400; --gray:#6c757d;
+    }
+    html,body{height:100%;margin:0;font-family:Arial, sans-serif;background:linear-gradient(to bottom,var(--orange) 0%,var(--orange)20%,#fff 20%,#fff 80%,var(--orange)80%,var(--orange)100%);display:flex;align-items:center;justify-content:center;}
+    .search-container{background:var(--black);color:var(--white);width:90%;max-width:400px;padding:20px 24px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.5);position:relative;z-index:1}
+    /* header hidden text (branch) */
+    .search-container h1,.search-container .subtitle{visibility:hidden;height:0;margin:0;padding:0}
+    .engine-select{margin-bottom:12px}
+    .engine-select select{width:100%;padding:8px;border-radius:6px;border:none;font-size:16px}
+    .search-row{display:flex;align-items:center;margin-bottom:10px}
+    .search-row input[type="text"]{flex:1;padding:10px;border-radius:8px;border:none;font-size:16px;outline:none}
+    /* yellow history/bookmarks button (default opens bookmarks) */
+    #historyButton{width:40px;height:40px;margin-left:8px;background:var(--yellow);border:none;border-radius:6px;cursor:pointer;font-size:18px}
+    .button-row{display:flex;justify-content:space-between;margin-bottom:10px}
+    .button-row button{width:48%;padding:10px;border-radius:8px;border:none;cursor:pointer;font-size:16px}
+    #translateButton{background:var(--green);color:#fff}#goButton{background:#0073e6;color:#fff}
+    #archiveButton{width:100%;padding:12px;border-radius:8px;border:none;background:var(--red);color:#fff;cursor:pointer}
+    .footer{position:fixed;left:0;right:0;bottom:20px;text-align:center;color:#fff;font-size:14px}
+    .footer a{color:#fff;text-decoration:none}
+    .version{margin-top:4px;font-size:12px;color:#fff}
+
+    /* overlay panel covers entire UI when active (branch behaviour) */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;z-index:2000}
+    .overlay.active{display:flex}
+    .panel{background:var(--black);color:var(--white);width:92%;max-width:600px;border-radius:8px;padding:14px;max-height:90%;overflow:auto;position:relative}
+    .panel .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .panel .left-controls{display:flex;gap:8px;align-items:center}
+    .btn-gray{background:var(--gray);border:none;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .menu-select{background:transparent;border:1px solid #333;color:#fff;padding:6px;border-radius:6px}
+    .panel .title{font-weight:700;font-size:16px}
+    /* content area */
+    .panel .content{display:grid;grid-template-columns:1fr;gap:10px}
+    .record-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;background:rgba(255,255,255,0.03);word-break:break-word}
+    .record-item .text{flex:1;margin-right:8px;color:#fff}
+    .record-item .btn-red{background:var(--red);border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer}
+    /* bookmark grid */
+    .bookmark-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+    .bookmark-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
+    .bookmark-card img{width:64px;height:64px;border-radius:8px;object-fit:cover;background:#333}
+    .bookmark-name{font-size:14px;color:#fff;word-break:break-word;text-align:center}
+    /* selectable state */
+    .bookmark-card.selected{outline:3px solid var(--red)}
+    .bookmark-controls{display:flex;align-items:center;gap:8px;margin-top:8px}
+    .count-badge{background:var(--green);padding:6px 10px;border-radius:8px;color:#fff;font-weight:700}
+    .remove-btn{background:var(--red);color:#fff;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
+    /* add form */
+    .add-form{display:flex;flex-direction:column;gap:8px;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02)}
+    .add-form input[type="text"]{padding:8px;border-radius:6px;border:none}
+    .add-form input[type="file"]{color:#fff}
+    .add-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+    .btn-yellow{background:var(--yellow);border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+    .btn-cancel{background:#888;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;color:#fff}
+
+    /* small helper */
+    .muted{color:#bbb;font-size:13px}
+  </style>
+</head>
+<body>
+  <!-- main UI (keeps layout/size for icon design as branch requirement) -->
+  <div class="search-container" id="mainUI">
+    <h1 style="display:none">TNTExplorer</h1>
+    <div class="engine-select" style="display:none">
+      <select id="engine">
+        <option value="https://www.google.com/search?num=70&udm=14&q=%s" selected>Google</option>
+        <option value="https://www.bing.com/search?q=%s">Bing</option>
+        <option value="https://www.youtube.com/results?search_query=%s">YouTube</option>
+        <option value="https://www.reddit.com/search/?q=%s">Reddit</option>
+      </select>
+    </div>
+
+    <form id="searchForm">
+      <div class="search-row">
+        <input type="text" id="query" placeholder="" autocomplete="off"/>
+        <!-- yellow button opens Bookmarks by default in this branch; menu toggles panel mode -->
+        <button type="button" id="historyButton" title="Bookmarks / Records">⧆</button>
+      </div>
+      <div class="button-row">
+        <button type="button" id="translateButton" title=""> </button>
+        <button type="button" id="goButton" title=""> </button>
+      </div>
+    </form>
+
+    <button id="archiveButton" title=""></button>
+  </div>
+
+  <!-- overlay panel: both Exploration Records and Bookmarks live here; default opens Bookmarks -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true">
+      <div class="topbar">
+        <div class="left-controls">
+          <button id="closePanel" class="btn-gray">關閉</button>
+          <!-- menu position selects which view is active inside panel -->
+          <select id="panelMenu" class="menu-select" aria-label="選單位置">
+            <option value="bookmarks">書籤</option>
+            <option value="records">探索記錄</option>
+          </select>
+          <button id="addBookmarkBtn" class="btn-gray">新增</button>
+          <button id="bulkRemoveBtn" class="btn-gray">移除</button>
+        </div>
+        <div class="title" id="panelTitle">書籤</div>
+      </div>
+
+      <!-- Bookmarks view -->
+      <div id="bookmarksView" class="content" style="display:block">
+        <div class="muted">新增書籤須上傳圖示，否則無法新增</div>
+        <div style="height:8px"></div>
+        <div class="add-form" id="addForm" style="display:none">
+          <input type="file" id="iconFile" accept="image/*"/>
+          <input type="text" id="bookmarkName" placeholder="輸入書籤名"/>
+          <input type="text" id="bookmarkURL" placeholder="輸入書籤網址"/>
+          <div class="add-actions">
+            <button class="btn-cancel" id="cancelAdd">取消</button>
+            <button class="btn-yellow" id="confirmAdd">新增書籤</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
+          <div class="count-badge" id="selectedCount">0</div>
+          <button class="remove-btn" id="removeSelected">移除所選</button>
+        </div>
+
+        <div id="bookmarkGrid" class="bookmark-grid" aria-live="polite"></div>
+      </div>
+
+      <!-- Records view -->
+      <div id="recordsView" class="content" style="display:none">
+        <ul id="recordsList" style="list-style:none;padding:0;margin:0"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="#" id="supportLink">支持作者</a>
+    <div class="version">版本號: 0.6.3(Internal "a")</div>
+  </div>
+
+  <script>
+    /**** Branch note: This is a branch-only UI for experimenting bookmarks. Do not use as main template. ****/
+
+    // storage keys
+    const STORAGE = {
+      RECORDS: 'tnt_explore_records_branch',
+      BOOKMARKS: 'tnt_explore_bookmarks_branch' // stores array of {id,name,url,iconDataURL}
+    };
+
+    // Helpers
+    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key)||'[]') }catch{ return [] } }
+    function saveJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)) }
+    function uid(){ return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8) }
+
+    // UI elements
+    const overlay = document.getElementById('overlay');
+    const historyButton = document.getElementById('historyButton'); // opens panel (bookmarks by default)
+    const panelMenu = document.getElementById('panelMenu');
+    const panelTitle = document.getElementById('panelTitle');
+    const bookmarksView = document.getElementById('bookmarksView');
+    const recordsView = document.getElementById('recordsView');
+    const addBookmarkBtn = document.getElementById('addBookmarkBtn');
+    const addForm = document.getElementById('addForm');
+    const iconFile = document.getElementById('iconFile');
+    const bookmarkName = document.getElementById('bookmarkName');
+    const bookmarkURL = document.getElementById('bookmarkURL');
+    const cancelAdd = document.getElementById('cancelAdd');
+    const confirmAdd = document.getElementById('confirmAdd');
+    const bookmarkGrid = document.getElementById('bookmarkGrid');
+    const selectedCount = document.getElementById('selectedCount');
+    const removeSelected = document.getElementById('removeSelected');
+    const recordsList = document.getElementById('recordsList');
+    const closePanel = document.getElementById('closePanel');
+
+    // selection set for bookmarks (ids)
+    let selectedBookmarks = new Set();
+
+    // Open panel (default to bookmarks view per branch spec)
+    historyButton.addEventListener('click', ()=>{
+      panelMenu.value = 'bookmarks';
+      switchPanelView('bookmarks');
+      overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
+    });
+
+    // panel menu switching between bookmarks and records (simulates browser menu switching)
+    panelMenu.addEventListener('change',(e)=>{
+      switchPanelView(e.target.value);
+    });
+
+    function switchPanelView(mode){
+      if(mode === 'bookmarks'){
+        bookmarksView.style.display = 'block';
+        recordsView.style.display = 'none';
+        panelTitle.textContent = '書籤';
+        renderBookmarks();
+      } else {
+        bookmarksView.style.display = 'none';
+        recordsView.style.display = 'block';
+        panelTitle.textContent = '探索記錄';
+        renderRecords();
+      }
+      // reset selection UI state
+      selectedBookmarks.clear(); updateSelectedCount();
+      addForm.style.display = 'none';
+    }
+
+    // close handlers
+    closePanel.addEventListener('click', ()=>{ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); });
+    overlay.addEventListener('click', (e)=>{
+      if(e.target === overlay){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); }
+    });
+
+    /* -------------------------------
+       Records (Exploration Records) - saved when user uses actions
+       ------------------------------- */
+    function loadRecords(){ return loadJSON(STORAGE.RECORDS) }
+    function saveRecords(arr){ saveJSON(STORAGE.RECORDS, arr) }
+    function addRecord(text){
+      if(!text || !text.trim()) return;
+      const arr = loadRecords();
+      arr.push({id: uid(), text: text});
+      saveRecords(arr);
+    }
+    function renderRecords(){
+      const arr = loadRecords().slice().reverse(); // show latest first
+      recordsList.innerHTML = '';
+      if(arr.length === 0){
+        const li = document.createElement('li'); li.className='record-item muted'; li.textContent=''; recordsList.appendChild(li); return;
+      }
+      arr.forEach(item=>{
+        const li = document.createElement('li'); li.className='record-item';
+        const txt = document.createElement('div'); txt.className='text'; txt.textContent = item.text;
+        const btn = document.createElement('button'); btn.className='btn-red'; btn.textContent='清除';
+        btn.addEventListener('click', ()=>{ // remove single
+          const current = loadRecords().filter(r=>r.id !== item.id); saveRecords(current); renderRecords();
+        });
+        li.appendChild(txt); li.appendChild(btn);
+        recordsList.appendChild(li);
+      });
+    }
+
+    /* -------------------------------
+       Bookmarks: local storage of bookmarks with icons (dataURL)
+       Structure: [{id,name,url,icon}] where icon is dataURL
+       ------------------------------- */
+    function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS) }
+    function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr) }
+
+    function renderBookmarks(){
+      const arr = loadBookmarks();
+      bookmarkGrid.innerHTML = '';
+      if(arr.length === 0){
+        const el = document.createElement('div'); el.className='muted'; el.textContent=''; bookmarkGrid.appendChild(el); return;
+      }
+      arr.forEach(b => {
+        const card = document.createElement('div'); card.className = 'bookmark-card'; card.dataset.id = b.id;
+        const img = document.createElement('img'); img.alt = b.name || '';
+        img.src = b.icon || '';
+        const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
+        // selection handling
+        card.addEventListener('click', (e)=>{
+          // toggle selection
+          if(selectedBookmarks.has(b.id)) selectedBookmarks.delete(b.id);
+          else selectedBookmarks.add(b.id);
+          updateSelectedState(card,b.id);
+        });
+        // context: clicking name should load into input and close (as prior behaviour for records)
+        name.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          document.getElementById('query').value = b.url || '';
+          overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
+        });
+        // visual selected state
+        if(selectedBookmarks.has(b.id)) card.classList.add('selected');
+        bookmarkGrid.appendChild(card); card.appendChild(img); card.appendChild(name);
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedState(card,id){
+      if(selectedBookmarks.has(id)) card.classList.add('selected'); else card.classList.remove('selected');
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount(){
+      selectedCount.textContent = String(selectedBookmarks.size || 0);
+    }
+
+    // add bookmark UI show/hide
+    addBookmarkBtn.addEventListener('click', ()=>{
+      addForm.style.display = addForm.style.display === 'none' ? 'flex' : 'none';
+    });
+    cancelAdd.addEventListener('click', ()=>{ addForm.style.display='none'; clearAddForm(); });
+
+    confirmAdd.addEventListener('click', ()=>{
+      // must have uploaded icon to add
+      const file = iconFile.files && iconFile.files[0];
+      const name = (bookmarkName.value || '').trim();
+      const url = (bookmarkURL.value || '').trim();
+      if(!file){ alert('必須上傳圖示才能新增書籤'); return; }
+      if(!name || !url){ alert('請輸入書籤名與網址'); return; }
+      // read file as dataURL and save
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        const iconData = evt.target.result;
+        const arr = loadBookmarks();
+        const id = uid();
+        arr.push({id, name, url, icon: iconData});
+        saveBookmarks(arr);
+        clearAddForm();
+        addForm.style.display='none';
+        renderBookmarks();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function clearAddForm(){ iconFile.value=''; bookmarkName.value=''; bookmarkURL.value=''; }
+
+    // remove selected bookmarks
+    removeSelected.addEventListener('click', ()=>{
+      if(selectedBookmarks.size === 0){ alert('未選擇任何書籤'); return; }
+      let arr = loadBookmarks();
+      arr = arr.filter(b => !selectedBookmarks.has(b.id));
+      saveBookmarks(arr);
+      selectedBookmarks.clear();
+      renderBookmarks();
+    });
+    // also bulk remove button top-left (same)
+    document.getElementById('bulkRemoveBtn').addEventListener('click', ()=>{
+      removeSelected.click();
+    });
+
+    // populate some initial hidden placeholders (branch: keep empty content strings as requested)
+    // NOTE: this branch intentionally removes visible labels/content for icon export; keep placeholders blank.
+
+    /* -------------------------------
+       Integrate with main actions: when user uses translate/go/archive, save a record
+       Also for branch: default historyButton opens bookmarks (above).
+       ------------------------------- */
+    // minimal main action buttons are intentionally blank labels (branch)
+    const goButton = document.getElementById('goButton');
+    const translateButton = document.getElementById('translateButton');
+    const archiveButton = document.getElementById('archiveButton');
+
+    // simple input getter
+    function getInputVal(){ return document.getElementById('query').value.trim(); }
+
+    // add record when actions used; these records are separate from bookmarks
+    goButton.addEventListener('click', ()=>{
+      const v = getInputVal(); if(!v) return;
+      addRecord(v);
+      // branch does not navigate to preserve icon capture flow
+      // (If you want navigation in branch, uncomment next line)
+      // window.open(v.match(/^https?:\/\//i)? v : 'https://' + v, '_blank');
+    });
+    translateButton.addEventListener('click', ()=>{
+      const v = getInputVal(); if(!v) return;
+      addRecord(v);
+      // branch: do not navigate
+    });
+    archiveButton.addEventListener('click', ()=>{
+      const v = getInputVal(); if(!v) return;
+      addRecord(v);
+      // branch: do not navigate
+    });
+
+    // renderRecords/bookmarks when opening panel (handled in switchPanelView)
+    function init(){
+      // ensure bookmarks storage exists
+      if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
+      if(!localStorage.getItem(STORAGE.RECORDS)) saveRecords([]);
+      // reset selection
+      selectedBookmarks.clear();
+      updateSelectedCount();
+    }
+    init();
+  </script>
+</body>
+</html>
