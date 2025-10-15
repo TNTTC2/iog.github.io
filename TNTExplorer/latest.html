@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
 
   <style>
-    /* --- 恢復 0.6.3 主線尺寸/排版為基準 --- */
+    /* 使用 0.6.3 主介面尺寸/排版為基準，並保留 0.7.x 面板樣式 */
     :root{
       --orange:#ED732E; --black:#000; --white:#ffffff; --muted:#bbb;
       --green:#28a745; --red:#dc3545; --blue:#007bff; --yellow:#ffd400;
@@ -21,46 +21,43 @@
       body { background: linear-gradient(to bottom, #b95a20 0%, #b95a20 20%, #2f2f2f 20%, #2f2f2f 80%, #b95a20 80%, #b95a20 100%); }
     }
 
-    html,body{height:100%;margin:0;font-family:Arial, sans-serif;-webkit-font-smoothing:antialiased;}
-    body {
-      background: linear-gradient(to bottom, var(--orange) 0%, var(--orange) 20%, var(--white) 20%, var(--white) 80%, var(--orange) 80%, var(--orange) 100%);
-      display:flex;align-items:center;justify-content:center;position:relative;
+    html,body { margin:0; padding:0; height:100vh; font-family:Arial, sans-serif;
+      background: linear-gradient(to bottom,
+        var(--orange) 0%, var(--orange) 20%,
+        var(--white) 20%, var(--white) 80%,
+        var(--orange) 80%, var(--orange) 100%);
+      display:flex; align-items:center; justify-content:center; position:relative;
     }
 
-    /* 主介面回復到 0.6.3 大小 */
-    .search-container {
-      background: var(--black); color: var(--white);
-      width: 90%; max-width: 400px; /* 0.6.3 主介面寬度 */
-      padding: 20px 30px; border-radius:10px; box-shadow: 0 2px 8px rgba(0,0,0,0.45);
-      z-index:1; text-align:center;
+    /* --- 主搜尋區 (恢復 0.6.3 樣式) --- */
+    .search-container { background:#000; color:#fff; width:90%; max-width:400px;
+      padding:20px 30px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.5);
+      text-align:center; z-index:1;
     }
-    .subtitle { font-size:14px; color:var(--muted); margin-bottom:12px; }
+    .search-container h1 { font-size:28px; margin:0 0 5px; }
+    .subtitle { font-size:16px; margin:0 0 20px; opacity:0.8; font-style:italic; }
 
     .engine-select { text-align:left; margin-bottom:12px; }
-    .engine-select select { width:100%; padding:8px; border-radius:6px; border:none; outline:none; font-size:15px; }
+    .engine-select select { width:100%; padding:8px; font-size:16px; border:none; border-radius:6px; outline:none; }
 
-    .search-row { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
-    .search-row input[type="text"] { flex:1; padding:10px 12px; font-size:16px; border-radius:8px; border:none; outline:none; background:#111; color:var(--white); }
-    #historyButton { width:40px; height:40px; background:var(--yellow); border:none; border-radius:6px; cursor:pointer; font-size:18px; }
+    .search-row { display:flex; align-items:center; margin-bottom:10px; }
+    .search-row input[type="text"] { flex:1; padding:10px; font-size:16px; border:none; border-radius:8px; outline:none; background:#111; color:var(--white); }
+    #historyButton { width:40px; height:40px; margin-left:5px; background:var(--yellow); border:none; border-radius:5px; cursor:pointer; font-size:18px; line-height:1; }
 
-    .button-row { display:flex; justify-content:space-between; gap:8px; margin-bottom:10px; }
-    .button-row button { width:48%; padding:10px; border-radius:8px; border:none; cursor:pointer; font-size:15px; }
-    #translateButton { background:var(--green); color:#fff; }
-    #goButton { background:#0073e6; color:#fff; }
+    .button-row { display:flex; justify-content:space-between; margin-bottom:10px; }
+    .button-row button { width:48%; padding:10px; font-size:16px; border:none; border-radius:8px; cursor:pointer; }
+    #translateButton { background:var(--green); color:#fff; } #translateButton:hover { background:#218838; }
+    #goButton { background:#0073e6; color:#fff; } #goButton:hover { background:#005bb5; }
 
-    #archiveButton { width:100%; padding:12px; border-radius:8px; border:none; background:var(--red); color:#fff; cursor:pointer; }
+    #archiveButton { width:100%; padding:12px; font-size:16px; border:none; border-radius:8px; background:var(--red); color:#fff; cursor:pointer; }
+    #archiveButton:hover { background:#c82333; }
 
-    /* 覆蓋面板恢復到 0.6.3 的 panel 大小 (max-width:500px) */
-    .overlay { display:none; position:fixed; inset:0; background:var(--overlay-bg); align-items:center; justify-content:center; z-index:2000; }
+    /* --- 覆蓋層 (探索 / 書籤 面板) --- */
+    .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--overlay-bg); align-items:center; justify-content:center; z-index:1000; }
     .overlay.active { display:flex; }
-    .panel {
-      background: var(--panel-bg); color:var(--white);
-      width:90%; max-width:500px; /* 0.6.3 panel 寬度 */
-      border-radius:8px; padding:20px;
-      max-height:90vh; overflow:auto; box-shadow:0 6px 30px rgba(0,0,0,0.6);
-    }
+    .panel { background:var(--panel-bg); color:var(--white); padding:20px; border-radius:8px; width:90%; max-width:500px; max-height:90%; overflow:auto; position:relative; } /* max-width 500px 為 0.6.3 panel 大小 */
 
-    .topbar { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; }
     .left-controls { display:flex; gap:8px; align-items:center; }
     .btn-gray { background:#6c757d; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
     .btn-yellow { background:var(--yellow); color:#000; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
@@ -68,28 +65,19 @@
     .btn-blue { background:var(--blue); color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
 
     .menu-select { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--white); padding:6px 8px; border-radius:6px; }
-    .panel .title { font-size:16px; font-weight:700; }
+    .panel .title { font-size:18px; font-weight:700; }
 
     .description { color:var(--muted); font-size:14px; margin-bottom:10px; }
 
-    /* Records */
+    /* Records list */
     #recordsView .record-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:8px; background: rgba(255,255,255,0.03); margin-bottom:8px; word-break:break-word; }
     #recordsView .record-item .text { color:var(--white); flex:1; margin-right:10px; text-align:left; cursor:pointer; }
 
-    /* Bookmarks grid: 4 per row (恢復原本 grid) */
-    .bookmark-grid {
-      display:grid;
-      grid-template-columns: repeat(4, 1fr); /* 4 per row */
-      gap:10px;
-    }
-    .bookmark-card {
-      background: rgba(255,255,255,0.03); padding:10px; border-radius:8px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; position:relative;
-      min-height:110px;
-    }
+    /* Bookmarks: 4 per row grid (restored) */
+    .bookmark-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:10px; }
+    .bookmark-card { background: rgba(255,255,255,0.03); padding:10px; border-radius:8px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; position:relative; min-height:110px; }
     .bookmark-card img { width:64px; height:64px; border-radius:8px; object-fit:cover; background:#333; }
     .bookmark-name { font-size:13px; color:var(--white); text-align:center; word-break:break-word; }
-
-    /* select-mode visuals */
     .bookmark-card .select-checkbox { position:absolute; top:8px; right:8px; width:18px; height:18px; border-radius:4px; border:2px solid rgba(255,255,255,0.6); display:none; align-items:center; justify-content:center; color:#fff; font-weight:bold; }
     .bookmark-card.select-mode .select-checkbox { display:flex; }
     .bookmark-card.selected { outline:3px solid var(--red); }
@@ -97,7 +85,6 @@
     .remove-controls { display:flex; align-items:center; gap:10px; margin:10px 0; }
     .count-badge { background:var(--green); color:#fff; padding:6px 10px; border-radius:8px; font-weight:700; }
 
-    /* add form restored to vertical layout */
     .add-form { display:flex; flex-direction:column; gap:8px; padding:6px; border-radius:6px; background: rgba(255,255,255,0.02); margin-bottom:8px; }
     .add-form input[type="text"], .add-form input[type="file"] { padding:8px; border-radius:6px; border:none; color:var(--white); background:rgba(255,255,255,0.03); }
     .add-actions { display:flex; justify-content:flex-end; gap:8px; }
@@ -105,16 +92,20 @@
     @media (max-width:800px){ .bookmark-grid { grid-template-columns: repeat(3,1fr); } }
     @media (max-width:520px){ .bookmark-grid { grid-template-columns: repeat(2,1fr); } .search-container { max-width:360px; } }
 
-    .footer { position:fixed; left:0; right:0; bottom:18px; text-align:center; color:var(--white); font-size:14px; z-index:1; }
-    .footer a { color:var(--white); text-decoration:none; }
-    .version { margin-top:6px; font-size:13px; color:var(--muted); }
+    /* Footer */
+    .footer { position:absolute; bottom:20px; width:100%; text-align:center; font-size:16px; color:#fff; z-index:1; }
+    .footer a { color:#fff; text-decoration:none; }
+    .version { margin-top:5px; font-size:14px; }
   </style>
 </head>
 <body>
-  <div class="search-container" id="mainUI">
+  <!-- 主介面 (已恢復 0.6.3 樣式，標題與 subtitle 顯示) -->
+  <div class="search-container">
+    <h1>TNTExplorer 探索器</h1>
     <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
 
-    <div class="engine-select" aria-hidden="true">
+    <div class="engine-select">
+      <label for="engine" style="display:none;"></label>
       <select id="engine">
         <option value="https://www.google.com/search?num=70&udm=14&q=%s" selected>Google</option>
         <option value="https://www.bing.com/search?q=%s">Bing</option>
@@ -126,8 +117,9 @@
     <form id="searchForm">
       <div class="search-row">
         <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off" />
-        <button type="button" id="historyButton" title="探索與書籤">⧆</button>
+        <button type="button" id="historyButton">⧆</button>
       </div>
+
       <div class="button-row">
         <button type="button" id="translateButton">翻譯</button>
         <button type="button" id="goButton">前往</button>
@@ -137,7 +129,7 @@
     <button id="archiveButton">查看舊版網頁</button>
   </div>
 
-  <!-- overlay panel -->
+  <!-- 覆蓋式面板（探索記錄 / 書籤），寬度與 0.6.3 相同 -->
   <div id="overlay" class="overlay" aria-hidden="true">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
       <div class="topbar">
@@ -148,19 +140,18 @@
             <option value="records">探索記錄</option>
           </select>
 
-          <!-- 新增/移除只在書籤視圖可見，records 視圖不顯示 -->
           <button id="addBookmarkBtn" class="btn-yellow">新增</button>
           <button id="toggleRemoveModeBtn" class="btn-red">移除</button>
         </div>
         <div class="title" id="panelTitle">書籤</div>
       </div>
 
-      <!-- 一行描述（修正重複） -->
+      <!-- 描述（修正為只有一行） -->
       <div id="panelDescription">
         <p id="exploreDesc" class="description" style="display:none">查看你的搜尋、翻譯、前往網站等紀錄</p>
       </div>
 
-      <!-- bookmarks view -->
+      <!-- 書籤視圖 -->
       <div id="bookmarksView" class="content" style="display:block">
         <div class="muted" style="margin-bottom:6px">新增書籤須上傳圖示，否則無法新增</div>
 
@@ -182,7 +173,7 @@
         <div id="bookmarkGrid" class="bookmark-grid" aria-live="polite"></div>
       </div>
 
-      <!-- records view -->
+      <!-- 探索記錄視圖 -->
       <div id="recordsView" class="content" style="display:none">
         <div id="recordsList"></div>
       </div>
@@ -191,20 +182,20 @@
 
   <div class="footer">
     <a href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" id="supportLink" target="_blank">支持作者</a>
-    <div class="version">版本號: 0.7.1b</div>
+    <div class="version">版本號: 0.7.1c</div>
   </div>
 
   <script>
-    // Use the same RECORDS key as 0.6.3 mainline so old data isn't lost
+    // RECORDS key 回復為 0.6.3 使用的 key，避免因 key 改變導致舊紀錄看不到
     const STORAGE = { RECORDS: 'tntExplorerHistory', BOOKMARKS: 'tnt_explore_bookmarks' };
 
-    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key)||'[]'); } catch(e){ return []; } }
+    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
     function saveJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
     function uid(){ return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
     function normalizeKey(s){ return (s||'').trim().toLowerCase(); }
     function isLikelyURL(str){ return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(str); }
 
-    // UI refs (same as previous)
+    // UI refs
     const overlay = document.getElementById('overlay');
     const historyButton = document.getElementById('historyButton');
     const panelMenu = document.getElementById('panelMenu');
@@ -236,64 +227,45 @@
     let selectedBookmarks = new Set();
 
     /* -------------------------
-       Records (兼容舊格式)
-       - 舊版可能只存純字串陣列或 tntExplorerHistory as array of strings/objects.
-       - renderRecords 支援兩者，並確保每筆可點擊。
+       Records: 兼容舊格式 (array of strings or array of objects)
+       - renderRecords 會正確顯示舊紀錄文字並可點擊
        ------------------------- */
-    function loadRecords(){
-      const raw = loadJSON(STORAGE.RECORDS);
-      // Normalize to array of objects {id,text}
-      const normalized = raw.map(item => {
-        if(typeof item === 'string') return { id: uid(), text: item };
-        if(item && typeof item === 'object'){
-          if(item.text) return { id: item.id || uid(), text: item.text };
-          // handle object that might already be the string under other key
-          const maybeText = Object.values(item).find(v => typeof v === 'string');
-          return { id: item.id || uid(), text: maybeText || '' };
-        }
-        return { id: uid(), text: '' };
-      });
-      return normalized;
-    }
-    function saveRecords(arr){ saveJSON(STORAGE.RECORDS, arr); }
+    function loadRecordsRaw(){ return loadJSON(STORAGE.RECORDS); }
+
     function addRecord(text){
       if(!text || !text.trim()) return;
-      // preserve previous structure (if old stored as strings, we append string)
-      const existingRaw = loadJSON(STORAGE.RECORDS);
-      // if old structure is array of strings, keep strings; otherwise keep objects
-      const usesString = existingRaw.length === 0 || typeof existingRaw[0] === 'string';
+      const raw = loadRecordsRaw();
+      // if raw is empty or first item is string, keep string-array format
+      const usesString = raw.length === 0 || typeof raw[0] === 'string';
       if(usesString){
-        existingRaw.push(text);
-        saveJSON(STORAGE.RECORDS, existingRaw);
+        raw.push(text);
+        saveJSON(STORAGE.RECORDS, raw);
       } else {
-        existingRaw.push({ id: uid(), text });
-        saveJSON(STORAGE.RECORDS, existingRaw);
+        raw.push({ id: uid(), text });
+        saveJSON(STORAGE.RECORDS, raw);
       }
     }
 
     function renderRecords(){
-      // read raw to respect original format for older data
-      const raw = loadJSON(STORAGE.RECORDS);
-      // normalize for rendering
+      const raw = loadRecordsRaw();
+      // normalize to display entries as {id,text}
       const items = raw.map(it => {
         if(typeof it === 'string') return { id: uid(), text: it };
-        if(it && typeof it === 'object') return { id: it.id || uid(), text: it.text || (Object.values(it).find(v => typeof v==='string')||'') };
+        if(it && typeof it === 'object') return { id: it.id || uid(), text: it.text || (Object.values(it).find(v => typeof v==='string') || '') };
         return { id: uid(), text: '' };
       }).reverse();
 
       recordsList.innerHTML = '';
       if(items.length === 0){
-        const p = document.createElement('div'); p.className = 'muted'; p.textContent = ''; recordsList.appendChild(p); return;
+        const p = document.createElement('div'); p.className='muted'; p.textContent = ''; recordsList.appendChild(p); return;
       }
 
       items.forEach(item => {
         const row = document.createElement('div'); row.className = 'record-item';
         const t = document.createElement('div'); t.className = 'text'; t.textContent = item.text || '';
-        // clicking text fills query or navigates
         t.addEventListener('click', () => {
           if(!item.text) return;
-          // if looks like URL, open; else fill query input
-          if(isLikelyURL(item.text)) {
+          if(isLikelyURL(item.text)){
             const dest = item.text.match(/^https?:\/\//i) ? item.text : ('https://' + item.text);
             window.open(dest, '_blank');
           } else {
@@ -304,23 +276,22 @@
 
         const b = document.createElement('button'); b.className = 'btn-red'; b.textContent = '清除';
         b.addEventListener('click', () => {
-          // remove item from raw storage accurately
-          const rawBefore = loadJSON(STORAGE.RECORDS);
-          // remove first matching text instance (preserve other duplicates)
+          const rawBefore = loadRecordsRaw();
           const idx = rawBefore.findIndex(r => (typeof r==='string' && r === item.text) || (r && r.text === item.text));
-          if(idx !== -1) { rawBefore.splice(idx,1); saveRecords(rawBefore); renderRecords(); }
+          if(idx !== -1){ rawBefore.splice(idx,1); saveJSON(STORAGE.RECORDS, rawBefore); renderRecords(); }
         });
 
-        row.appendChild(t); row.appendChild(b); recordsList.appendChild(row);
+        row.appendChild(t); row.appendChild(b);
+        recordsList.appendChild(row);
       });
     }
 
     /* -------------------------
-       Bookmarks (same as prior mainline)
+       Bookmarks (same behavior)
        ------------------------- */
     function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
     function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
-    function addBookmark({name,url,icon}){
+    function addBookmark({name, url, icon}){
       if(!icon) return;
       const arr = loadBookmarks();
       const key = normalizeKey(name + '|' + (url||''));
@@ -332,8 +303,8 @@
     function renderBookmarks(){
       const arr = loadBookmarks();
       bookmarkGrid.innerHTML = '';
-      if(arr.length === 0){ const el = document.createElement('div'); el.className = 'muted'; el.textContent = ''; bookmarkGrid.appendChild(el); return; }
-      arr.forEach(b => {
+      if(arr.length === 0){ const el = document.createElement('div'); el.className='muted'; el.textContent=''; bookmarkGrid.appendChild(el); return; }
+      arr.forEach(b=>{
         const card = document.createElement('div'); card.className = 'bookmark-card'; card.dataset.id = b.id;
         const checkbox = document.createElement('div'); checkbox.className = 'select-checkbox'; checkbox.textContent = '✓';
         const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
@@ -342,8 +313,7 @@
 
         card.addEventListener('click', (e) => {
           if(removeMode){
-            if(selectedBookmarks.has(b.id)){ selectedBookmarks.delete(b.id); card.classList.remove('selected'); }
-            else { selectedBookmarks.add(b.id); card.classList.add('selected'); }
+            if(selectedBookmarks.has(b.id)){ selectedBookmarks.delete(b.id); card.classList.remove('selected'); } else { selectedBookmarks.add(b.id); card.classList.add('selected'); }
             selectedCount.textContent = String(selectedBookmarks.size);
           } else {
             if(b.url && b.url.trim()){
@@ -364,9 +334,9 @@
     }
 
     /* -------------------------
-       Panel open/close / view switching logic
-       - ensure add/remove buttons hidden in records view
-       - ensure single description line
+       Panel open/close / view switching
+       - ensure add/remove hidden in records view
+       - description appears once
        ------------------------- */
     function openPanel(defaultView='bookmarks'){ panelMenu.value = defaultView; switchView(defaultView); overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); }
     function closePanelFunc(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); exitRemoveMode(); }
@@ -377,7 +347,6 @@
     panelMenu.addEventListener('change', e => switchView(e.target.value));
     function switchView(view){
       exitRemoveMode();
-      // hide add/remove by default; only show in bookmarks view
       if(view === 'bookmarks'){
         bookmarksView.style.display = 'block';
         recordsView.style.display = 'none';
@@ -391,7 +360,6 @@
         recordsView.style.display = 'block';
         panelTitle.textContent = '探索記錄';
         exploreDesc.style.display = 'block';
-        // hide add/remove in records view
         addBookmarkBtn.style.display = 'none';
         toggleRemoveModeBtn.style.display = 'none';
         renderRecords();
@@ -400,7 +368,7 @@
 
     // add bookmark UI
     addBookmarkBtn.addEventListener('click', ()=>{
-      if(addForm.style.display === 'flex') {
+      if(addForm.style.display === 'flex'){
         addForm.style.display = 'none';
         addBookmarkBtn.textContent = '新增';
       } else {
@@ -429,7 +397,7 @@
     });
     function clearAddForm(){ iconFile.value=''; bookmarkName.value=''; bookmarkURL.value=''; }
 
-    // remove-mode
+    // remove-mode toggle
     toggleRemoveModeBtn.addEventListener('click', ()=> { if(!removeMode) enterRemoveMode(); else exitRemoveMode(); });
     function enterRemoveMode(){
       removeMode = true; selectedBookmarks.clear(); renderBookmarks();
@@ -446,7 +414,7 @@
       let arr = loadBookmarks(); arr = arr.filter(b => !selectedBookmarks.has(b.id)); saveBookmarks(arr); selectedBookmarks.clear(); exitRemoveMode(); renderBookmarks();
     });
 
-    // main actions: go/translate/archive — save record and navigate
+    // main actions: go/translate/archive (save record and navigate)
     function getInputVal(){ return queryInput.value.trim(); }
 
     function performGo(){
@@ -458,7 +426,7 @@
     function performTranslate(){
       const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; }
       addRecord(v);
-      if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); try { const u = new URL(dest); const host = u.hostname.replace(/\./g,'-') + '.translate.goog'; const final = `https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); } catch(e){ alert('無效的網址格式'); } }
+      if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); try{ const u = new URL(dest); const host = u.hostname.replace(/\./g,'-') + '.translate.goog'; const final = `https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); }catch(e){ alert('無效的網址格式'); } }
       else { const tran = `https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`; window.open(tran,'_blank'); }
     }
     function performArchive(){ const v = getInputVal(); if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; } addRecord(v); const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); const code = new Date().getFullYear() + '0000000000*'; window.open(`https://web.archive.org/web/${code}/${dest}`, '_blank'); }
@@ -468,20 +436,20 @@
     archiveButton.addEventListener('click', performArchive);
     document.getElementById('searchForm').addEventListener('submit', (e)=>{ e.preventDefault(); performGo(); });
 
-    // init: ensure bookmark and record data exist and title/support link visible
+    // support initialization
     function init(){
       if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
-      if(!localStorage.getItem(STORAGE.RECORDS)) saveRecords([]);
-      // ensure UI texts visible (fix title bug)
+      if(!localStorage.getItem(STORAGE.RECORDS)) saveJSON(STORAGE.RECORDS, []); // ensure key exists (preserve old)
       panelTitle.textContent = '書籤';
       document.getElementById('supportLink').setAttribute('href','https://www.youtube.com/@Minecraft_TryingTNH-db5pb');
       document.getElementById('supportLink').textContent = '支持作者';
       exitRemoveMode();
     }
 
-    // helper bookmark functions used above
+    // helper functions used above (re-declared to ensure availability)
+    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
+    function saveJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
     function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
-    function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
 
     init();
   </script>
