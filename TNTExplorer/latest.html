@@ -2,108 +2,89 @@
 <html lang="zh-TW">
 <head>
   <meta charset="utf-8"/>
-  <!-- prevent mobile auto-zoom and allow responsive control -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>TNTExplorer 探索器</title>
   <link rel="icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg" type="image/jpeg"/>
   <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
-
   <style>
     :root{
-      --orange:#ED732E; --black:#000; --white:#fff;
-      --muted:#bbb; --green:#28a745; --red:#dc3545; --blue:#007bff; --yellow:#ffd400;
+      --orange:#ED732E; --black:#000; --white:#fff; --muted:#bbb;
+      --green:#28a745; --red:#dc3545; --blue:#007bff; --yellow:#ffd400;
       --panel-bg: rgba(0,0,0,0.92); --overlay-bg: rgba(0,0,0,0.75);
     }
-
     @media (prefers-color-scheme: dark) {
       :root{ --white:#e6e6e6; --muted:#c2c2c2; --panel-bg: rgba(18,18,18,0.98); --overlay-bg: rgba(0,0,0,0.85); }
       body { background: linear-gradient(to bottom, #b95a20 0%, #b95a20 20%, #2f2f2f 20%, #2f2f2f 80%, #b95a20 80%, #b95a20 100%); }
     }
 
-    html,body{
-      margin:0; padding:0; height:100%; font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, var(--orange) 0%, var(--orange) 20%, var(--white) 20%, var(--white) 80%, var(--orange) 80%, var(--orange) 100%);
-      display:flex; align-items:center; justify-content:center; overflow-x:hidden;
+    html,body{height:100%;margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;-webkit-text-size-adjust:100%;}
+    body{
+      background: linear-gradient(to bottom, var(--orange) 0%, var(--orange)20%, var(--white)20%, var(--white)80%, var(--orange)80%, var(--orange)100%);
+      display:flex;align-items:center;justify-content:center;position:relative;overflow-x:hidden;
     }
 
-    /* --- 主介面 (恢復 0.6.3 主介面尺寸/排版) --- */
-    .search-container{
-      background:#000; color:var(--white);
-      width:90%; max-width:400px;
-      padding:20px 30px; border-radius:10px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.5);
-      text-align:center; z-index:1;
-    }
-    .search-container h1{ font-size:28px; margin:0 0 5px; }
-    .subtitle{ font-size:16px; margin:0 0 20px; opacity:0.8; font-style:italic; }
+    /* 主介面（維持 0.6.3） */
+    .search-container{background:#000;color:var(--white);width:90%;max-width:400px;padding:20px 30px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.5);text-align:center;z-index:1;}
+    .search-container h1{font-size:28px;margin:0 0 5px;}
+    .subtitle{font-size:16px;margin:0 0 20px;opacity:0.8;font-style:italic;}
+    .engine-select{ text-align:left;margin-bottom:12px;}
+    .engine-select select{ width:100%;padding:8px;font-size:16px;border:none;border-radius:6px;outline:none;}
+    .search-row{display:flex;align-items:center;margin-bottom:10px;}
+    .search-row input[type="text"]{flex:1;padding:10px;font-size:16px;border:none;border-radius:8px;outline:none;background:#111;color:var(--white);}
+    /* prevent mobile zoom by using font-size >=16px above and meta viewport */
+    #historyButton{width:40px;height:40px;margin-left:5px;background:var(--yellow);border:none;border-radius:5px;cursor:pointer;font-size:18px;line-height:1;}
+    .button-row{display:flex;justify-content:space-between;margin-bottom:10px;}
+    .button-row button{width:48%;padding:10px;font-size:16px;border:none;border-radius:8px;cursor:pointer;}
+    #translateButton{background:var(--green);color:#fff;}#translateButton:hover{background:#218838;}
+    #goButton{background:#0073e6;color:#fff;}#goButton:hover{background:#005bb5;}
+    #archiveButton{width:100%;padding:12px;font-size:16px;border:none;border-radius:8px;background:var(--red);color:#fff;cursor:pointer;}
+    #archiveButton:hover{background:#c82333;}
 
-    .engine-select{ text-align:left; margin-bottom:12px; }
-    .engine-select select{ width:100%; padding:8px; font-size:16px; border:none; border-radius:6px; outline:none; }
+    /* overlay panel (max-width restored to 500px) */
+    .overlay{display:none;position:fixed;inset:0;background:var(--overlay-bg);align-items:center;justify-content:center;z-index:1000;}
+    .overlay.active{display:flex;}
+    .panel{background:var(--panel-bg);color:var(--white);padding:18px;border-radius:8px;width:90%;max-width:500px;max-height:92vh;overflow:auto;box-sizing:border-box;}
 
-    .search-row{ display:flex; align-items:center; margin-bottom:10px; }
-    /* keep input font-size 16px to avoid mobile auto-zoom */
-    .search-row input[type="text"]{ flex:1; padding:10px; font-size:16px; border:none; border-radius:8px; outline:none; background:#111; color:var(--white); -webkit-text-size-adjust:100%; }
-    #historyButton{ width:40px; height:40px; margin-left:5px; background:var(--yellow); border:none; border-radius:5px; cursor:pointer; font-size:18px; line-height:1; }
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+    .left-controls{display:flex;gap:8px;align-items:center;}
+    .btn-gray{background:#fff;color:#000;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;} /* white return button style uses same class for top-return */
+    .btn-white{background:#fff;color:#000;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
+    .btn-yellow{background:var(--yellow);color:#000;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
+    .btn-red{background:var(--red);color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
+    .btn-blue{background:var(--blue);color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
 
-    .button-row{ display:flex; justify-content:space-between; margin-bottom:10px; }
-    .button-row button{ width:48%; padding:10px; font-size:16px; border:none; border-radius:8px; cursor:pointer; }
-    #translateButton{ background:var(--green); color:#fff; } #translateButton:hover{ background:#218838; }
-    #goButton{ background:#0073e6; color:#fff; } #goButton:hover{ background:#005bb5; }
+    .menu-select{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:6px 8px;border-radius:6px;}
+    .panel .title{font-size:18px;font-weight:700;}
 
-    #archiveButton{ width:100%; padding:12px; font-size:16px; border:none; border-radius:8px; background:var(--red); color:#fff; cursor:pointer; }
-    #archiveButton:hover{ background:#c82333; }
-
-    /* panel (max-width restored to 500px) */
-    .overlay{ display:none; position:fixed; inset:0; background:var(--overlay-bg); align-items:center; justify-content:center; z-index:1000; }
-    .overlay.active{ display:flex; }
-    .panel{ background:var(--panel-bg); color:var(--white); padding:20px; border-radius:8px; width:90%; max-width:500px; max-height:90vh; overflow:auto; box-sizing:border-box; }
-
-    .topbar{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
-    .left-controls{ display:flex; gap:8px; align-items:center; }
-    .btn-gray{ background:#6c757d; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    .btn-yellow{ background:var(--yellow); color:#000; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    .btn-white{ background:#fff; color:#000; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    .btn-red{ background:var(--red); color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    .btn-blue{ background:var(--blue); color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-
-    .menu-select{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--white); padding:6px 8px; border-radius:6px; }
-    .panel .title{ font-size:18px; font-weight:700; }
-
-    .description{ color:var(--muted); font-size:14px; margin-bottom:10px; }
+    .description{color:var(--muted);font-size:14px;margin-bottom:10px;}
 
     /* records */
-    #recordsView .record-item{ display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); margin-bottom:8px; word-break:break-word; }
-    #recordsView .record-item .text{ color:var(--white); flex:1; margin-right:10px; text-align:left; cursor:pointer; }
+    #recordsView .record-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);margin-bottom:8px;word-break:break-word;}
+    #recordsView .record-item .text{color:var(--white);flex:1;margin-right:10px;text-align:left;cursor:pointer;}
 
-    /* bookmarks: smaller icons and grid preserved 4 per row even on mobile by reducing card padding */
-    .bookmark-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:8px; }
-    .bookmark-card{ background: rgba(255,255,255,0.03); padding:6px; border-radius:8px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; position:relative; min-height:92px; }
-    /* smaller icon to allow 4 per row on small screens */
-    .bookmark-card img{ width:48px; height:48px; border-radius:8px; object-fit:cover; background:#333; }
-    .bookmark-name{ font-size:12px; color:var(--white); text-align:center; word-break:break-word; }
-    .bookmark-card .select-checkbox{ position:absolute; top:6px; right:6px; width:16px; height:16px; border-radius:4px; border:2px solid rgba(255,255,255,0.6); display:none; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:12px; }
-    .bookmark-card.select-mode .select-checkbox{ display:flex; }
-    .bookmark-card.selected{ outline:3px solid var(--red); }
+    /* bookmarks: smaller icons to allow 4-per-row on mobile */
+    .bookmark-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .bookmark-card{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;min-height:90px;}
+    .bookmark-card img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:#333;}
+    .bookmark-name{font-size:12px;color:var(--white);text-align:center;word-break:break-word;}
+    .bookmark-card .select-checkbox{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:4px;border:2px solid rgba(255,255,255,0.6);display:none;align-items:center;justify-content:center;color:#fff;font-weight:bold;}
+    .bookmark-card.select-mode .select-checkbox{display:flex;}
+    .bookmark-card.selected{outline:3px solid var(--red);}
 
-    .remove-controls{ display:flex; align-items:center; gap:10px; margin:8px 0; }
-    .count-badge{ background:var(--green); color:#fff; padding:6px 10px; border-radius:8px; font-weight:700; }
+    .remove-controls{display:flex;align-items:center;gap:10px;margin:8px 0;}
+    .count-badge{background:var(--green);color:#fff;padding:6px 10px;border-radius:8px;font-weight:700;}
 
-    .add-form{ display:flex; flex-direction:column; gap:8px; padding:6px; border-radius:6px; background: rgba(255,255,255,0.02); margin-bottom:8px; }
-    .add-form input[type="text"], .add-form input[type="file"]{ padding:8px; border-radius:6px; border:none; color:var(--white); background:rgba(255,255,255,0.03); font-size:14px; }
+    /* add form vertical */
+    .add-form{display:flex;flex-direction:column;gap:8px;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px;}
+    .add-form input[type="text"], .add-form input[type="file"]{padding:8px;border-radius:6px;border:none;color:var(--white);background:rgba(255,255,255,0.03);font-size:14px;}
 
-    @media (max-width:880px){
-      .bookmark-grid{ grid-template-columns: repeat(4,1fr); } /* still 4 columns */
-      .panel{ padding:16px; }
-      .search-container{ padding:16px 20px; }
-    }
-    @media (max-width:520px){
-      .bookmark-name{ font-size:11px; }
-      .panel{ padding:12px; max-width:98%; }
-    }
+    /* responsive grid adjustments */
+    @media (max-width:800px){ .bookmark-grid{grid-template-columns:repeat(4,1fr);} }
+    @media (max-width:520px){ .bookmark-grid{grid-template-columns:repeat(4,1fr);} .search-container{max-width:360px;} }
 
-    .footer{ position:fixed; left:0; right:0; bottom:18px; text-align:center; color:var(--white); font-size:14px; z-index:1; }
-    .footer a{ color:var(--white); text-decoration:none; }
-    .version{ margin-top:6px; font-size:13px; color:var(--muted); }
+    .footer{position:fixed;left:0;right:0;bottom:18px;text-align:center;color:var(--white);font-size:14px;z-index:1;}
+    .footer a{color:var(--white);text-decoration:none;}
+    .version{margin-top:6px;font-size:13px;color:var(--muted);}
   </style>
 </head>
 <body>
@@ -122,10 +103,9 @@
 
     <form id="searchForm">
       <div class="search-row">
-        <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off" inputmode="search" />
-        <button type="button" id="historyButton" title="探索與書籤">⧆</button>
+        <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off" inputmode="text" />
+        <button type="button" id="historyButton" aria-label="探索與書籤">⧆</button>
       </div>
-
       <div class="button-row">
         <button type="button" id="translateButton">翻譯</button>
         <button type="button" id="goButton">前往</button>
@@ -140,36 +120,36 @@
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
       <div class="topbar">
         <div class="left-controls">
-          <button id="closePanel" class="btn-gray">關閉</button>
+          <!-- top return button appears only in add-mode; default hidden -->
+          <button id="topReturn" class="btn-white" style="display:none">返回</button>
+
           <select id="panelMenu" class="menu-select" aria-label="選單位置">
             <option value="bookmarks">書籤</option>
             <option value="records">探索記錄</option>
           </select>
 
-          <!-- top add button becomes white "返回" in add-mode; visible only in bookmarks view -->
-          <button id="addBookmarkBtn" class="btn-yellow">新增</button>
-          <!-- top remove button becomes blue "完成" in remove-mode; visible only in bookmarks view -->
-          <button id="toggleRemoveModeBtn" class="btn-red">移除</button>
+          <!-- add/remove buttons: will be toggled (mutually exclusive) -->
+          <button id="addModeToggle" class="btn-yellow">新增</button>
+          <button id="removeModeToggle" class="btn-red">移除</button>
         </div>
         <div class="title" id="panelTitle">書籤</div>
       </div>
 
-      <div id="panelDescription">
-        <p id="exploreDesc" class="description" style="display:none">查看你的搜尋、翻譯、前往網站等紀錄</p>
-      </div>
+      <!-- single description line shown in records view -->
+      <div id="panelDescription"><p id="exploreDesc" class="description" style="display:none">查看你的搜尋、翻譯、前往網站等紀錄</p></div>
 
-      <!-- bookmarks view -->
+      <!-- BOOKMARKS VIEW -->
       <div id="bookmarksView" class="content" style="display:block">
         <div class="muted" style="margin-bottom:6px">新增書籤須上傳圖示，否則無法新增</div>
 
-        <!-- add form: when shown, top add button becomes white "返回"; bottom confirm is yellow "新增" -->
+        <!-- add form (vertical). topReturn shown when addMode true -->
         <div id="addForm" class="add-form" style="display:none">
           <input type="file" id="iconFile" accept="image/*"/>
           <input type="text" id="bookmarkName" placeholder="輸入書籤名"/>
           <input type="text" id="bookmarkURL" placeholder="輸入書籤網址"/>
           <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
-            <button class="btn-white" id="cancelAddTop">返回</button>
-            <button class="btn-yellow" id="confirmAdd">新增</button>
+            <button id="cancelAdd" class="btn-gray">取消</button>
+            <button id="confirmAdd" class="btn-yellow">新增</button>
           </div>
         </div>
 
@@ -182,8 +162,9 @@
         <div id="bookmarkGrid" class="bookmark-grid" aria-live="polite"></div>
       </div>
 
-      <!-- records view -->
+      <!-- RECORDS VIEW -->
       <div id="recordsView" class="content" style="display:none">
+        <p id="recordsDescription" class="description" style="margin-top:0">查看你的搜尋、翻譯、前往網站等紀錄</p>
         <div id="recordsList"></div>
       </div>
     </div>
@@ -198,12 +179,11 @@
     // storage keys
     const STORAGE = { RECORDS: 'tntExplorerHistory', BOOKMARKS: 'tnt_explore_bookmarks' };
 
-    // utils
-    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){ return []; } }
+    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch{ return []; } }
     function saveJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
     function uid(){ return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
-    function normalizeKey(s){ return (s||'').trim().toLowerCase(); }
-    function isLikelyURL(str){ return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(str); }
+    function normalize(s){ return (s||'').trim().toLowerCase(); }
+    function isLikelyURL(s){ return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(s); }
 
     // UI refs
     const overlay = document.getElementById('overlay');
@@ -212,100 +192,84 @@
     const panelTitle = document.getElementById('panelTitle');
     const bookmarksView = document.getElementById('bookmarksView');
     const recordsView = document.getElementById('recordsView');
-    const addBookmarkBtn = document.getElementById('addBookmarkBtn');
+    const addModeToggle = document.getElementById('addModeToggle');
+    const removeModeToggle = document.getElementById('removeModeToggle');
     const addForm = document.getElementById('addForm');
     const iconFile = document.getElementById('iconFile');
     const bookmarkName = document.getElementById('bookmarkName');
     const bookmarkURL = document.getElementById('bookmarkURL');
-    const cancelAddTop = document.getElementById('cancelAddTop');
+    const cancelAdd = document.getElementById('cancelAdd');
     const confirmAdd = document.getElementById('confirmAdd');
-    const bookmarkGrid = document.getElementById('bookmarkGrid');
+    const topReturn = document.getElementById('topReturn');
     const removeControls = document.getElementById('removeControls');
     const selectedCount = document.getElementById('selectedCount');
     const removeSelected = document.getElementById('removeSelected');
+    const bookmarkGrid = document.getElementById('bookmarkGrid');
     const recordsList = document.getElementById('recordsList');
-    const closePanel = document.getElementById('closePanel');
-    const toggleRemoveModeBtn = document.getElementById('toggleRemoveModeBtn');
+    const closePanelBtn = document.getElementById('closePanel');
     const exploreDesc = document.getElementById('exploreDesc');
-
     const engineSelect = document.getElementById('engine');
     const queryInput = document.getElementById('query');
     const goButton = document.getElementById('goButton');
     const translateButton = document.getElementById('translateButton');
     const archiveButton = document.getElementById('archiveButton');
 
-    let removeMode = false;
     let addMode = false;
+    let removeMode = false;
     let selectedBookmarks = new Set();
 
-    /* -------------------------
-       Records: dedupe on save (case-insensitive), keep latest
-       ------------------------- */
+    /* ---------------------------
+       Records: dedupe on add (case-insensitive), preserve new and remove old duplicates
+       Stored as array of strings for compatibility with 0.6.3
+       --------------------------- */
     function loadRecordsRaw(){ return loadJSON(STORAGE.RECORDS); }
     function saveRecordsRaw(arr){ saveJSON(STORAGE.RECORDS, arr); }
 
-    // add record with dedupe: remove existing equal (case-insensitive), then push new
     function addRecord(text){
       if(!text || !text.trim()) return;
       const raw = loadRecordsRaw();
-      // normalize structure: keep strings if original array uses strings, otherwise objects
-      const usesString = raw.length === 0 || typeof raw[0] === 'string';
-      // remove existing duplicates (case-insensitive)
-      const filtered = raw.filter(r => {
-        const val = (typeof r === 'string') ? r : (r && r.text ? r.text : '');
-        return normalizeKey(val) !== normalizeKey(text);
-      });
-      if(usesString) filtered.push(text);
-      else filtered.push({ id: uid(), text });
+      // dedupe case-insensitive: remove any existing strings equal ignoring case
+      const norm = normalize(text);
+      const filtered = raw.filter(r => !(typeof r === 'string' && normalize(r) === norm));
+      filtered.push(text);
       saveRecordsRaw(filtered);
     }
 
     function renderRecords(){
-      const raw = loadRecordsRaw();
-      const items = raw.map(it => {
-        if(typeof it === 'string') return { id: uid(), text: it };
-        if(it && typeof it === 'object') return { id: it.id || uid(), text: it.text || '' };
-        return { id: uid(), text: '' };
-      }).reverse();
-
+      const raw = loadRecordsRaw().slice().reverse();
       recordsList.innerHTML = '';
-      if(items.length === 0){
-        const p = document.createElement('div'); p.className = 'muted'; p.textContent = ''; recordsList.appendChild(p); return;
-      }
-
-      items.forEach(item => {
-        const row = document.createElement('div'); row.className = 'record-item';
-        const t = document.createElement('div'); t.className = 'text'; t.textContent = item.text || '';
-        // clicking record now fills search input (do NOT navigate)
+      if(raw.length === 0){ const el=document.createElement('div'); el.className='muted'; el.textContent=''; recordsList.appendChild(el); return; }
+      raw.forEach(item=>{
+        const text = (typeof item === 'string') ? item : (item && item.text) ? item.text : String(item);
+        const row = document.createElement('div'); row.className='record-item';
+        const t = document.createElement('div'); t.className='text'; t.textContent = text || '';
+        // clicking any record fills query input (no direct navigation)
         t.addEventListener('click', () => {
-          if(!item.text) return;
-          queryInput.value = item.text;
+          if(!text) return;
+          queryInput.value = text;
           overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
         });
-
-        const b = document.createElement('button'); b.className = 'btn-red'; b.textContent = '清除';
-        b.addEventListener('click', () => {
-          const rawBefore = loadRecordsRaw();
-          // remove first matching instance (string or object matching text)
-          const idx = rawBefore.findIndex(r => (typeof r === 'string' && r === item.text) || (r && r.text === item.text));
-          if(idx !== -1){ rawBefore.splice(idx,1); saveRecordsRaw(rawBefore); renderRecords(); }
+        const btn = document.createElement('button'); btn.className='btn-red'; btn.textContent='清除';
+        btn.addEventListener('click', () => {
+          const before = loadRecordsRaw();
+          const idx = before.findIndex(r => (typeof r==='string' && r === item) || (r && r.text === (item.text||item)));
+          if(idx !== -1){ before.splice(idx,1); saveRecordsRaw(before); renderRecords(); }
         });
-
-        row.appendChild(t); row.appendChild(b); recordsList.appendChild(row);
+        row.appendChild(t); row.appendChild(btn); recordsList.appendChild(row);
       });
     }
 
-    /* -------------------------
-       Bookmarks: add/remove/select mode handling
-       ------------------------- */
+    /* ---------------------------
+       Bookmarks
+       --------------------------- */
     function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
     function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
 
-    function addBookmark({name, url, icon}){
+    function addBookmark({name,url,icon}){
       if(!icon) return;
       const arr = loadBookmarks();
-      const key = normalizeKey(name + '|' + (url||''));
-      const filtered = arr.filter(b => normalizeKey(b.name + '|' + (b.url||'')) !== key);
+      const key = normalize(name + '|' + (url||''));
+      const filtered = arr.filter(b => normalize(b.name + '|' + (b.url||'')) !== key);
       filtered.push({ id: uid(), name, url, icon });
       saveBookmarks(filtered);
     }
@@ -315,19 +279,18 @@
       bookmarkGrid.innerHTML = '';
       if(arr.length === 0){ const el = document.createElement('div'); el.className='muted'; el.textContent=''; bookmarkGrid.appendChild(el); return; }
       arr.forEach(b=>{
-        const card = document.createElement('div'); card.className = 'bookmark-card'; card.dataset.id = b.id;
-        const checkbox = document.createElement('div'); checkbox.className = 'select-checkbox'; checkbox.textContent = '✓';
+        const card = document.createElement('div'); card.className='bookmark-card'; card.dataset.id = b.id;
+        const cb = document.createElement('div'); cb.className='select-checkbox'; cb.textContent='✓';
         const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
-        const name = document.createElement('div'); name.className = 'bookmark-name'; name.textContent = b.name || '';
-        card.appendChild(checkbox); card.appendChild(img); card.appendChild(name);
+        const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
+        card.appendChild(cb); card.appendChild(img); card.appendChild(name);
 
         card.addEventListener('click', () => {
           if(removeMode){
-            if(selectedBookmarks.has(b.id)){ selectedBookmarks.delete(b.id); card.classList.remove('selected'); }
-            else { selectedBookmarks.add(b.id); card.classList.add('selected'); }
+            if(selectedBookmarks.has(b.id)){ selectedBookmarks.delete(b.id); card.classList.remove('selected'); } else { selectedBookmarks.add(b.id); card.classList.add('selected'); }
             selectedCount.textContent = String(selectedBookmarks.size);
           } else {
-            // In bookmarks normal click should "前往" url or fill query if no url
+            // navigate if url, else fill input
             if(b.url && b.url.trim()){
               const dest = b.url.match(/^https?:\/\//i) ? b.url : ('https://' + b.url);
               window.open(dest, '_blank');
@@ -345,67 +308,72 @@
       selectedCount.textContent = String(selectedBookmarks.size || 0);
     }
 
-    /* -------------------------
+    /* ---------------------------
        Panel open/close and view switching
-       - add/remove buttons hidden in records view
-       - add/remove modes mutually exclusive
-       - closing panel exits modes
-       ------------------------- */
-    function openPanel(defaultView='bookmarks'){
-      panelMenu.value = defaultView;
-      switchView(defaultView);
-      overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
-    }
-    function closePanel(){
-      overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
-      exitAddMode(); exitRemoveMode();
-    }
+       --------------------------- */
+    function openPanel(defaultView='bookmarks'){ panelMenu.value = defaultView; switchView(defaultView); overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); }
+    function closePanel(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); exitAddMode(); exitRemoveMode(); }
     historyButton.addEventListener('click', ()=> openPanel('bookmarks'));
-    closePanel.addEventListener('click', closePanel);
-    overlay.addEventListener('click', e => { if(e.target === overlay) closePanel(); });
+    document.getElementById('panelMenu').addEventListener('change', (e)=> switchView(e.target.value));
+    document.getElementById('closePanel').addEventListener('click', closePanel);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closePanel(); });
 
-    panelMenu.addEventListener('change', e => switchView(e.target.value));
     function switchView(view){
+      // leaving panel closes modes
       exitAddMode(); exitRemoveMode();
       if(view === 'bookmarks'){
         bookmarksView.style.display = 'block';
         recordsView.style.display = 'none';
         panelTitle.textContent = '書籤';
         exploreDesc.style.display = 'none';
-        addBookmarkBtn.style.display = 'inline-block';
-        toggleRemoveModeBtn.style.display = 'inline-block';
+        addModeToggle.style.display = 'inline-block';
+        removeModeToggle.style.display = 'inline-block';
         renderBookmarks();
       } else {
         bookmarksView.style.display = 'none';
         recordsView.style.display = 'block';
         panelTitle.textContent = '探索記錄';
         exploreDesc.style.display = 'block';
-        addBookmarkBtn.style.display = 'none';
-        toggleRemoveModeBtn.style.display = 'none';
+        addModeToggle.style.display = 'none';
+        removeModeToggle.style.display = 'none';
         renderRecords();
       }
     }
 
-    /* -------------------------
-       Add mode handling
-       - top addBookmarkBtn becomes white "返回" when entering add-mode
-       - bottom confirmAdd is yellow "新增"
-       - in add-mode hide remove button
-       ------------------------- */
-    addBookmarkBtn.addEventListener('click', ()=>{
-      if(!addMode){
-        enterAddMode();
-      } else {
-        // top white "返回" acts as cancel
-        exitAddMode();
-      }
+    /* ---------------------------
+       Add mode (top white "返回", bottom yellow "新增")
+       - entering add mode hides remove button
+       - exiting restores
+       --------------------------- */
+    addModeToggle.addEventListener('click', ()=>{
+      if(!addMode) enterAddMode(); else exitAddMode();
     });
-    cancelAddTop.addEventListener('click', exitAddMode);
+    topReturn.addEventListener('click', ()=> exitAddMode());
+    cancelAdd.addEventListener('click', ()=> exitAddMode());
+    function enterAddMode(){
+      exitRemoveMode();
+      addMode = true;
+      addForm.style.display = 'flex';
+      topReturn.style.display = 'inline-block'; /* white "返回" */
+      addModeToggle.style.display = 'inline-block';
+      addModeToggle.textContent = '完成'; /* bottom button label will be changed to "新增" on confirm */
+      removeModeToggle.style.display = 'none';
+      confirmAdd.textContent = '新增';
+    }
+    function exitAddMode(){
+      addMode = false;
+      addForm.style.display = 'none';
+      topReturn.style.display = 'none';
+      addModeToggle.style.display = 'inline-block';
+      addModeToggle.textContent = '新增';
+      removeModeToggle.style.display = 'inline-block';
+      clearAddForm();
+    }
 
     confirmAdd.addEventListener('click', ()=>{
       const file = iconFile.files && iconFile.files[0];
-      const name = (bookmarkName.value || '').trim();
-      const url = (bookmarkURL.value || '').trim();
+      const name = (bookmarkName.value||'').trim();
+      const url = (bookmarkURL.value||'').trim();
       if(!file){ alert('必須上傳圖示才能新增書籤'); return; }
       if(!name || !url){ alert('請輸入書籤名與網址'); return; }
       const reader = new FileReader();
@@ -413,129 +381,96 @@
         addBookmark({ name, url, icon: evt.target.result });
         exitAddMode();
         renderBookmarks();
-        clearAddForm();
       };
       reader.readAsDataURL(file);
     });
-
-    function enterAddMode(){
-      addMode = true;
-      addForm.style.display = 'flex';
-      // top button becomes white "返回"
-      addBookmarkBtn.className = 'btn-white';
-      addBookmarkBtn.textContent = '返回';
-      // hide remove button while adding
-      toggleRemoveModeBtn.style.display = 'none';
-      // ensure remove-mode off
-      exitRemoveMode();
-    }
-    function exitAddMode(){
-      addMode = false;
-      addForm.style.display = 'none';
-      addBookmarkBtn.className = 'btn-yellow';
-      addBookmarkBtn.textContent = '新增';
-      toggleRemoveModeBtn.style.display = 'inline-block';
-      clearAddForm();
-    }
     function clearAddForm(){ iconFile.value=''; bookmarkName.value=''; bookmarkURL.value=''; }
 
-    /* -------------------------
-       Remove mode handling
+    /* ---------------------------
+       Remove mode
        - entering remove mode hides add button
-       - top remove button becomes blue "完成" when removing
-       - exiting remove mode restores add visibility
-       ------------------------- */
-    toggleRemoveModeBtn.addEventListener('click', ()=>{
+       - remove toggle becomes blue "完成" to exit
+       --------------------------- */
+    removeModeToggle.addEventListener('click', ()=>{
       if(!removeMode) enterRemoveMode(); else exitRemoveMode();
     });
-
     function enterRemoveMode(){
+      exitAddMode();
       removeMode = true;
       selectedBookmarks.clear();
-      renderBookmarks();
       removeControls.style.display = 'flex';
-      toggleRemoveModeBtn.className = 'btn-blue';
-      toggleRemoveModeBtn.textContent = '完成';
-      // hide add button while removing
-      addBookmarkBtn.style.display = 'none';
+      removeModeToggle.classList.remove('btn-red'); removeModeToggle.classList.add('btn-blue'); removeModeToggle.textContent = '完成';
+      addModeToggle.style.display = 'none';
+      renderBookmarks();
     }
     function exitRemoveMode(){
       removeMode = false;
       selectedBookmarks.clear();
-      renderBookmarks();
       removeControls.style.display = 'none';
-      toggleRemoveModeBtn.className = 'btn-red';
-      toggleRemoveModeBtn.textContent = '移除';
-      addBookmarkBtn.style.display = 'inline-block';
+      removeModeToggle.classList.remove('btn-blue'); removeModeToggle.classList.add('btn-red'); removeModeToggle.textContent = '移除';
+      addModeToggle.style.display = 'inline-block';
+      renderBookmarks();
     }
-
     removeSelected.addEventListener('click', ()=>{
       if(selectedBookmarks.size === 0){ alert('未選擇任何書籤'); return; }
-      let arr = loadBookmarks();
-      arr = arr.filter(b => !selectedBookmarks.has(b.id));
-      saveBookmarks(arr);
-      selectedBookmarks.clear();
-      exitRemoveMode();
-      renderBookmarks();
+      let arr = loadBookmarks(); arr = arr.filter(b => !selectedBookmarks.has(b.id)); saveBookmarks(arr); selectedBookmarks.clear(); exitRemoveMode(); renderBookmarks();
     });
 
-    /* -------------------------
-       Main actions: go / translate / archive
-       - addRecord uses dedupe (case-insensitive)
-       ------------------------- */
+    /* ---------------------------
+       Main actions: add record + navigation
+       --------------------------- */
     function getInputVal(){ return queryInput.value.trim(); }
-
-    function performGo(){
-      const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; }
-      addRecord(v);
-      if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i)? v : ('https://' + v); window.open(dest,'_blank'); }
-      else { const tmpl = engineSelect.value; window.open(tmpl.replace('%s', encodeURIComponent(v)), '_blank'); }
-    }
-
-    function performTranslate(){
-      const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; }
-      addRecord(v);
-      if(isLikelyURL(v)){
-        const dest = v.match(/^https?:\/\//i)? v : ('https://' + v);
-        try{ const u = new URL(dest); const host = u.hostname.replace(/\./g,'-') + '.translate.goog'; const final = `https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); }catch(e){ alert('無效的網址格式'); }
-      } else {
-        const tran = `https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`;
-        window.open(tran,'_blank');
-      }
-    }
-
-    function performArchive(){
-      const v = getInputVal(); if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; }
-      addRecord(v);
-      const dest = v.match(/^https?:\/\//i)? v : ('https://' + v);
-      const code = new Date().getFullYear() + '0000000000*';
-      window.open(`https://web.archive.org/web/${code}/${dest}`, '_blank');
-    }
-
+    function performGo(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i)? v : ('https://' + v); window.open(dest,'_blank'); } else { const tmpl = engineSelect.value; window.open(tmpl.replace('%s',encodeURIComponent(v)), '_blank'); } }
+    function performTranslate(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i)? v : ('https://' + v); try{ const u=new URL(dest); const host = u.hostname.replace(/\./g,'-') + '.translate.goog'; const final=`https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); }catch(e){ alert('無效的網址格式'); } } else { const tran=`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`; window.open(tran,'_blank'); } }
+    function performArchive(){ const v = getInputVal(); if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; } addRecord(v); const dest = v.match(/^https?:\/\//i)? v : ('https://' + v); const code = new Date().getFullYear() + '0000000000*'; window.open(`https://web.archive.org/web/${code}/${dest}`, '_blank'); }
     goButton.addEventListener('click', performGo);
     translateButton.addEventListener('click', performTranslate);
     archiveButton.addEventListener('click', performArchive);
     document.getElementById('searchForm').addEventListener('submit', (e)=>{ e.preventDefault(); performGo(); });
 
-    /* -------------------------
-       Init & helpers
-       ------------------------- */
+    /* ---------------------------
+       Init / helpers
+       --------------------------- */
+    function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
+    function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
+
+    function renderBookmarks(){ // exported earlier but ensure accessible
+      const arr = loadBookmarks();
+      bookmarkGrid.innerHTML = '';
+      if(arr.length === 0){ const el = document.createElement('div'); el.className='muted'; el.textContent=''; bookmarkGrid.appendChild(el); return; }
+      arr.forEach(b=>{
+        const card = document.createElement('div'); card.className='bookmark-card'; card.dataset.id = b.id;
+        const cb = document.createElement('div'); cb.className='select-checkbox'; cb.textContent='✓';
+        const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
+        const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
+        card.appendChild(cb); card.appendChild(img); card.appendChild(name);
+        card.addEventListener('click', ()=>{
+          if(removeMode){
+            if(selectedBookmarks.has(b.id)){ selectedBookmarks.delete(b.id); card.classList.remove('selected'); } else { selectedBookmarks.add(b.id); card.classList.add('selected'); }
+            selectedCount.textContent = String(selectedBookmarks.size);
+          } else {
+            if(b.url && b.url.trim()){ const dest = b.url.match(/^https?:\/\//i)? b.url : ('https://' + b.url); window.open(dest,'_blank'); } else { queryInput.value = b.name||''; overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); }
+          }
+        });
+        if(removeMode) card.classList.add('select-mode'); else card.classList.remove('select-mode');
+        if(selectedBookmarks.has(b.id)) card.classList.add('selected'); else card.classList.remove('selected');
+        bookmarkGrid.appendChild(card);
+      });
+      selectedCount.textContent = String(selectedBookmarks.size || 0);
+    }
+
+    // initialization
     function init(){
-      if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveJSON(STORAGE.BOOKMARKS, []);
-      if(!localStorage.getItem(STORAGE.RECORDS)) saveJSON(STORAGE.RECORDS, []);
-      exitAddMode(); exitRemoveMode();
-      panelTitle.textContent = '書籤';
+      if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
+      if(!localStorage.getItem(STORAGE.RECORDS)) saveRecordsRaw([]);
+      // ensure panel title and support link
+      document.getElementById('panelTitle').textContent = '書籤';
       document.getElementById('supportLink').setAttribute('href','https://www.youtube.com/@Minecraft_TryingTNH-db5pb');
       document.getElementById('supportLink').textContent = '支持作者';
+      // initial rendering
+      renderBookmarks();
     }
     init();
-
-    // accessibility: prevent keyboard zoom on iOS when focusing inputs by ensuring font-size>=16px (already set)
-    // Also prevent pinch-zoom via meta viewport above.
-
-    // Expose render functions so they can be called after external changes
-    window.renderBookmarks = renderBookmarks;
-    window.renderRecords = renderRecords;
   </script>
 </body>
 </html>
