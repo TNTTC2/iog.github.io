@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="referrer" content="origin"><meta name="theme-color" content="#fff"><meta name="viewport" content="width=device-width,initial-scale=1"><link id="pwa-manifest-placeholder" rel="manifest" href=""><script>window.RETOOL_FRONTEND_FAKE_BACKEND_MODE = false;
+      
+
+      // #PageVisibility
+      // Here we detect if user has suspended the browser page / tab since loading
+      // See https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+      window.RETOOL_PAGE_SUSPEND_DETECTED = document.visibilityState === 'hidden'
+      function _detectVisibilityChange() {
+        if (document.visibilityState === 'hidden') {
+          window.RETOOL_PAGE_SUSPEND_DETECTED = true
+          // Remove listener because we only detect it once
+          document.removeEventListener('visibilitychange', _detectVisibilityChange)
+        }
+      }
+      // Only listen for change if page is not already hidden
+      if (document.visibilityState === 'visible') {
+        document.addEventListener('visibilitychange', _detectVisibilityChange)
+      }</script><script>// https://stackoverflow.com/a/24103596
+      function _getCookie(name) {
+        var nameEq = (name += '=')
+        var ca = document.cookie.split(';')
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i]
+          while (c.charAt(0) === ' ') c = c.substring(1, c.length)
+          if (c.indexOf(nameEq) === 0) return c.substring(nameEq.length, c.length)
+        }
+      }
+
+      // Here we do an eager fetch of user data as a performance optimization. By doing the
+      // fetch here, in an inline script, we can fire it asap while the initial webpack
+      // bundle loads and evals. This is strictly for performance optimization and non-essential,
+      // if this fails to run or has errors then the normal application flow will handle the
+      // fetch for user data.
+
+      if (
+        !RETOOL_FRONTEND_FAKE_BACKEND_MODE &&
+        _getCookie('xsrfToken') && // presence of xsrf token means user is already authed
+        window.fetch !== undefined && // make sure fetch api is available
+        !new URL(location.origin).host.startsWith('login.') // avoid special login domain
+      ) {
+        window.RETOOL_USER_FETCH = fetch('/api/user', {
+          credentials: 'same-origin',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Relax-Login-Subdomain-Restrictions': false,
+            'X-Xsrf-Token': _getCookie('xsrfToken'),
+            'X-Retool-Client-Version': '3.306.0-391baca (Build 288865)',
+          },
+        })
+      }</script><script>function parseAsBool(envValue, defaultValue) {
+        if (envValue === 'true') {
+          return true
+        } else if (envValue === 'false') {
+          return false
+        } else {
+          return defaultValue
+        }
+      }
+
+      // Webpack uses slightly unconventional EJS templating which is why we need to duplicate this
+      // snippet. ViteJS does it the "right way" and will be the what we keep once migration to
+      // Vite is done, so lets just keep this duplicated for now.
+      
+      SANDBOX_DOMAIN = "https://retool-edge.com"
+      ALLOW_SAME_ORIGIN_OPTION = parseAsBool("true", false)
+      MAIN_DOMAIN = "retool.com"
+      SAML_ENABLED = parseAsBool("false", false)
+      CLIENT_ID = "716367306867-d861tjqj92gjb0uphcjt8gu2nvtf6e9t.apps.googleusercontent.com"
+      RESTRICTED_DOMAIN = ""
+      DISABLE_USER_PASS_LOGIN = parseAsBool("false", false)
+      INCLUDE_COOKIES_IN_API_CALLS = ""
+      VERSION_CONTROL_LOCKED = parseAsBool("false", false)
+      IS_ADMIN = parseAsBool("false", false)
+      WEBPACK_SHARED_BUILD_VERSION = "288865_391baca"
+      STATSD_HOST = "__STATSD_HOST__"
+      RETOOL_APP_VARIANT = 'vite'
+      console.log('Running ViteJS Retool app variant')
+      // To get replaced during vite prod build with hash filename
+      VITE_RUNTIME_HTML = 'runtime.ZTE5MDZl.html'
+      
+
+      // Eager fetch of global experiments. Since global experiments can affect rendering they
+      // should be loaded before initial render. Because of that it is best to start fetching
+      // as early as possible to avoid blocking the initial render.
+      window.RETOOL_EXPERIMENTS_ID_COOKIE_NAME = 'experimentsId'
+      const credentials = INCLUDE_COOKIES_IN_API_CALLS || 'same-origin'
+      if (_getCookie(window.RETOOL_EXPERIMENTS_ID_COOKIE_NAME) !== undefined) {
+        // Only make the request if the experiments id idempotency cookie in order to get
+        // deterministic values on each call
+        window.RETOOL_GLOBAL_EXPERIMENTS_FETCH = fetch('/api/experiments', {
+          credentials,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-Retool-Client-Version': '3.306.0-391baca (Build 288865)',
+          },
+        })
+      }
+
+      window.htmlLoadedAt = performance.now()</script><link rel="modulepreload" crossorigin="" href="https://retool-edge.com/assets_vjs/routeAssumptions-CoSRnCq6.js"><link rel="modulepreload" crossorigin="" href="https://retool-edge.com/assets_vjs/main-DBCPCgeW.js"><link rel="stylesheet" crossorigin="" href="css/main-CYEVdsHA.css"></head><body><script>var entrypointChunk = 'https://retool-edge.com/assets_vjs/src-index-a3XJ5rj2.js'</script><div id="root" style="height:100%"></div><div id="translationToolDetectionId" style="position:absolute;left:-9999px;top:-9999px;visibility:hidden;z-index:-100">This is some invisible text to see if a translation tool is being used</div><script></script><script>function errorHandler() {
+        var url = this._url
+        var retryCount
+        var storedRetryCount = localStorage.getItem('entrypoint-chunk-retry-count')
+        if (storedRetryCount !== null) {
+          retryCount = parseInt(storedRetryCount)
+        } else {
+          retryCount = 0
+        }
+        if (retryCount < 5) {
+          localStorage.setItem('entrypoint-chunk-retry-count', retryCount + 1)
+          window.location.reload()
+        }
+      }
+      function createScriptElement(url) {
+        var scriptTag = document.createElement('script')
+        scriptTag.onerror = errorHandler
+        scriptTag.type = 'module'
+        scriptTag.crossorigin = 'crossorigin'
+        scriptTag._url = url
+        scriptTag.src = url
+        scriptTag.setAttribute('data-marker', 'entrypoint-chunk')
+        return scriptTag
+      }
+      if (entrypointChunk !== undefined) {
+        document.body.appendChild(createScriptElement(entrypointChunk))
+      }</script><script>// Initialize the cache service worker
+      // This code is is intentionally in an inline script instead of the app code because it needs to properly resolve the relative URL for the service worker
+      // If done in the app code, relative links would resolve to the CDN domain
+      if ('serviceWorker' in navigator) {
+        
+        const swUrl = '/assets_vjs/serviceWorkers/cacheServiceWorker.js'
+        
+
+        // Regexed from service worker code to extract the Retool version
+        const retoolVersionForServiceWorker = '3.306.0-391baca (Build 288865)'
+
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register(swUrl, { type: 'module', scope: '/' }).catch(console.error)
+        })
+
+        /*
+        * If a user has been waiting for the page to load for longer than this timeout,
+        *  don't trigger a page refresh even if the cached HTML is stale.
+        */
+        const PAGE_REFRESH_TIMEOUT = 1000
+
+        // Listen for messages from the service worker to refresh the page (e.g. if different from cached page)
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (!(event.source instanceof ServiceWorker && event.source.scriptURL.endsWith(swUrl))) return;
+
+          if (event.data.type === 'REFRESH_PAGE') {
+            const fetchStartTime = event.data.fetchStartTime
+            console.log('New version detected')
+            if (Date.now() - fetchStartTime < PAGE_REFRESH_TIMEOUT) {
+              console.log('Loading latest version...')
+            }
+            window.location.reload()
+          }
+        })
+      }</script></body></html>
