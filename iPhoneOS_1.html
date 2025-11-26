@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iPhoneOS 1 - Functional Edition</title>
+    <title>iPhoneOS 1 - Ultimate Edition</title>
     <style>
         :root {
             --dock-height: 90px;
@@ -21,22 +21,45 @@
             display: flex; flex-direction: column; overflow: hidden;
             font-family: var(--system-font); color: black;
             user-select: none; -webkit-user-select: none;
+            overscroll-behavior: none;
         }
 
         /* --- UI Components --- */
         .status-bar {
-            height: var(--status-bar-height); background: linear-gradient(to bottom, #666 0%, #333 50%, #000 51%, #000 100%);
+            height: var(--status-bar-height);
+            background: linear-gradient(to bottom, #666 0%, #333 50%, #000 51%, #000 100%);
             display: flex; justify-content: space-between; align-items: center; padding: 0 6px;
             font-size: 12px; font-weight: bold; color: white; z-index: 1000; flex-shrink: 0;
         }
 
+        /* App Window Animations */
         .app-window {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 600; display: none; flex-direction: column;
-            animation: zoomIn 0.2s ease-out;
         }
-        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .app-opening { animation: zoomIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .app-closing { animation: zoomOut 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; }
 
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes zoomOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.8); opacity: 0; } }
+
+        /* Multitasking Tray */
+        #multitasking-tray {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 95px;
+            background: url('https://www.transparenttextures.com/patterns/dark-denim-3.png'), #222;
+            z-index: 2000; display: none; align-items: center; justify-content: flex-start;
+            padding: 0 10px; box-sizing: border-box; overflow-x: auto;
+            border-top: 1px solid #555; animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .tray-icon {
+            width: 58px; height: 58px; margin-right: 15px; flex-shrink: 0;
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+        }
+        .tray-icon .icon-box { box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        /* Standard Components */
         .nav-bar {
             height: 44px; display: flex; justify-content: center; align-items: center;
             font-weight: bold; font-size: 20px; flex-shrink: 0; position: relative;
@@ -50,23 +73,57 @@
             position: absolute; font-size: 12px; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold;
         }
         .nav-btn.left { left: 5px; } .nav-btn.right { right: 5px; }
-        .btn-default { background: linear-gradient(#f9f9f9, #d0d0d0); border: 1px solid #999; color: black; }
-        .btn-blue { background: linear-gradient(#4a7fb5, #26558b); border: 1px solid #1a3e66; color: white; }
+        .btn-style-default { background: linear-gradient(#f9f9f9, #d0d0d0); border: 1px solid #999; color: black; }
+        .btn-style-blue { background: linear-gradient(#4a7fb5, #26558b); border: 1px solid #1a3e66; color: white; }
 
-        /* Tabs */
         .tab-bar {
             height: 49px; background: linear-gradient(to bottom, #2d2d2d, #000);
-            display: flex; justify-content: space-around; align-items: center; flex-shrink: 0;
-            border-top: 1px solid #444;
+            display: flex; justify-content: space-around; align-items: center; flex-shrink: 0; border-top: 1px solid #444;
         }
         .tab-item { width: 100%; display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; cursor: pointer; padding-top: 2px;}
         .tab-item.active { background: radial-gradient(circle at bottom, rgba(255,255,255,0.15), transparent 70%); color: #fff; }
         .tab-icon { font-size: 24px; margin-bottom: 1px; }
 
-        /* Main Display */
-        #main-display { flex-grow: 1; position: relative; overflow: hidden; background: #000; }
+        .list-view { list-style: none; padding: 0; margin: 0; background: white; flex-grow: 1; overflow-y: auto; }
+        .list-group-bg { background: var(--stripe-bg); }
+        .list-item {
+            padding: 12px 15px; border-bottom: 1px solid #e0e0e0;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 18px; font-weight: bold; background: white; color: #000; cursor: pointer;
+        }
+        .list-item.group { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; margin-top: 20px; }
+        .list-item:active { background: #027afe; color: white; }
+        .arrow { color: #ccc; font-weight: bold; font-family: monospace; }
+        .list-item:active .arrow { color: white; }
 
-        /* Springboard */
+        /* Lock Screen */
+        #lock-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/8/8c/Earth_Western_Hemisphere_transparent_background.png') no-repeat center 30%, #000;
+            background-size: contain; z-index: 900;
+            display: flex; flex-direction: column; align-items: center;
+            transition: transform 0.4s ease-out; color: white;
+        }
+        .lock-time { font-size: 80px; font-weight: 100; margin-top: 15%; line-height: 1; font-family: "Helvetica", sans-serif; letter-spacing: -2px;}
+        .lock-date { font-size: 18px; margin-top: 10px; }
+        .slider-container {
+            position: absolute; bottom: 80px; width: 80%; max-width: 300px; height: 50px;
+            background: #111; border-radius: 25px; border: 1px solid #444;
+            display: flex; align-items: center; overflow: hidden;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,1);
+        }
+        .slider-text { width: 100%; text-align: center; color: #666; font-size: 22px; animation: shine 3s infinite; pointer-events: none;}
+        .slider-knob {
+            width: 46px; height: 46px; border-radius: 50%;
+            background: linear-gradient(to bottom, #eee 0%, #aaa 100%); 
+            position: absolute; left: 2px;
+            display: flex; justify-content: center; align-items: center; color: #333; font-size: 24px; cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 10;
+        }
+        @keyframes shine { 0%,100% { color: #555; } 50% { color: #fff; } }
+
+        /* Home & Dock */
+        #main-display { flex-grow: 1; position: relative; overflow: hidden; background: #000; }
         #home-screen { width: 100%; height: 100%; display: flex; flex-direction: column; padding-top: 15px; background: #000; }
         .grid-container {
             flex-grow: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, min-content);
@@ -87,7 +144,8 @@
         .app-name { font-size: 11px; margin-top: 4px; color: #ddd; text-align: center; font-weight: bold; text-shadow: 0 1px 2px #000; }
 
         .dock {
-            height: var(--dock-height); background: linear-gradient(to bottom, rgba(140,140,140,0.4), rgba(0,0,0,0.9));
+            height: var(--dock-height);
+            background: linear-gradient(to bottom, rgba(140,140,140,0.4), rgba(0,0,0,0.9));
             border-top: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-evenly; align-items: center;
             position: relative; perspective: 600px; flex-shrink: 0; z-index: 10;
         }
@@ -97,7 +155,6 @@
             transform: rotateX(40deg) scaleY(1.3) translateY(5px); transform-origin: bottom; z-index: -1; opacity: 0.6;
         }
 
-        /* Home Button */
         #home-area {
             height: var(--home-area-height); background: #111; border-top: 1px solid #333;
             display: flex; justify-content: center; align-items: center; flex-shrink: 0;
@@ -108,9 +165,9 @@
             display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
         .home-button .square { width: 20px; height: 20px; border: 2px solid #777; border-radius: 4px; }
+        .home-button:active { background: #111; }
 
-        /* Specific App Styles */
-        
+        /* Specific Apps */
         /* Camera */
         #camera-video { width: 100%; height: 100%; object-fit: cover; }
         .camera-controls { height: 100px; background: url('https://www.transparenttextures.com/patterns/brushed-alum.png'), #111; display: flex; justify-content: center; align-items: center; position: absolute; bottom: 0; width: 100%; z-index: 10;}
@@ -119,9 +176,30 @@
         
         /* Photos */
         .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 2px; overflow-y: auto; flex-grow: 1; align-content: flex-start; }
-        .photo-thumb { aspect-ratio: 1; background: #ddd; background-size: cover; background-position: center; border: 1px solid #fff;}
+        .photo-thumb { aspect-ratio: 1; background: #ddd; background-size: cover; background-position: center; border: 1px solid #fff; cursor: pointer;}
+        #photo-viewer {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 2000; flex-direction: column;
+        }
+        #viewer-img { flex-grow: 1; width: 100%; height: 100%; object-fit: contain; }
+        .share-btn { font-size: 24px; cursor: pointer; color: #027afe; }
 
-        /* Clock - Timer */
+        /* YouTube */
+        .yt-list-item { display: flex; gap: 10px; padding: 10px; border-bottom: 1px solid #ccc; cursor: pointer; }
+        .yt-thumb { width: 120px; height: 90px; background: #000; display: flex; align-items: center; justify-content: center; color: white; position: relative;}
+        .yt-thumb::after { content: '▶'; font-size: 24px; opacity: 0.8; }
+        .yt-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .yt-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .yt-meta { font-size: 12px; color: #666; }
+        #yt-player-container { position: absolute; top: 44px; left: 0; width: 100%; bottom: 49px; background: #000; display: none; z-index: 50; }
+
+        /* Stocks */
+        .stock-row { background: #111; color: white; border-bottom: 1px solid #333; padding: 15px; display: flex; justify-content: space-between; align-items: center; height: 50px; box-sizing: border-box;}
+        .stock-val-box { padding: 5px 10px; border-radius: 5px; font-weight: bold; width: 70px; text-align: right; font-size: 14px; text-shadow: 0 -1px 0 rgba(0,0,0,0.3);}
+        .bg-green { background: linear-gradient(#4cd964, #3cb04f); } 
+        .bg-red { background: linear-gradient(#ff3b30, #c02a21); }
+
+        /* Clock */
         .timer-picker { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: #fff; flex-direction: column; gap: 20px; }
         .time-inputs { display: flex; gap: 10px; align-items: center; font-size: 24px; }
         .time-input { width: 60px; height: 60px; font-size: 30px; text-align: center; border: 1px solid #ccc; border-radius: 10px; background: #eee;}
@@ -129,15 +207,39 @@
         .timer-btn { width: 150px; height: 50px; background: #4cd964; border-radius: 10px; color: white; font-size: 20px; font-weight: bold; border: none; cursor: pointer; }
         .timer-btn.stop { background: #ff3b30; }
 
-        /* Safari */
-        .url-bar { background: #c5ccd4; padding: 8px; border-bottom: 1px solid #888; display: flex; gap: 5px; }
-        .url-input { flex-grow: 1; border-radius: 15px; border: 1px solid #999; padding: 5px 10px; font-size: 14px; outline: none; }
-        #safari-frame { flex-grow: 1; border: none; background: white; }
-        
-        /* Maps */
-        #google-map { flex-grow: 1; border: none; }
+        /* Weather */
+        .weather-bg { background: linear-gradient(to bottom, #1d3356 0%, #3e6aa8 100%); color: white; flex-grow: 1; display: flex; flex-direction: column; align-items: center; padding-top: 40px; position: relative;}
+        .weather-card { width: 100px; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
+        .yahoo-logo { position: absolute; bottom: 10px; left: 10px; font-size: 10px; opacity: 0.8; font-weight: bold;}
 
-        /* iPod */
+        /* Calculator */
+        .calc-display { background: #000; color: #fff; font-size: 56px; text-align: right; padding: 10px 20px; height: 90px; font-family: monospace; line-height: 90px;}
+        .calc-pad { display: grid; grid-template-columns: repeat(4, 1fr); flex-grow: 1; }
+        .calc-btn { background: linear-gradient(#fff, #dcdcdc); border: 1px solid #888; font-size: 26px; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+        .calc-btn.op { background: linear-gradient(#f9b33b, #e08f18); color: white; border-color: #ba7410; text-shadow: 0 -1px 0 rgba(0,0,0,0.3);}
+        .calc-btn:active { background: #bbb; }
+        .calc-btn.op:active { background: #bf7811; }
+
+        /* Phone Keypad (Restored) */
+        .phone-display { height: 80px; background: white; display: flex; justify-content: center; align-items: center; font-size: 32px; border-bottom: 1px solid #999; }
+        .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px 30px; background: #e8e8e8; flex-grow: 1; }
+        .key-circle { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(#fdfdfd, #bbbbbb); border: 1px solid #777; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: auto; font-size: 28px; font-weight: bold; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.4);}
+        .key-circle:active { background: #222; color: #fff; border-color: #000;}
+        .key-circle:active .key-sub { color: #ccc; }
+        .key-sub { font-size: 9px; color: #555; font-weight: normal; margin-top: -3px; letter-spacing: 1px; }
+        .call-btn { grid-column: span 3; background: linear-gradient(#57e671, #28a745); color: white; border-radius: 12px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: bold; margin-top: 10px; cursor: pointer; border: 1px solid #208035; text-shadow: 0 -1px 0 rgba(0,0,0,0.3); box-shadow: 0 2px 3px rgba(0,0,0,0.3);}
+
+        /* Notes & Calendar & Others */
+        .notes-paper { background: #fdfeb6; flex-grow: 1; padding: 20px 40px 20px 20px; font-family: "Marker Felt", "Comic Sans MS", cursive; font-size: 22px; line-height: 30px; background-image: linear-gradient(#f1f1d4 1px, transparent 1px); background-size: 100% 30px; border: none; outline: none; resize: none; color: #333; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 5px; text-align: center; gap: 1px; background: #ccc; }
+        .cal-cell { aspect-ratio: 1/1; background: #fff; display: flex; padding: 2px; font-size: 14px; font-weight: bold; color: #333; }
+        .cal-cell.today { background: #000; color: #fff; }
+        
+        /* Safari (Restored) */
+        .safari-bar { background: #c5ccd4; padding: 8px; border-bottom: 1px solid #888; display: flex; gap: 5px; align-items: center;}
+        .url-input { flex-grow: 1; border-radius: 15px; border: 1px solid #999; padding: 5px 10px; font-size: 14px; outline: none; }
+        iframe { flex-grow: 1; border: none; background: #eee; }
+
         .ipod-file-input { display: none; }
         .ipod-import-btn { margin-top: 10px; padding: 10px 20px; background: #333; color: #fff; border: 1px solid #555; border-radius: 5px; cursor: pointer; font-size: 12px; }
 
@@ -153,6 +255,16 @@
 
     <div id="main-display">
         
+        <!-- Lock Screen -->
+        <div id="lock-screen">
+            <div class="lock-time" id="lock-time">9:41</div>
+            <div class="lock-date" id="lock-date">Tuesday, January 9</div>
+            <div class="slider-container" id="slider-track">
+                <div class="slider-text">slide to unlock</div>
+                <div class="slider-knob" id="slider-knob">➜</div>
+            </div>
+        </div>
+
         <div id="home-screen">
             <div class="grid-container">
                 <div class="app-icon" onclick="openApp('sms')"><div class="icon-box" style="background:#4cd964;">💬</div><div class="app-name">Text</div></div>
@@ -181,6 +293,7 @@
             </div>
         </div>
 
+        <!-- Camera -->
         <div id="app-camera" class="app-window" style="background:#000;">
             <video id="camera-video" autoplay playsinline muted></video>
             <div class="camera-controls">
@@ -189,76 +302,214 @@
             <canvas id="camera-canvas" style="display:none;"></canvas>
         </div>
 
+        <!-- Photos -->
         <div id="app-photos" class="app-window">
             <div class="nav-bar black">Camera Roll</div>
             <div class="photo-grid" id="photo-gallery">
-                <div class="photo-thumb" style="background-color:#ccc;"></div>
-                <div class="photo-thumb" style="background-color:#999;"></div>
+                <div class="photo-thumb" style="background-color:#ccc;" onclick="viewPhoto(null, '#ccc')"></div>
+                <div class="photo-thumb" style="background-color:#999;" onclick="viewPhoto(null, '#999')"></div>
             </div>
             <div class="tab-bar">
                 <div class="tab-item active"><span class="tab-icon">🖼</span>Photos</div>
                 <div class="tab-item"><span class="tab-icon">📁</span>Albums</div>
             </div>
+            <!-- Full Screen Viewer -->
+            <div id="photo-viewer">
+                <div style="height:44px; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:space-between; padding:0 10px; color:white; position:absolute; top:0; width:100%; box-sizing:border-box;">
+                    <div style="font-weight:bold; cursor:pointer;" onclick="closePhotoViewer()">Done</div>
+                    <div>1 of 1</div>
+                    <div></div>
+                </div>
+                <img id="viewer-img" src="">
+                <div style="height:44px; background:rgba(0,0,0,0.6); position:absolute; bottom:0; width:100%; display:flex; justify-content:space-around; align-items:center; color:white;">
+                    <span class="share-btn" onclick="sharePhoto()">📤</span>
+                </div>
+            </div>
         </div>
 
+        <!-- YouTube -->
+        <div id="app-youtube" class="app-window" style="background:#fff;">
+            <div class="nav-bar">YouTube</div>
+            <div class="list-view">
+                <div class="yt-list-item" onclick="playVideo('VQKMoT-6XSg')">
+                    <div class="yt-thumb" style="background: url('https://img.youtube.com/vi/VQKMoT-6XSg/0.jpg') center/cover;"></div>
+                    <div class="yt-info">
+                        <div class="yt-title">iPhone Unveiling</div>
+                        <div class="yt-meta">Steve Jobs • 2007</div>
+                    </div>
+                </div>
+                <div class="yt-list-item" onclick="playVideo('MnrJzXM7a6o')">
+                    <div class="yt-thumb" style="background: url('https://img.youtube.com/vi/MnrJzXM7a6o/0.jpg') center/cover;"></div>
+                    <div class="yt-info">
+                        <div class="yt-title">Hello</div>
+                        <div class="yt-meta">Apple Commercial</div>
+                    </div>
+                </div>
+            </div>
+            <div id="yt-player-container">
+                <iframe id="yt-iframe" width="100%" height="100%" src="" frameborder="0" allowfullscreen></iframe>
+                <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); color:white; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="closeVideo()">Done</div>
+            </div>
+            <div class="tab-bar">
+                <div class="tab-item active"><span class="tab-icon">★</span>Featured</div>
+                <div class="tab-item"><span class="tab-icon">🔍</span>Search</div>
+                <div class="tab-item"><span class="tab-icon">...</span>More</div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div id="app-settings" class="app-window">
+            <div class="nav-bar">Settings</div>
+            <div class="list-view list-group-bg">
+                <div class="list-item group">
+                    <span>✈️ Airplane Mode</span>
+                    <div style="width:50px;height:24px;border:1px solid #999;border-radius:12px;background:#fff;position:relative;"><div style="width:22px;height:22px;background:white;border:1px solid #999;border-radius:50%;box-shadow:0 1px 2px rgba(0,0,0,0.3);"></div></div>
+                </div>
+                <div class="list-item"><span>Wi-Fi</span><span class="arrow">Not Connected ></span></div>
+                <div class="list-item group"><span>General</span><span class="arrow">></span></div>
+                <div class="list-item"><span>Sounds</span><span class="arrow">></span></div>
+                <div class="list-item"><span>Brightness</span><span class="arrow">></span></div>
+            </div>
+        </div>
+
+        <!-- Maps -->
+        <div id="app-maps" class="app-window">
+            <div class="nav-bar blue">
+                <div class="nav-btn left btn-style-default">Search</div>
+                Maps
+                <div class="nav-btn right btn-style-default">Directions</div>
+            </div>
+            <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-74.02038574218751%2C40.69654185768801%2C-73.95309448242189%2C40.73036495818956&amp;layer=mapnik&amp;marker=40.71345686016149%2C-73.98674011230469"></iframe>
+            <div class="tab-bar">
+                <div class="tab-item active"><span class="tab-icon">🔍</span>Search</div>
+                <div class="tab-item"><span class="tab-icon">↱</span>Directions</div>
+            </div>
+        </div>
+
+        <!-- iPod -->
+        <div id="app-ipod" class="app-window">
+            <div class="nav-bar black">Now Playing</div>
+            <div style="flex-grow:1; background:#000; color:white; display:flex; flex-direction:column; align-items:center; padding-top:20px;">
+                <div style="width:200px; height:200px; background:linear-gradient(#333,#111); border:1px solid #444; display:flex; justify-content:center; align-items:center; font-size:60px; box-shadow:0 5px 15px rgba(255,255,255,0.1);">🎵</div>
+                <div style="text-align:center; margin-top:20px;">
+                    <h3 id="ipod-title" style="margin:0;">No Music Selected</h3>
+                    <p id="ipod-artist" style="color:#999; margin:5px;">Tap below to import</p>
+                </div>
+                <label class="ipod-import-btn">
+                    Import Audio (MP3/M4A)
+                    <input type="file" class="ipod-file-input" accept="audio/*, .m4a" onchange="loadAudio(this)">
+                </label>
+                <audio id="audio-player" controls style="margin-top:20px; width:80%;"></audio>
+            </div>
+            <div class="tab-bar">
+                <div class="tab-item active"><span class="tab-icon">🎵</span>Music</div>
+                <div class="tab-item"><span class="tab-icon">🎤</span>Artists</div>
+                <div class="tab-item"><span class="tab-icon">💿</span>Albums</div>
+                <div class="tab-item"><span class="tab-icon">...</span>More</div>
+            </div>
+        </div>
+
+        <!-- Clock -->
         <div id="app-clock" class="app-window">
-            <div class="nav-bar black" id="clock-header">Timer</div>
+            <div class="nav-bar black" id="clock-header">World Clock</div>
             
-            <div id="clock-view-timer" class="timer-picker">
+            <div id="clock-view-timer" class="timer-picker" style="display:none;">
                 <div class="time-inputs" id="timer-inputs">
-                    <div>
-                        <input type="number" id="timer-h" class="time-input" value="0" min="0" max="23"> H
-                    </div>
-                    <div>
-                        <input type="number" id="timer-m" class="time-input" value="1" min="0" max="59"> M
-                    </div>
+                    <div><input type="number" id="timer-h" class="time-input" value="0" min="0" max="23"> H</div>
+                    <div><input type="number" id="timer-m" class="time-input" value="1" min="0" max="59"> M</div>
                 </div>
                 <div id="timer-countdown" class="timer-display">00:00:00</div>
                 <button class="timer-btn" id="timer-toggle-btn" onclick="toggleTimer()">Start Timer</button>
             </div>
 
-            <div id="clock-view-other" style="flex-grow:1; display:none; justify-content:center; align-items:center;">
-                Feature not implemented
-            </div>
-
-            <div class="tab-bar">
-                <div class="tab-item" onclick="switchClockTab('world')"><span class="tab-icon">🌍</span>World Clock</div>
-                <div class="tab-item" onclick="switchClockTab('alarm')"><span class="tab-icon">⏰</span>Alarm</div>
-                <div class="tab-item" onclick="switchClockTab('stopwatch')"><span class="tab-icon">⏱</span>Stopwatch</div>
-                <div class="tab-item active" onclick="switchClockTab('timer')"><span class="tab-icon">⏳</span>Timer</div>
-            </div>
-        </div>
-
-        <div id="app-ipod" class="app-window">
-            <div class="nav-bar black">Now Playing</div>
-            <div style="flex-grow:1; background:#000; color:white; display:flex; flex-direction:column; align-items:center; padding-top:20px;">
-                <div style="width:200px; height:200px; background:linear-gradient(#333,#111); border:1px solid #444; display:flex; justify-content:center; align-items:center; font-size:60px; box-shadow:0 5px 15px rgba(255,255,255,0.1);">🎵</div>
-                
-                <div style="text-align:center; margin-top:20px;">
-                    <h3 id="ipod-title" style="margin:0;">No Music Selected</h3>
-                    <p id="ipod-artist" style="color:#999; margin:5px;">Tap below to import</p>
+            <div id="clock-view-world" style="flex-grow:1; display:flex; background:#fff; flex-direction:column;">
+                <div class="list-view">
+                    <div class="list-item">
+                        <div>New York<br><span style="font-size:12px; color:#999;">Today</span></div>
+                        <div id="ny-time-display">--:--</div>
+                    </div>
+                    <div class="list-item">
+                        <div>Cupertino<br><span style="font-size:12px; color:#999;">Today</span></div>
+                        <div id="ca-time-display">--:--</div>
+                    </div>
+                    <div class="list-item">
+                        <div>London<br><span style="font-size:12px; color:#999;">Today</span></div>
+                        <div id="ln-time-display">--:--</div>
+                    </div>
                 </div>
-                
-                <label class="ipod-import-btn">
-                    Import MP3
-                    <input type="file" class="ipod-file-input" accept="audio/*" onchange="loadAudio(this)">
-                </label>
-
-                <audio id="audio-player" controls style="margin-top:20px; width:80%;"></audio>
             </div>
+
             <div class="tab-bar">
-                <div class="tab-item"><span class="tab-icon">📄</span>Playlists</div>
-                <div class="tab-item"><span class="tab-icon">🎤</span>Artists</div>
-                <div class="tab-item"><span class="tab-icon">🎵</span>Songs</div>
-                <div class="tab-item"><span class="tab-icon">📀</span>Videos</div>
-                <div class="tab-item active"><span class="tab-icon">...</span>More</div>
+                <div class="tab-item active" id="tab-world" onclick="switchClockTab('world')"><span class="tab-icon">🌍</span>World Clock</div>
+                <div class="tab-item"><span class="tab-icon">⏰</span>Alarm</div>
+                <div class="tab-item"><span class="tab-icon">⏱</span>Stopwatch</div>
+                <div class="tab-item" id="tab-timer" onclick="switchClockTab('timer')"><span class="tab-icon">⏳</span>Timer</div>
             </div>
         </div>
 
+        <!-- Stocks -->
+        <div id="app-stocks" class="app-window" style="background:#000;">
+            <div class="nav-bar black">Stocks<div class="nav-btn right btn-style-default">ℹ️</div></div>
+            <div style="background:#111; color:white;">
+                <div class="stock-row">
+                    <div><b>AAPL</b><br><span style="font-size:12px; color:#999;">Apple Inc.</span></div>
+                    <div class="stock-val-box bg-green">+4.1%</div>
+                </div>
+                <div class="stock-row">
+                    <div><b>GOOG</b><br><span style="font-size:12px; color:#999;">Google Inc.</span></div>
+                    <div class="stock-val-box bg-red">-0.2%</div>
+                </div>
+                <div class="stock-row">
+                    <div><b>DJIA</b><br><span style="font-size:12px; color:#999;">Dow Jones</span></div>
+                    <div class="stock-val-box bg-green">+0.5%</div>
+                </div>
+            </div>
+            <div style="flex-grow:1; background:#222; display:flex; justify-content:center; align-items:center; color:#555;">
+                [ MARKET CLOSED ]
+            </div>
+        </div>
+
+        <!-- SMS -->
+        <div id="app-sms" class="app-window">
+            <div class="nav-bar blue"><div class="nav-btn left btn-style-default">Messages</div>Steve Jobs</div>
+            <div style="flex-grow:1; background:#fff; padding:10px; display:flex; flex-direction:column; overflow-y:auto;">
+                <div style="color:#999; text-align:center; font-size:12px; margin-bottom:15px;">Tuesday 9:41 AM</div>
+                <div class="list-item" style="background:#e5e5ea; border-radius:15px; width:fit-content; border:none; margin-bottom:10px; font-weight:normal; cursor:default;">Are you in New York?</div>
+                <div class="list-item" style="background:#57d468; color:white; border-radius:15px; width:fit-content; align-self:flex-end; border:none; font-weight:normal; cursor:default;">Yes, at the Apple Store 5th Ave.</div>
+            </div>
+             <div style="height:45px; background:#f0f0f0; border-top:1px solid #999; display:flex; align-items:center; padding:0 10px;">
+                <input type="text" placeholder="Text Message" style="flex-grow:1; border:1px solid #ccc; border-radius:15px; padding:5px 10px; font-size:16px;">
+                <span style="color:#027afe; font-weight:bold; margin-left:10px;">Send</span>
+            </div>
+        </div>
+
+        <!-- Weather -->
+        <div id="app-weather" class="app-window">
+             <div class="weather-bg">
+                <div class="lock-date" id="weather-city" style="font-size:24px; text-shadow:0 1px 2px rgba(0,0,0,0.5);">New York</div>
+                <div id="weather-icon" style="font-size:70px; margin:20px 0; text-shadow:0 2px 5px rgba(0,0,0,0.3);">🌥</div>
+                <div id="weather-temp" style="font-size:90px; font-weight:100; text-shadow:0 2px 5px rgba(0,0,0,0.3);">--°</div>
+                <div class="yahoo-logo">Y! Weather</div>
+            </div>
+        </div>
+
+        <!-- Calculator -->
+        <div id="app-calculator" class="app-window">
+            <div class="calc-display" id="calc-display">0</div>
+            <div class="calc-pad">
+                <div class="calc-btn" onclick="calcInput('C')">C</div><div class="calc-btn" onclick="calcInput('±')">±</div><div class="calc-btn" onclick="calcInput('%')">%</div><div class="calc-btn op" onclick="calcInput('/')">÷</div>
+                <div class="calc-btn" onclick="calcInput('7')">7</div><div class="calc-btn" onclick="calcInput('8')">8</div><div class="calc-btn" onclick="calcInput('9')">9</div><div class="calc-btn op" onclick="calcInput('*')">×</div>
+                <div class="calc-btn" onclick="calcInput('4')">4</div><div class="calc-btn" onclick="calcInput('5')">5</div><div class="calc-btn" onclick="calcInput('6')">6</div><div class="calc-btn op" onclick="calcInput('-')">-</div>
+                <div class="calc-btn" onclick="calcInput('1')">1</div><div class="calc-btn" onclick="calcInput('2')">2</div><div class="calc-btn" onclick="calcInput('3')">3</div><div class="calc-btn op" onclick="calcInput('+')">+</div>
+                <div class="calc-btn" style="grid-column: span 2;" onclick="calcInput('0')">0</div><div class="calc-btn" onclick="calcInput('.')">.</div><div class="calc-btn op" onclick="calcInput('=')">=</div>
+            </div>
+        </div>
+        
+        <!-- Safari (Full UI Restored) -->
         <div id="app-safari" class="app-window">
-            <div class="url-bar">
+            <div class="safari-bar">
                 <input type="text" id="safari-input" class="url-input" value="https://en.m.wikipedia.org" onkeydown="if(event.key==='Enter') loadUrl()">
-                <button class="btn-blue" style="border-radius:5px; padding:0 10px; cursor:pointer;" onclick="loadUrl()">Go</button>
+                <button class="btn-style-blue" style="border-radius:5px; padding:4px 10px; cursor:pointer; margin-left:5px; font-weight:bold; font-size:12px;" onclick="loadUrl()">Go</button>
             </div>
             <iframe id="safari-frame" src="https://en.m.wikipedia.org/wiki/IPhone_(1st_generation)"></iframe>
             <div class="tab-bar" style="height:44px; background:#eee;">
@@ -270,38 +521,24 @@
             </div>
         </div>
 
-        <div id="app-maps" class="app-window">
-            <div class="nav-bar blue">
-                <div class="nav-btn left btn-default">Search</div>
-                Maps
-                <div class="nav-btn right btn-default">Directions</div>
-            </div>
-            <iframe id="google-map" src="https://maps.google.com/maps?q=New+York&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
-            <div class="tab-bar">
-                <div class="tab-item active"><span class="tab-icon">🔍</span>Search</div>
-                <div class="tab-item"><span class="tab-icon">↱</span>Directions</div>
-            </div>
-        </div>
-
+        <!-- Phone (Full UI Restored) -->
         <div id="app-phone" class="app-window">
-             <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:flex-end; background:#eee;">
-                <div style="height:80px; background:white; display:flex; justify-content:center; align-items:center; font-size:32px; border-bottom:1px solid #ccc;" id="phone-display"></div>
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:15px; padding:20px 30px;">
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('1')">1</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('2')">2</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('3')">3</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('4')">4</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('5')">5</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('6')">6</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('7')">7</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('8')">8</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('9')">9</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('*')">*</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('0')">0</button>
-                    <button class="home-button" style="width:60px; height:60px; background:#fff; border:1px solid #999; font-size:24px; color:#000;" onclick="phKey('#')">#</button>
-                </div>
-                <div style="padding:0 30px 20px;">
-                     <div style="background:linear-gradient(#57e671, #28a745); height:50px; border-radius:10px; display:flex; justify-content:center; align-items:center; color:white; font-size:22px; font-weight:bold; cursor:pointer;" onclick="alert('Calling...')">Call</div>
+             <div style="flex-grow:1; display:flex; flex-direction:column; background:#eee;">
+                <div class="phone-display" id="phone-display"></div>
+                <div class="keypad-grid">
+                    <div class="key-circle" onclick="phKey('1')">1</div>
+                    <div class="key-circle" onclick="phKey('2')">2<div class="key-sub">ABC</div></div>
+                    <div class="key-circle" onclick="phKey('3')">3<div class="key-sub">DEF</div></div>
+                    <div class="key-circle" onclick="phKey('4')">4<div class="key-sub">GHI</div></div>
+                    <div class="key-circle" onclick="phKey('5')">5<div class="key-sub">JKL</div></div>
+                    <div class="key-circle" onclick="phKey('6')">6<div class="key-sub">MNO</div></div>
+                    <div class="key-circle" onclick="phKey('7')">7<div class="key-sub">PQRS</div></div>
+                    <div class="key-circle" onclick="phKey('8')">8<div class="key-sub">TUV</div></div>
+                    <div class="key-circle" onclick="phKey('9')">9<div class="key-sub">WXYZ</div></div>
+                    <div class="key-circle" onclick="phKey('*')">*</div>
+                    <div class="key-circle" onclick="phKey('0')">0<div class="key-sub">+</div></div>
+                    <div class="key-circle" onclick="phKey('#')">#</div>
+                    <div class="call-btn" onclick="alert('Calling...')">Call</div>
                 </div>
              </div>
              <div class="tab-bar">
@@ -312,57 +549,147 @@
                 <div class="tab-item"><span class="tab-icon">➿</span>Voicemail</div>
             </div>
         </div>
-        
-        <div id="app-sms" class="app-window"><div class="nav-bar blue">Text</div></div>
-        <div id="app-calendar" class="app-window"><div class="nav-bar">Calendar</div></div>
-        <div id="app-youtube" class="app-window"><div class="nav-bar">YouTube</div></div>
-        <div id="app-stocks" class="app-window" style="background:black; color:white;"><div class="nav-bar black">Stocks</div></div>
-        <div id="app-weather" class="app-window"><div class="nav-bar">Weather</div></div>
-        <div id="app-calculator" class="app-window"><div class="nav-bar">Calculator</div></div>
-        <div id="app-notes" class="app-window"><div class="nav-bar">Notes</div></div>
-        <div id="app-settings" class="app-window"><div class="nav-bar">Settings</div></div>
-        <div id="app-mail" class="app-window"><div class="nav-bar blue">Mail</div></div>
+
+        <div id="app-calendar" class="app-window"><div class="nav-bar">Calendar</div><div class="cal-grid"><div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div></div></div>
+        <div id="app-notes" class="app-window"><div class="nav-bar">Notes</div><textarea class="notes-paper">Notes...</textarea></div>
+        <div id="app-mail" class="app-window"><div class="nav-bar blue">Mail</div><div class="list-view"><div class="list-item">Inbox</div></div></div>
 
     </div>
 
+    <!-- Multitasking Tray (Hidden by default) -->
+    <div id="multitasking-tray">
+        <!-- Icons populated by JS -->
+    </div>
+
     <div id="home-area">
-        <div class="home-button" onclick="goHome()">
+        <div class="home-button" onclick="handleHomeClick()">
             <div class="square"></div>
         </div>
     </div>
 
     <script>
-        // --- 1. System Navigation ---
+        // --- System State ---
+        let currentAppId = null;
+        let photoArray = [];
+        let recentApps = ['phone', 'mail', 'safari', 'ipod']; // Default background apps
+        let currentPhotoBlob = null; // For sharing
+
+        // --- 1. Home Button & Multitasking Logic ---
+        let lastHomeClick = 0;
+        let homeClickTimer = null;
+
+        function handleHomeClick() {
+            const now = Date.now();
+            if (now - lastHomeClick < 300) {
+                // Double Click
+                clearTimeout(homeClickTimer);
+                toggleMultitasking();
+            } else {
+                // Single Click (Wait to see if it's double)
+                lastHomeClick = now;
+                homeClickTimer = setTimeout(() => {
+                    goHome();
+                }, 300);
+            }
+        }
+
+        function toggleMultitasking() {
+            const tray = document.getElementById('multitasking-tray');
+            if (tray.style.display === 'flex') {
+                tray.style.display = 'none';
+            } else {
+                renderMultitasking();
+                tray.style.display = 'flex';
+            }
+        }
+
+        function renderMultitasking() {
+            const tray = document.getElementById('multitasking-tray');
+            tray.innerHTML = '';
+            
+            // Map IDs to Emoji icons/Colors
+            const appData = {
+                'sms': {icon:'💬', bg:'#4cd964', name:'Text'},
+                'calendar': {icon:'📅', bg:'#fff', name:'Calendar'},
+                'photos': {icon:'🌻', bg:'#add8e6', name:'Photos'},
+                'camera': {icon:'📷', bg:'#ccc', name:'Camera'},
+                'youtube': {icon:'📺', bg:'#5c3d2e', name:'YouTube'},
+                'stocks': {icon:'📈', bg:'#333', name:'Stocks'},
+                'maps': {icon:'🗺️', bg:'#f4d03f', name:'Maps'},
+                'weather': {icon:'☀️', bg:'#2980b9', name:'Weather'},
+                'clock': {icon:'⏰', bg:'#000', name:'Clock'},
+                'calculator': {icon:'🔢', bg:'#e67e22', name:'Calc'},
+                'notes': {icon:'📝', bg:'#f1c40f', name:'Notes'},
+                'settings': {icon:'⚙️', bg:'#7f8c8d', name:'Settings'},
+                'phone': {icon:'📞', bg:'#2ecc71', name:'Phone'},
+                'mail': {icon:'✉️', bg:'#3498db', name:'Mail'},
+                'safari': {icon:'🧭', bg:'#3498db', name:'Safari'},
+                'ipod': {icon:'🎵', bg:'#e67e22', name:'iPod'}
+            };
+
+            const uniqueRecents = [...new Set(recentApps)];
+            uniqueRecents.forEach(id => {
+                const data = appData[id];
+                if(data) {
+                    const div = document.createElement('div');
+                    div.className = 'tray-icon';
+                    div.onclick = () => { openApp(id); tray.style.display='none'; };
+                    div.innerHTML = `
+                        <div class="icon-box" style="background:${data.bg}; color:${id==='calendar'?'#333':'white'}">${data.icon}</div>
+                    `;
+                    tray.appendChild(div);
+                }
+            });
+        }
+
         function openApp(id) {
-            document.querySelectorAll('.app-window').forEach(el => el.style.display = 'none');
+            document.getElementById('multitasking-tray').style.display = 'none';
+
+            if(currentAppId === 'app-' + id) return;
+            recentApps = [id, ...recentApps.filter(a => a !== id)];
+
+            document.querySelectorAll('.app-window').forEach(el => {
+                el.style.zIndex = 600;
+                el.classList.remove('app-opening');
+                el.classList.remove('app-closing');
+                if(el.id !== 'app-' + id) el.style.display = 'none';
+            });
+
             const app = document.getElementById('app-' + id);
             if(app) {
                 app.style.display = 'flex';
-                // Trigger Camera
-                if(id === 'camera') startCamera();
-                else stopCamera();
+                app.style.zIndex = 700;
+                app.classList.add('app-opening');
+                currentAppId = 'app-' + id;
+
+                // Features triggers
+                if(id === 'camera') startCamera(); else stopCamera();
+                if(id === 'weather') fetchWeather();
+                if(id === 'clock') updateTime();
             }
         }
 
         function goHome() {
-            document.querySelectorAll('.app-window').forEach(el => el.style.display = 'none');
-            stopCamera();
-        }
+            document.getElementById('multitasking-tray').style.display = 'none';
+            if(!currentAppId) return;
 
-        function updateClock() {
-            const now = new Date();
-            let h = now.getHours();
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            document.getElementById('status-clock').innerText = `${h}:${m} ${ampm}`;
+            const app = document.getElementById(currentAppId);
+            if(app) {
+                app.classList.remove('app-opening');
+                app.classList.add('app-closing');
+                app.addEventListener('animationend', () => {
+                    if(app.classList.contains('app-closing')) {
+                        app.style.display = 'none';
+                        app.classList.remove('app-closing');
+                    }
+                }, {once: true});
+            }
+            stopCamera();
+            currentAppId = null;
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
         // --- 2. Camera & Photos Logic ---
         let videoStream = null;
-        const photoArray = [];
 
         async function startCamera() {
             const video = document.getElementById('camera-video');
@@ -371,10 +698,7 @@
                     videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                     video.srcObject = videoStream;
                 }
-            } catch (err) {
-                console.error("Camera access denied or unavailable", err);
-                //alert("無法存取相機。請確保在 HTTPS 或 Localhost 環境下執行，並允許權限。");
-            }
+            } catch (err) { console.error("Camera error", err); }
         }
 
         function stopCamera() {
@@ -394,47 +718,133 @@
                 canvas.height = video.videoHeight;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 
-                // Save photo
                 const dataUrl = canvas.toDataURL('image/png');
                 photoArray.push(dataUrl);
                 
-                // Flash effect
                 video.style.opacity = 0;
                 setTimeout(() => video.style.opacity = 1, 100);
-
                 updatePhotosApp();
             }
         }
 
         function updatePhotosApp() {
             const gallery = document.getElementById('photo-gallery');
-            // Keep the static placeholders if you want, or clear them. Let's append new ones.
-            // Clear existing generated thumbs to avoid duplicates if we simply re-render
             const existingGenerated = gallery.querySelectorAll('.generated-photo');
             existingGenerated.forEach(e => e.remove());
 
-            photoArray.forEach(src => {
+            [...photoArray].reverse().forEach(src => {
                 const div = document.createElement('div');
                 div.className = 'photo-thumb generated-photo';
                 div.style.backgroundImage = `url(${src})`;
-                gallery.prepend(div); // Newest first
+                div.onclick = () => viewPhoto(src);
+                gallery.prepend(div);
             });
         }
 
-        // --- 3. Clock Timer Logic ---
+        function viewPhoto(src, color) {
+            const viewer = document.getElementById('photo-viewer');
+            const img = document.getElementById('viewer-img');
+            currentPhotoBlob = null; 
+
+            if(src) {
+                img.src = src;
+                img.style.backgroundColor = 'transparent';
+                currentPhotoBlob = src; 
+            } else if (color) {
+                img.src = ''; 
+                img.style.backgroundColor = color;
+            }
+            viewer.style.display = 'flex';
+        }
+
+        function closePhotoViewer() {
+            document.getElementById('photo-viewer').style.display = 'none';
+        }
+
+        async function sharePhoto() {
+            if (!currentPhotoBlob) {
+                alert("Nothing to share!");
+                return;
+            }
+            try {
+                const res = await fetch(currentPhotoBlob);
+                const blob = await res.blob();
+                const file = new File([blob], "photo.png", { type: "image/png" });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Photo from iPhoneOS 1',
+                        text: 'Check out this photo!'
+                    });
+                } else {
+                    alert("Sharing not supported on this browser/device.");
+                }
+            } catch (err) {
+                console.error("Share failed", err);
+                alert("Error sharing photo.");
+            }
+        }
+
+        // --- 3. YouTube Logic ---
+        function playVideo(id) {
+            const container = document.getElementById('yt-player-container');
+            const iframe = document.getElementById('yt-iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+            container.style.display = 'block';
+        }
+
+        function closeVideo() {
+            const container = document.getElementById('yt-player-container');
+            const iframe = document.getElementById('yt-iframe');
+            iframe.src = "";
+            container.style.display = 'none';
+        }
+
+        // --- 4. Clock Logic ---
         let timerInterval = null;
         let timerSeconds = 0;
 
+        function updateTime() {
+            const now = new Date();
+            let h = now.getHours();
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            document.getElementById('status-clock').innerText = `${h}:${m} ${ampm}`;
+            
+            const lockTime = document.getElementById('lock-time');
+            if(lockTime) lockTime.innerText = `${h}:${m}`;
+
+            const ny = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute:'2-digit' });
+            const ca = now.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute:'2-digit' });
+            const ln = now.toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: 'numeric', minute:'2-digit' });
+            
+            const nyEl = document.getElementById('ny-time-display');
+            if(nyEl) nyEl.innerText = ny;
+            const caEl = document.getElementById('ca-time-display');
+            if(caEl) caEl.innerText = ca;
+            const lnEl = document.getElementById('ln-time-display');
+            if(lnEl) lnEl.innerText = ln;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
         function switchClockTab(tab) {
             document.getElementById('clock-view-timer').style.display = 'none';
-            document.getElementById('clock-view-other').style.display = 'none';
-            document.getElementById('clock-header').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+            document.getElementById('clock-view-world').style.display = 'none';
             
+            document.getElementById('tab-timer').classList.remove('active');
+            document.getElementById('tab-world').classList.remove('active');
+
             if(tab === 'timer') {
                 document.getElementById('clock-view-timer').style.display = 'flex';
-            } else {
-                document.getElementById('clock-view-other').style.display = 'flex';
-                document.getElementById('clock-view-other').innerText = tab.charAt(0).toUpperCase() + tab.slice(1) + " (Coming Soon)";
+                document.getElementById('clock-header').innerText = 'Timer';
+                document.getElementById('tab-timer').classList.add('active');
+            } else if (tab === 'world') {
+                document.getElementById('clock-view-world').style.display = 'flex';
+                document.getElementById('clock-header').innerText = 'World Clock';
+                document.getElementById('tab-world').classList.add('active');
             }
         }
 
@@ -444,7 +854,6 @@
             const display = document.getElementById('timer-countdown');
 
             if(timerInterval) {
-                // Stop Timer
                 clearInterval(timerInterval);
                 timerInterval = null;
                 btn.innerText = "Start Timer";
@@ -454,12 +863,9 @@
                 return;
             }
 
-            // Start Timer
             const h = parseInt(document.getElementById('timer-h').value) || 0;
             const m = parseInt(document.getElementById('timer-m').value) || 0;
-            
             if(h === 0 && m === 0) return;
-
             timerSeconds = (h * 3600) + (m * 60);
             
             inputs.style.display = 'none';
@@ -468,7 +874,6 @@
             btn.classList.add('stop');
             
             updateTimerDisplay();
-            
             timerInterval = setInterval(() => {
                 timerSeconds--;
                 if(timerSeconds <= 0) {
@@ -477,7 +882,6 @@
                     display.innerText = "Done";
                     btn.innerText = "OK";
                     btn.classList.remove('stop');
-                    // Play sound or alert here
                 } else {
                     updateTimerDisplay();
                 }
@@ -492,7 +896,7 @@
                 `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
 
-        // --- 4. iPod Audio Import ---
+        // --- 5. iPod Logic ---
         function loadAudio(input) {
             const file = input.files[0];
             if(file) {
@@ -500,13 +904,72 @@
                 const player = document.getElementById('audio-player');
                 player.src = url;
                 player.play();
-                
                 document.getElementById('ipod-title').innerText = file.name;
                 document.getElementById('ipod-artist').innerText = "Local Audio";
             }
         }
 
-        // --- 5. Safari URL Logic ---
+        // --- 6. Lock Screen Logic ---
+        const knob = document.getElementById('slider-knob');
+        const lockScreen = document.getElementById('lock-screen');
+        let isDragging = false, startX = 0;
+
+        knob.addEventListener('mousedown', startDrag);
+        knob.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
+        function startDrag(e) {
+            isDragging = true; startX = e.clientX;
+            knob.style.transition = 'none';
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', (e) => onDrag(e.touches[0]));
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+        function onDrag(e) {
+            if(!isDragging) return;
+            let move = e.clientX - startX;
+            move = Math.max(0, Math.min(move, 230));
+            knob.style.transform = `translateX(${move}px)`;
+            document.querySelector('.slider-text').style.opacity = 1 - (move/200);
+            if(move > 200) unlock();
+        }
+        function endDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('touchmove', onDrag);
+            if(lockScreen.style.transform !== 'translateY(-100%)') {
+                knob.style.transition = 'transform 0.3s';
+                knob.style.transform = 'translateX(0px)';
+                document.querySelector('.slider-text').style.opacity = 1;
+            }
+        }
+        function unlock() { lockScreen.style.transform = 'translateY(-100%)'; }
+
+        // --- 7. Calc Logic ---
+        let cVal = '0';
+        function calcInput(v) {
+            if(v==='C') cVal='0';
+            else if(v==='=') { try{cVal=eval(cVal).toString()}catch{cVal='Err'} }
+            else { if(cVal==='0') cVal=v; else cVal+=v; }
+            document.getElementById('calc-display').innerText = cVal.substring(0,9);
+        }
+
+        // --- 8. Weather Logic ---
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York');
+                const data = await res.json();
+                const temp = Math.round(data.current_weather.temperature);
+                document.getElementById('weather-temp').innerText = temp + '°';
+                const code = data.current_weather.weathercode;
+                let icon = '☀️';
+                if(code > 3) icon = '☁️';
+                if(code > 50) icon = '🌧';
+                if(code > 70) icon = '❄️';
+                document.getElementById('weather-icon').innerText = icon;
+            } catch(e) { console.log('Weather Error', e); }
+        }
+
+        // --- 9. Safari & Phone Logic (Restored) ---
         function loadUrl() {
             let url = document.getElementById('safari-input').value;
             if(!url.startsWith('http')) {
@@ -515,7 +978,6 @@
             document.getElementById('safari-frame').src = url;
         }
 
-        // --- 6. Phone Keypad ---
         function phKey(key) {
             const display = document.getElementById('phone-display');
             if(display.innerText.length < 13) display.innerText += key;
@@ -524,3 +986,5 @@
     </script>
 </body>
 </html>
+
+
