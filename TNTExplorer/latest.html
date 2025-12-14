@@ -5,18 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>TNTExplorer 探索器</title>
 
-  <link rel="icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg" type="image/jpeg"/>
-  <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg"/>
-
   <style>
     :root{
       --orange:#ED732E; --black:#000; --white:#fff; --muted:#bbb;
       --green:#28a745; --red:#dc3545; --blue:#007bff; --yellow:#ffd400;
       --panel-bg: rgba(0,0,0,0.92); --overlay-bg: rgba(0,0,0,0.75);
+      --input-bg: #ffffff; --input-color: #111;
     }
     @media (prefers-color-scheme: dark) {
-      :root{ --white:#e6e6e6; --muted:#c2c2c2; --panel-bg: rgba(18,18,18,0.98); --overlay-bg: rgba(0,0,0,0.85); }
-      body { background: linear-gradient(to bottom, #b95a20 0%, #b95a20 20%, #2f2f2f 20%, #2f2f2f 80%, #b95a20 80%, #b95a20 100%); }
+      :root{ --muted:#c2c2c2; --panel-bg: rgba(18,18,18,0.98); --overlay-bg: rgba(0,0,0,0.85); }
     }
 
     html,body{height:100%;margin:0;padding:0;overflow-x:hidden;font-family:Arial, sans-serif;-webkit-text-size-adjust:100%;}
@@ -29,9 +26,9 @@
     .search-container h1{font-size:28px;margin:0 0 5px}
     .subtitle{font-size:16px;margin:0 0 20px;opacity:.8;font-style:italic}
     .engine-select{margin-bottom:12px;text-align:left}
-    .engine-select select{width:100%;padding:8px;border-radius:6px;border:none;font-size:16px}
+    .engine-select select{width:100%;padding:8px;border-radius:6px;border:none;font-size:16px;background:var(--input-bg);color:var(--input-color)}
     .search-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-    .search-row input[type="text"]{flex:1;padding:10px;font-size:16px;border-radius:8px;border:none;outline:none;background:#111;color:var(--white)}
+    .search-row input[type="text"]{flex:1;padding:10px;font-size:16px;border-radius:8px;border:1px solid #ddd;outline:none;background:var(--input-bg);color:var(--input-color)}
     #historyButton{width:40px;height:40px;background:var(--yellow);border:none;border-radius:6px;cursor:pointer;font-size:18px}
     .button-row{display:flex;gap:8px;margin-bottom:10px}
     .button-row button{flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;font-size:16px}
@@ -75,9 +72,16 @@
 
     /* add/edit form */
     .add-form{display:flex;flex-direction:column;gap:8px;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px}
-    .add-form input[type="text"],.add-form input[type="file"]{padding:8px;border-radius:6px;border:none;color:var(--white);background:rgba(255,255,255,0.03)}
+    .add-form input[type="text"],.add-form input[type="file"]{padding:8px;border-radius:6px;border:1px solid #ddd;color:var(--input-color);background:var(--input-bg)}
     .add-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
     .left-actions,.right-actions{display:flex;gap:8px}
+
+    /* popup (non-blocking) */
+    .fetch-popup{
+      position:fixed;left:50%;transform:translateX(-50%);top:12px;background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;border-radius:8px;z-index:2000;font-size:14px;
+      pointer-events:none; /* non-blocking */
+      display:none;
+    }
 
     @media (max-width:380px){
       .bookmark-card img{width:36px;height:36px}
@@ -87,6 +91,8 @@
   </style>
 </head>
 <body>
+  <div class="fetch-popup" id="fetchPopup">正在抓取網站圖示</div>
+
   <div class="search-container">
     <h1>TNTExplorer 探索器</h1>
     <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
@@ -105,7 +111,6 @@
         <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off"/>
         <button type="button" id="historyButton">⧆</button>
       </div>
-
       <div class="button-row">
         <button type="button" id="translateButton">翻譯</button>
         <button type="button" id="goButton">前往</button>
@@ -125,7 +130,6 @@
             <option value="records">探索記錄</option>
           </select>
 
-          <!-- 以灰色「編輯」按鈕作為移除模式切換（符合設計） -->
           <button id="toggleEditBtn" class="btn-gray">編輯</button>
           <button id="addModeBtn" class="btn-yellow">新增</button>
         </div>
@@ -172,11 +176,10 @@
 
   <div style="position:fixed;left:0;right:0;bottom:18px;text-align:center;color:#fff;font-size:14px;z-index:1">
     <a id="supportLink" href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" style="color:#fff;text-decoration:none">支持作者</a>
-    <div style="font-size:13px;margin-top:6px">版本號: 0.7.2b</div>
+    <div style="font-size:13px;margin-top:6px">版本號: 0.7.3</div>
   </div>
 
   <script>
-    // keys
     const STORAGE = { RECORDS: 'tntExplorerHistory', BOOKMARKS: 'tnt_explore_bookmarks' };
 
     function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){ return []; } }
@@ -186,11 +189,12 @@
     function isLikelyURL(s){ return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(s) }
 
     // UI refs
+    const fetchPopup = document.getElementById('fetchPopup');
     const overlay = document.getElementById('overlay');
     const historyButton = document.getElementById('historyButton');
     const panelMenu = document.getElementById('panelMenu');
     const panelTitle = document.getElementById('panelTitle');
-    const toggleEditBtn = document.getElementById('toggleEditBtn'); // renamed
+    const toggleEditBtn = document.getElementById('toggleEditBtn');
     const addModeBtn = document.getElementById('addModeBtn');
     const addForm = document.getElementById('addForm');
     const iconFile = document.getElementById('iconFile');
@@ -217,10 +221,16 @@
     let editMode = false;
     let editTargetId = null;
     const selectedBookmarks = new Set();
+    const failedIconIds = new Set(); // track images that failed to load
 
-    /* Records */
+    /* ---------- popup helpers ---------- */
+    function showFetchPopup(){ fetchPopup.style.display = 'block'; }
+    function hideFetchPopup(){ fetchPopup.style.display = 'none'; }
+
+    /* ---------- records ---------- */
     function loadRecordsRaw(){ return loadJSON(STORAGE.RECORDS); }
     function saveRecordsRaw(arr){ saveJSON(STORAGE.RECORDS, arr); }
+
     function addRecord(text){
       if(!text || !text.trim()) return;
       const raw = loadRecordsRaw();
@@ -261,7 +271,7 @@
           openPanel('bookmarks');
           enterAddMode();
           bookmarkName.value = item.text || '';
-          bookmarkURL.value = isLikelyURL(item.text) ? item.text : item.text;
+          bookmarkURL.value = item.text || '';
         });
 
         clearBtn.addEventListener('click', ()=> {
@@ -276,21 +286,28 @@
       });
     }
 
-    /* Bookmarks: favicon fetch helper (same approach as earlier) */
+    /* ---------- bookmarks & favicon persistence ---------- */
     function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
     function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
 
-    async function fetchFavicon(url){
+    // fetch favicon and return dataURL (base64) or null
+    async function fetchFaviconDataURL(url){
+      if(!url) return null;
+      showFetchPopup();
       try{
-        if(!url) return null;
         const dest = url.match(/^https?:\/\//i) ? url : ('https://' + url);
         const u = new URL(dest);
+        // try google s2 via allorigins wrapper to avoid CORS
         const googleFav = `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`;
         const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(googleFav)}`;
         const r = await fetch(wrap);
         if(r.ok){
           const blob = await r.blob();
-          if(blob.size > 0) return URL.createObjectURL(blob);
+          if(blob.size > 0){
+            const data = await blobToDataURL(blob);
+            hideFetchPopup();
+            return data;
+          }
         }
       }catch(e){}
       try{
@@ -301,16 +318,30 @@
         const r2 = await fetch(wrap2);
         if(r2.ok){
           const b = await r2.blob();
-          if(b.size > 0) return URL.createObjectURL(b);
+          if(b.size > 0){
+            const data2 = await blobToDataURL(b);
+            hideFetchPopup();
+            return data2;
+          }
         }
       }catch(e){}
+      hideFetchPopup();
       return null;
+    }
+
+    function blobToDataURL(blob){
+      return new Promise((res, rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=>res(fr.result);
+        fr.onerror = rej;
+        fr.readAsDataURL(blob);
+      });
     }
 
     async function addBookmark({name, url, icon}) {
       let finalIcon = icon || null;
       if(!finalIcon && url && url.trim()){
-        finalIcon = await fetchFavicon(url).catch(()=>null);
+        finalIcon = await fetchFaviconDataURL(url).catch(()=>null);
       }
       const arr = loadBookmarks();
       const key = normalizeKey((name||'') + '|' + (url||''));
@@ -327,14 +358,17 @@
         const card = document.createElement('div'); card.className='bookmark-card'; card.dataset.id = b.id;
         const checkbox = document.createElement('div'); checkbox.className='select-checkbox'; checkbox.textContent='✓';
         const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
+        // if image fails to load, mark failedIconIds
+        img.onerror = ()=>{ failedIconIds.add(b.id); img.src = ''; };
+        img.onload = ()=>{ failedIconIds.delete(b.id); };
+
         const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
 
-        // edit button: only visible in removeMode per new spec
+        // edit button only visible in removeMode
         const actionsWrap = document.createElement('div'); actionsWrap.className = 'bookmark-actions';
         const editBtn = document.createElement('button'); editBtn.className = 'btn-edit-bookmark'; editBtn.textContent = '編輯';
         editBtn.style.display = removeMode ? 'inline-block' : 'none';
 
-        // clicking card behavior
         card.addEventListener('click', ()=> {
           if(removeMode){
             if(selectedBookmarks.has(b.id)){ selectedBookmarks.delete(b.id); card.classList.remove('selected'); }
@@ -368,7 +402,7 @@
       selectedCount.textContent = String(selectedBookmarks.size || 0);
     }
 
-    /* PANEL controls */
+    /* ---------- panel controls ---------- */
     function openPanel(defaultView='bookmarks'){ panelMenu.value = defaultView; switchView(defaultView); overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); }
     function closePanelFunc(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); exitAddMode(); exitRemoveMode(); exitEditMode(); }
     historyButton.addEventListener('click', ()=> openPanel('bookmarks'));
@@ -397,13 +431,12 @@
       }
     }
 
-    /* ADD MODE */
+    /* ---------- add/edit mode ---------- */
     function enterAddMode(){
       addMode = true; editMode = false; editTargetId = null;
       addModeBtn.className = 'btn-white'; addModeBtn.textContent = '返回';
       addForm.style.display = 'flex';
       confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
-      // hide toggleEdit while adding
       toggleEditBtn.style.display = 'none';
       removeControls.style.display = 'none';
     }
@@ -426,6 +459,7 @@
       const name = (bookmarkName.value || '').trim();
       const url = (bookmarkURL.value || '').trim();
       if(!name || !url){ alert('請輸入書籤名稱與網址'); return; }
+
       if(editMode && editTargetId){
         const arr = loadBookmarks();
         const idx = arr.findIndex(b => b.id === editTargetId);
@@ -433,8 +467,11 @@
         let iconData = arr[idx].icon || null;
         if(file){
           iconData = await fileToDataURL(file);
-        } else if(!iconData){
-          iconData = await fetchFavicon(url);
+        } else {
+          // if icon missing or previously failed, re-fetch
+          if(!iconData || failedIconIds.has(editTargetId)){
+            iconData = await fetchFaviconDataURL(url);
+          }
         }
         arr[idx].name = name; arr[idx].url = url; arr[idx].icon = iconData;
         saveBookmarks(arr);
@@ -446,7 +483,7 @@
       // ADD flow
       let iconData = null;
       if(file) iconData = await fileToDataURL(file);
-      else iconData = await fetchFavicon(url);
+      else iconData = await fetchFaviconDataURL(url);
       await addBookmark({ name, url, icon: iconData });
       exitAddMode();
       renderBookmarks();
@@ -455,7 +492,7 @@
     function clearAddForm(){ iconFile.value = ''; bookmarkName.value = ''; bookmarkURL.value = ''; }
     function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); }); }
 
-    /* REMOVE MODE (triggered by toggleEditBtn) */
+    /* ---------- remove/edit mode ---------- */
     toggleEditBtn.addEventListener('click', ()=> {
       if(panelMenu.value !== 'bookmarks') return;
       if(!removeMode) enterRemoveMode(); else exitRemoveMode();
@@ -485,13 +522,11 @@
       selectedBookmarks.clear(); exitRemoveMode(); renderBookmarks();
     });
 
-    /* EDIT MODE (enterEditMode called from per-card edit button) */
     function enterEditMode(id){
       const arr = loadBookmarks();
       const b = arr.find(x => x.id === id);
       if(!b){ alert('找不到書籤'); return; }
       openPanel('bookmarks');
-      // prepare form
       exitRemoveMode();
       enterAddMode();
       editMode = true; editTargetId = id;
@@ -499,41 +534,14 @@
       bookmarkURL.value = b.url || '';
       confirmAdd.className = 'btn-blue'; confirmAdd.textContent = '儲存';
     }
+
     function exitEditMode(){
       editMode = false; editTargetId = null;
       confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
       exitAddMode();
     }
 
-    /* favicon helper (same as before) */
-    async function fetchFavicon(url){
-      try{
-        if(!url) return null;
-        const dest = url.match(/^https?:\/\//i) ? url : ('https://' + url);
-        const u = new URL(dest);
-        const googleFav = `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`;
-        const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(googleFav)}`;
-        const r = await fetch(wrap);
-        if(r.ok){
-          const blob = await r.blob();
-          if(blob.size > 0) return URL.createObjectURL(blob);
-        }
-      }catch(e){}
-      try{
-        const dest = url.match(/^https?:\/\//i) ? url : ('https://' + url);
-        const u = new URL(dest);
-        const fav = `${u.origin}/favicon.ico`;
-        const wrap2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(fav)}`;
-        const r2 = await fetch(wrap2);
-        if(r2.ok){
-          const b = await r2.blob();
-          if(b.size > 0) return URL.createObjectURL(b);
-        }
-      }catch(e){}
-      return null;
-    }
-
-    /* MAIN ACTIONS */
+    /* ---------- main actions ---------- */
     function getInputVal(){ return queryInput.value.trim(); }
     function performGo(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); window.open(dest,'_blank'); } else { const tmpl = engineSelect.value; window.open(tmpl.replace('%s', encodeURIComponent(v)),'_blank'); } }
     function performTranslate(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); try{ const u=new URL(dest); const host=u.hostname.replace(/\./g,'-') + '.translate.goog'; const final=`https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); }catch(e){ alert('無效的網址格式'); } } else { const tran=`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`; window.open(tran,'_blank'); } }
@@ -544,17 +552,16 @@
     document.getElementById('archiveButton').addEventListener('click', performArchive);
     document.getElementById('searchForm').addEventListener('submit', e=>{ e.preventDefault(); performGo(); });
 
-    /* INIT */
+    /* ---------- init ---------- */
     function init(){
       if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
       if(!localStorage.getItem(STORAGE.RECORDS)) saveRecordsRaw([]);
       panelTitle.textContent = '書籤';
       exitAddMode(); exitRemoveMode(); exitEditMode();
     }
-    function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
     init();
 
-    // Small helper to expose rendering for testing in console
+    // expose for debugging
     window.renderBookmarks = renderBookmarks;
     window.renderRecords = renderRecords;
   </script>
