@@ -13,7 +13,6 @@
       --input-bg: #ffffff; --input-color: #111; --card-bg: rgba(255,255,255,0.03);
     }
 
-    /* 有效深色模式：把原本白色改得更暗但保留可讀性 */
     @media (prefers-color-scheme: dark) {
       :root{
         --input-bg: #1b1b1b;
@@ -30,7 +29,6 @@
       background:linear-gradient(to bottom,var(--orange)0%,var(--orange)20%,var(--white)20%,var(--white)80%,var(--orange)80%,var(--orange)100%);
     }
 
-    /* main */
     .search-container{background:var(--black);color:var(--white);width:min(92%,420px);padding:20px 28px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.5);text-align:center;z-index:1}
     .search-container h1{font-size:26px;margin:0 0 6px}
     .subtitle{font-size:14px;margin:0 0 16px;opacity:.85;font-style:italic}
@@ -44,7 +42,6 @@
     #translateButton{background:var(--green);color:#fff}#goButton{background:#0073e6;color:#fff}
     #archiveButton{width:100%;padding:12px;border-radius:8px;border:none;background:var(--red);color:#fff;cursor:pointer}
 
-    /* overlay & panel */
     .overlay{display:none;position:fixed;inset:0;background:var(--overlay-bg);align-items:center;justify-content:center;z-index:1000;overflow:auto}
     .overlay.active{display:flex}
     .panel{background:var(--panel-bg);color:var(--white);padding:16px;border-radius:8px;width:min(94%,560px);max-width:560px;max-height:90vh;overflow:auto;box-sizing:border-box}
@@ -59,37 +56,37 @@
     .panel .title{font-size:18px;font-weight:700}
     .description{color:var(--muted);font-size:14px;margin-bottom:10px}
 
-    /* records */
     .record-item{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;background:var(--card-bg);margin-bottom:8px;gap:8px}
     .record-text{flex:1;color:var(--white);text-align:left;cursor:pointer;word-break:break-word;padding-right:8px}
     .record-actions{display:flex;gap:6px}
     .btn-save-record{background:var(--yellow);color:#000;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
     .btn-clear-record{background:var(--red);color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
 
-    /* bookmarks */
     .bookmark-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-    .bookmark-card{background:var(--card-bg);padding:8px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;min-height:84px;transition:box-shadow .12s,outline .12s}
+    .bookmark-card{background:var(--card-bg);padding:8px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;min-height:84px;transition:all .12s}
     .bookmark-card img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#333}
     .bookmark-name{font-size:12px;color:var(--white);text-align:center;word-break:break-word}
     .bookmark-actions{display:flex;gap:6px;margin-top:6px}
     .btn-edit-bookmark{background:#6c757d;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
-    .bookmark-card.clear-mark{outline:3px solid rgba(220,53,69,0.9); box-shadow:0 0 0 4px rgba(220,53,69,0.06)}
+    
+    /* 外框樣式修正 */
+    .bookmark-card.editing-mark{outline:3px solid var(--blue); box-shadow:0 0 0 4px rgba(0,123,255,0.06)}
+    .bookmark-card.clear-mark{outline:3px solid var(--red); box-shadow:0 0 0 4px rgba(220,53,69,0.06)}
+    
     .remove-controls{display:flex;align-items:center;gap:10px;margin:10px 0}
     .count-badge{background:var(--green);color:#fff;padding:6px 10px;border-radius:8px;font-weight:700}
 
-    /* add/edit form */
     .add-form{display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px}
     .add-form input[type="text"],.add-form input[type="file"]{padding:8px;border-radius:6px;border:1px solid #ddd;color:var(--input-color);background:var(--input-bg)}
     .add-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
     .left-actions,.right-actions{display:flex;gap:8px}
 
-    /* 清除模式按鈕紅色邊框 */
     .btn-white.clear-mode {
-      outline: 3px solid rgba(220,53,69,0.9);
-      box-shadow: 0 0 0 6px rgba(220,53,69,0.06);
+      background: var(--red);
+      color: #fff;
+      outline: 2px solid var(--white);
     }
 
-    /* popup (non-blocking) */
     .fetch-popup{
       position:fixed;left:50%;transform:translateX(-50%);top:12px;background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;border-radius:8px;z-index:2000;font-size:14px;
       pointer-events:none;display:none;
@@ -107,7 +104,7 @@
 
   <div class="search-container">
     <h1>TNTExplorer 探索器</h1>
-    <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
+    <div class="subtitle">由TNH Minecraft負責監督，Gemini負責實行</div>
 
     <div class="engine-select" aria-hidden="true">
       <select id="engine">
@@ -144,6 +141,7 @@
           </select>
 
           <button id="toggleEditBtn" class="btn-gray">編輯</button>
+          <button id="clearIconBtn" class="btn-white" style="display:none">清除圖示</button>
           <button id="addModeBtn" class="btn-yellow">新增</button>
         </div>
         <div class="title" id="panelTitle">書籤</div>
@@ -153,11 +151,9 @@
         <p id="exploreDesc" class="description" style="display:none">查看你的搜尋、翻譯、前往網站等紀錄</p>
       </div>
 
-      <!-- BOOKMARKS -->
       <div id="bookmarksView" class="content" style="display:block">
         <div class="muted" style="margin-bottom:6px">新增書籤可上傳圖示；若不上傳，系統會嘗試從網址抓取網站圖示作為書籤圖示</div>
 
-        <!-- add/edit form -->
         <div id="addForm" class="add-form" style="display:none">
           <input type="file" id="iconFile" accept="image/*"/>
           <input type="text" id="bookmarkName" placeholder="輸入書籤名"/>
@@ -180,7 +176,6 @@
         <div id="bookmarkGrid" class="bookmark-grid" aria-live="polite"></div>
       </div>
 
-      <!-- RECORDS -->
       <div id="recordsView" class="content" style="display:none">
         <div id="recordsList"></div>
       </div>
@@ -189,7 +184,7 @@
 
   <div style="position:fixed;left:0;right:0;bottom:18px;text-align:center;color:#fff;font-size:14px;z-index:1">
     <a id="supportLink" href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" style="color:#fff;text-decoration:none">支持作者</a>
-    <div style="font-size:13px;margin-top:6px">版本號: 0.8.0</div>
+    <div style="font-size:13px;margin-top:6px">版本號: 0.8.1c</div>
   </div>
 
   <script>
@@ -201,7 +196,6 @@
     function normalizeKey(s){ return (s||'').trim().toLowerCase(); }
     function isLikelyURL(s){ return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(s) }
 
-    // UI refs
     const fetchPopup = document.getElementById('fetchPopup');
     const overlay = document.getElementById('overlay');
     const historyButton = document.getElementById('historyButton');
@@ -214,6 +208,7 @@
     const bookmarkName = document.getElementById('bookmarkName');
     const bookmarkURL = document.getElementById('bookmarkURL');
     const cancelAdd = document.getElementById('cancelAdd');
+    const clearIconBtn = document.getElementById('clearIconBtn');
     const confirmAdd = document.getElementById('confirmAdd');
     const bookmarkGrid = document.getElementById('bookmarkGrid');
     const removeControls = document.getElementById('removeControls');
@@ -224,62 +219,53 @@
     const exploreDesc = document.getElementById('exploreDesc');
     const engineSelect = document.getElementById('engine');
     const queryInput = document.getElementById('query');
-    const goButton = document.getElementById('goButton');
-    const translateButton = document.getElementById('translateButton');
-    const archiveButton = document.getElementById('archiveButton');
 
-    // state
     let removeMode = false;
     let addMode = false;
     let editMode = false;
     let editTargetId = null;
-    let clearIconMode = false; // when true, top white button shows red border
+    let clearIconMode = false; 
     const selectedBookmarks = new Set();
     const failedIconIds = new Set();
 
-    /* ---------- popup helpers ---------- */
     let fetchPopupTimer = null;
     function showFetchPopup(){ fetchPopup.style.display = 'block'; if(fetchPopupTimer) clearTimeout(fetchPopupTimer); fetchPopupTimer = setTimeout(()=>{ hideFetchPopup(); }, 12000); }
     function hideFetchPopup(){ fetchPopup.style.display = 'none'; if(fetchPopupTimer){ clearTimeout(fetchPopupTimer); fetchPopupTimer = null; } }
 
-    /* ---------- storage helpers ---------- */
     function loadRecordsRaw(){ return loadJSON(STORAGE.RECORDS); }
     function saveRecordsRaw(arr){ saveJSON(STORAGE.RECORDS, arr); }
     function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
     function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
 
-    /* ---------- favicon fetch & persistence ---------- */
+    // 圖示抓取邏輯強化與防丟失修正
     async function fetchFaviconDataURL(url){
       if(!url) return null;
       showFetchPopup();
       try{
         const dest = url.match(/^https?:\/\//i) ? url : ('https://' + url);
         const u = new URL(dest);
-        const googleFav = `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`;
-        const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(googleFav)}`;
-        const r = await fetch(wrap);
-        if(r.ok){
-          const blob = await r.blob();
-          if(blob.size > 0){
-            const data = await blobToDataURL(blob);
-            hideFetchPopup();
-            return data;
-          }
-        }
-      }catch(e){}
-      try{
-        const dest = url.match(/^https?:\/\//i) ? url : ('https://' + url);
-        const u = new URL(dest);
-        const fav = `${u.origin}/favicon.ico`;
-        const wrap2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(fav)}`;
-        const r2 = await fetch(wrap2);
-        if(r2.ok){
-          const b = await r2.blob();
-          if(b.size > 0){
-            const data2 = await blobToDataURL(b);
-            hideFetchPopup();
-            return data2;
-          }
+        const host = u.hostname;
+        
+        // 多重備援來源
+        const sources = [
+          `https://www.google.com/s2/favicons?domain=${host}&sz=128`,
+          `https://icons.duckduckgo.com/ip3/${host}.ico`,
+          `https://icon.horse/icon/${host}`
+        ];
+        
+        for(let src of sources){
+          try {
+            const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(src)}`;
+            const r = await fetch(wrap);
+            if(r.ok){
+              const blob = await r.blob();
+              if(blob.size > 200){ 
+                const data = await blobToDataURL(blob);
+                hideFetchPopup();
+                return data;
+              }
+            }
+          } catch(e){}
         }
       }catch(e){}
       hideFetchPopup();
@@ -295,20 +281,15 @@
       });
     }
 
-    /* ---------- records ---------- */
     function addRecord(text){
       if(!text || !text.trim()) return;
       const raw = loadRecordsRaw();
-      const usesString = raw.length === 0 || typeof raw[0] === 'string';
       const key = normalizeKey(text);
-      let filtered;
-      if(usesString){
-        filtered = raw.filter(r => typeof r !== 'string' || normalizeKey(r) !== key);
-        filtered.push(text);
-      } else {
-        filtered = raw.filter(r => !(r && normalizeKey(r.text||'') === key));
-        filtered.push({ id: uid(), text });
-      }
+      const filtered = raw.filter(r => {
+        const rText = (typeof r === 'string') ? r : r.text;
+        return normalizeKey(rText) !== key;
+      });
+      filtered.push({ id: uid(), text });
       saveRecordsRaw(filtered);
     }
 
@@ -316,17 +297,16 @@
       const raw = loadRecordsRaw();
       const items = raw.map(it => {
         if(typeof it === 'string') return { id: uid(), text: it };
-        if(it && typeof it === 'object') return { id: it.id || uid(), text: it.text || (Object.values(it).find(v=>typeof v==='string')||'') };
-        return { id: uid(), text: '' };
+        return { id: it.id || uid(), text: it.text || '' };
       }).reverse();
 
       recordsList.innerHTML = '';
-      if(items.length === 0){ const p=document.createElement('div'); p.className='muted'; p.textContent=''; recordsList.appendChild(p); return; }
+      if(items.length === 0) return;
 
       items.forEach(item=>{
         const row = document.createElement('div'); row.className='record-item';
         const txt = document.createElement('div'); txt.className='record-text'; txt.textContent = item.text || '';
-        txt.addEventListener('click', ()=>{ if(!item.text) return; queryInput.value = item.text; overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); });
+        txt.addEventListener('click', ()=>{ queryInput.value = item.text; closePanelFunc(); });
 
         const actions = document.createElement('div'); actions.className='record-actions';
         const saveBtn = document.createElement('button'); saveBtn.className='btn-save-record'; saveBtn.textContent='儲存';
@@ -336,7 +316,7 @@
           openPanel('bookmarks');
           enterAddMode();
           bookmarkName.value = item.text || '';
-          // URL intentionally not overwritten
+          bookmarkURL.value = item.text || ''; 
         });
 
         clearBtn.addEventListener('click', ()=> {
@@ -351,15 +331,14 @@
       });
     }
 
-    /* ---------- bookmarks ---------- */
     async function addBookmark({name, url, icon}) {
       let finalIcon = icon || null;
       if(!finalIcon && url && url.trim()){
         finalIcon = await fetchFaviconDataURL(url).catch(()=>null);
       }
       const arr = loadBookmarks();
-      const key = normalizeKey((name||'') + '|' + (url||''));
-      const filtered = arr.filter(b => normalizeKey(b.name + '|' + (b.url||'')) !== key);
+      const key = normalizeKey(name + '|' + url);
+      const filtered = arr.filter(b => normalizeKey(b.name + '|' + b.url) !== key);
       filtered.push({ id: uid(), name: name||'', url: url||'', icon: finalIcon });
       saveBookmarks(filtered);
     }
@@ -367,33 +346,23 @@
     function renderBookmarks(){
       const arr = loadBookmarks();
       bookmarkGrid.innerHTML = '';
-      if(arr.length === 0){ const el=document.createElement('div'); el.className='muted'; el.textContent=''; bookmarkGrid.appendChild(el); return; }
       arr.forEach(b=>{
         const card = document.createElement('div'); card.className='bookmark-card'; card.dataset.id = b.id;
         const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
         img.onerror = ()=>{ failedIconIds.add(b.id); img.src = ''; };
-        img.onload = ()=>{ failedIconIds.delete(b.id); };
-
+        
         const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
-
         const actionsWrap = document.createElement('div'); actionsWrap.className = 'bookmark-actions';
         const editBtn = document.createElement('button'); editBtn.className = 'btn-edit-bookmark'; editBtn.textContent = '編輯';
         editBtn.style.display = removeMode ? 'inline-block' : 'none';
 
         card.addEventListener('click', (e)=> {
-          // Quick-set name only when in add/edit mode and not in clear-icon mode
-          if(addMode && !clearIconMode){
+          if(addMode){
             bookmarkName.value = b.name || '';
             return;
           }
 
-          // If clear-icon mode active: clicking cards does nothing (we only clear the currently edited bookmark)
-          if(addMode && clearIconMode){
-            return;
-          }
-
           if(removeMode){
-            // selection for remove mode
             if(card.classList.contains('selected')){ card.classList.remove('selected'); selectedBookmarks.delete(b.id); }
             else { card.classList.add('selected'); selectedBookmarks.add(b.id); }
             selectedCount.textContent = String(selectedBookmarks.size);
@@ -405,31 +374,29 @@
             window.open(dest, '_blank');
           } else {
             queryInput.value = b.name || '';
-            overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
+            closePanelFunc();
           }
         });
 
-        editBtn.addEventListener('click', (e)=>{
-          e.stopPropagation();
-          enterEditMode(b.id);
-        });
+        editBtn.addEventListener('click', (e)=>{ e.stopPropagation(); enterEditMode(b.id); });
 
         card.appendChild(img); card.appendChild(name);
         actionsWrap.appendChild(editBtn);
         card.appendChild(actionsWrap);
 
-        // show clear-mark only when this card is the one being edited and clearIconMode active
-        if(clearIconMode && editMode && editTargetId === b.id) card.classList.add('clear-mark'); else card.classList.remove('clear-mark');
+        // 外框視覺邏輯修正
+        if(editMode && editTargetId === b.id){
+           card.classList.add(clearIconMode ? 'clear-mark' : 'editing-mark');
+        }
 
-        if(removeMode) card.classList.add('select-mode'); else card.classList.remove('select-mode');
-        if(selectedBookmarks.has(b.id)) card.classList.add('selected'); else card.classList.remove('selected');
+        if(removeMode) card.classList.add('select-mode');
+        if(selectedBookmarks.has(b.id)) card.classList.add('selected');
 
         bookmarkGrid.appendChild(card);
       });
       selectedCount.textContent = String(selectedBookmarks.size || 0);
     }
 
-    /* ---------- panel controls ---------- */
     function openPanel(defaultView='bookmarks'){ panelMenu.value = defaultView; switchView(defaultView); overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); }
     function closePanelFunc(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); exitAddMode(); exitRemoveMode(); exitEditMode(); }
     historyButton.addEventListener('click', ()=> openPanel('bookmarks'));
@@ -458,89 +425,71 @@
       }
     }
 
-    /* ---------- add / clear-icon mode ---------- */
     function enterAddMode(){
       addMode = true; editMode = false; editTargetId = null;
-      addModeBtn.className = 'btn-white'; addModeBtn.textContent = '清除圖示';
+      addModeBtn.style.display = 'none';
       addForm.style.display = 'flex';
+      clearIconBtn.style.display = 'none'; 
       confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
       toggleEditBtn.style.display = 'none';
       removeControls.style.display = 'none';
       clearIconMode = false;
-      addModeBtn.classList.remove('clear-mode');
       renderBookmarks();
     }
     function exitAddMode(){
       addMode = false;
-      addModeBtn.className = 'btn-yellow'; addModeBtn.textContent = '新增';
+      addModeBtn.style.display = 'inline-block';
       addForm.style.display = 'none';
-      confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
       if(panelMenu.value === 'bookmarks') toggleEditBtn.style.display = 'inline-block';
       clearIconMode = false;
-      addModeBtn.classList.remove('clear-mode');
+      clearIconBtn.style.display = 'none';
+      clearIconBtn.classList.remove('clear-mode');
       renderBookmarks();
       clearAddForm();
     }
 
-    // toggle addMode or toggle clearIconMode when already in addMode
-    addModeBtn.addEventListener('click', ()=> {
-      if(panelMenu.value !== 'bookmarks') return;
-      if(!addMode){ enterAddMode(); return; }
-      // toggle clear-icon mode: visualized by adding class to the button (red border)
+    addModeBtn.addEventListener('click', enterAddMode);
+    cancelAdd.addEventListener('click', exitAddMode);
+
+    clearIconBtn.addEventListener('click', ()=> {
       clearIconMode = !clearIconMode;
-      if(clearIconMode) addModeBtn.classList.add('clear-mode'); else addModeBtn.classList.remove('clear-mode');
+      if(clearIconMode) clearIconBtn.classList.add('clear-mode'); else clearIconBtn.classList.remove('clear-mode');
       renderBookmarks();
     });
 
-    cancelAdd.addEventListener('click', ()=> exitAddMode());
-
-    /* ---------- confirm add / save behavior ---------- */
     confirmAdd.addEventListener('click', async ()=>{
       const file = iconFile.files && iconFile.files[0];
       const name = (bookmarkName.value || '').trim();
       const url = (bookmarkURL.value || '').trim();
       if(!name || !url){ alert('請輸入書籤名稱與網址'); return; }
 
-      // If clearIconMode active and editing a bookmark: clear that bookmark's icon and immediately save
       if(clearIconMode && editMode && editTargetId){
         const arr = loadBookmarks();
         const idx = arr.findIndex(b => b.id === editTargetId);
         if(idx !== -1){
-          arr[idx].icon = null;
-          // attempt to re-fetch favicon and store if available
-          const newIcon = await fetchFaviconDataURL(arr[idx].url).catch(()=>null);
-          if(newIcon) arr[idx].icon = newIcon;
-          // also update name/url from form and save immediately
+          arr[idx].icon = await fetchFaviconDataURL(url).catch(()=>null);
           arr[idx].name = name;
           arr[idx].url = url;
           saveBookmarks(arr);
         }
-        // exit clear mode after operation
-        clearIconMode = false;
-        addModeBtn.classList.remove('clear-mode');
         exitEditMode();
-        renderBookmarks();
         return;
       }
 
       if(editMode && editTargetId){
         const arr = loadBookmarks();
         const idx = arr.findIndex(b => b.id === editTargetId);
-        if(idx === -1){ alert('找不到要編輯的書籤'); return; }
+        if(idx === -1) return;
         let iconData = arr[idx].icon || null;
         if(file) iconData = await fileToDataURL(file);
         else if(!iconData || failedIconIds.has(editTargetId)) iconData = await fetchFaviconDataURL(url);
         arr[idx].name = name; arr[idx].url = url; arr[idx].icon = iconData;
         saveBookmarks(arr);
         exitEditMode();
-        renderBookmarks();
         return;
       }
 
-      // Normal add flow
-      let iconData = null;
-      if(file) iconData = await fileToDataURL(file);
-      else iconData = await fetchFaviconDataURL(url);
+      let iconData = file ? await fileToDataURL(file) : await fetchFaviconDataURL(url);
       await addBookmark({ name, url, icon: iconData });
       exitAddMode();
       renderBookmarks();
@@ -549,15 +498,13 @@
     function clearAddForm(){ iconFile.value = ''; bookmarkName.value = ''; bookmarkURL.value = ''; }
     function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); }); }
 
-    /* ---------- remove mode ---------- */
     toggleEditBtn.addEventListener('click', ()=> {
-      if(panelMenu.value !== 'bookmarks') return;
       if(!removeMode) enterRemoveMode(); else exitRemoveMode();
     });
 
     function enterRemoveMode(){
       removeMode = true;
-      toggleEditBtn.classList.remove('btn-gray'); toggleEditBtn.classList.add('btn-blue'); toggleEditBtn.textContent = '完成';
+      toggleEditBtn.className = 'btn-blue'; toggleEditBtn.textContent = '完成';
       addModeBtn.style.display = 'none';
       removeControls.style.display = 'flex';
       selectedBookmarks.clear();
@@ -565,27 +512,30 @@
     }
     function exitRemoveMode(){
       removeMode = false;
-      toggleEditBtn.classList.remove('btn-blue'); toggleEditBtn.classList.add('btn-gray'); toggleEditBtn.textContent = '編輯';
+      toggleEditBtn.className = 'btn-gray'; toggleEditBtn.textContent = '編輯';
       removeControls.style.display = 'none';
-      selectedBookmarks.clear();
       if(panelMenu.value === 'bookmarks') addModeBtn.style.display = 'inline-block';
       renderBookmarks();
     }
     removeSelected.addEventListener('click', ()=>{
-      if(selectedBookmarks.size === 0){ alert('未選擇任何書籤'); return; }
+      if(selectedBookmarks.size === 0) return;
       let arr = loadBookmarks(); arr = arr.filter(b => !selectedBookmarks.has(b.id)); saveBookmarks(arr);
       selectedBookmarks.clear(); exitRemoveMode(); renderBookmarks();
     });
 
-    /* ---------- edit mode ---------- */
     function enterEditMode(id){
       const arr = loadBookmarks();
       const b = arr.find(x => x.id === id);
-      if(!b){ alert('找不到書籤'); return; }
+      if(!b) return;
       openPanel('bookmarks');
       exitRemoveMode();
-      enterAddMode();
-      editMode = true; editTargetId = id;
+      addMode = true; editMode = true; editTargetId = id;
+      addModeBtn.style.display = 'none';
+      addForm.style.display = 'flex';
+      
+      toggleEditBtn.style.display = 'none';
+      clearIconBtn.style.display = 'inline-block';
+      
       bookmarkName.value = b.name || '';
       bookmarkURL.value = b.url || '';
       confirmAdd.className = 'btn-blue'; confirmAdd.textContent = '儲存';
@@ -593,33 +543,52 @@
     }
     function exitEditMode(){
       editMode = false; editTargetId = null;
-      confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
       exitAddMode();
+      // 確保取消/儲存後徹底移除視覺標記
+      const cards = document.querySelectorAll('.bookmark-card');
+      cards.forEach(c => {
+        c.classList.remove('editing-mark');
+        c.classList.remove('clear-mark');
+      });
     }
 
-    /* ---------- main actions ---------- */
-    function getInputVal(){ return queryInput.value.trim(); }
-    function performGo(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); window.open(dest,'_blank'); } else { const tmpl = engineSelect.value; window.open(tmpl.replace('%s', encodeURIComponent(v)),'_blank'); } }
-    function performTranslate(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); try{ const u=new URL(dest); const host=u.hostname.replace(/\./g,'-') + '.translate.goog'; const final=`https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); }catch(e){ alert('無效的網址格式'); } } else { const tran=`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`; window.open(tran,'_blank'); } }
-    function performArchive(){ const v = getInputVal(); if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; } addRecord(v); const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); const code = new Date().getFullYear() + '0000000000*'; window.open(`https://web.archive.org/web/${code}/${dest}`,'_blank'); }
-
+    function performGo(){ 
+      const v = queryInput.value.trim(); 
+      if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } 
+      addRecord(v); 
+      if(isLikelyURL(v)){ 
+        window.open(v.match(/^https?:\/\//i) ? v : ('https://' + v),'_blank'); 
+      } else { 
+        window.open(engineSelect.value.replace('%s', encodeURIComponent(v)),'_blank'); 
+      } 
+    }
+    
     document.getElementById('goButton').addEventListener('click', performGo);
-    document.getElementById('translateButton').addEventListener('click', performTranslate);
-    document.getElementById('archiveButton').addEventListener('click', performArchive);
+    document.getElementById('translateButton').addEventListener('click', ()=> {
+      const v = queryInput.value.trim();
+      if(!v) return;
+      addRecord(v);
+      if(isLikelyURL(v)){
+        const u = new URL(v.match(/^https?:\/\//i) ? v : ('https://' + v));
+        window.open(`https://${u.hostname.replace(/\./g,'-')}.translate.goog${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`,'_blank');
+      } else {
+        window.open(`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`,'_blank');
+      }
+    });
+    document.getElementById('archiveButton').addEventListener('click', ()=> {
+      const v = queryInput.value.trim();
+      if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; }
+      addRecord(v);
+      window.open(`https://web.archive.org/web/${new Date().getFullYear()}0000000000*/${v.match(/^https?:\/\//i) ? v : ('https://' + v)}`,'_blank');
+    });
     document.getElementById('searchForm').addEventListener('submit', e=>{ e.preventDefault(); performGo(); });
 
-    /* ---------- init ---------- */
     function init(){
       if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
       if(!localStorage.getItem(STORAGE.RECORDS)) saveRecordsRaw([]);
-      panelTitle.textContent = '書籤';
       exitAddMode(); exitRemoveMode(); exitEditMode();
     }
     init();
-
-    // expose for debugging
-    window.renderBookmarks = renderBookmarks;
-    window.renderRecords = renderRecords;
   </script>
 </body>
 </html>
