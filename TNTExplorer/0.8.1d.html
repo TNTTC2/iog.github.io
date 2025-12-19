@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>TNTExplorer 探索器</title>
+
+  <style>
+    :root{
+      --orange:#ED732E; --black:#000; --white:#ffffff; --muted:#bbb;
+      --green:#28a745; --red:#dc3545; --blue:#007bff; --yellow:#ffd400;
+      --panel-bg: rgba(0,0,0,0.92); --overlay-bg: rgba(0,0,0,0.75);
+      --input-bg: #ffffff; --input-color: #111; --card-bg: rgba(255,255,255,0.03);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root{
+        --input-bg: #1b1b1b; --input-color: #e6e6e6;
+        --panel-bg: rgba(12,12,12,0.98); --overlay-bg: rgba(0,0,0,0.85);
+        --card-bg: rgba(255,255,255,0.02); --muted:#9f9f9f;
+      }
+    }
+
+    html,body{height:100%;margin:0;padding:0;overflow-x:hidden;font-family:Arial, sans-serif;-webkit-text-size-adjust:100%;}
+    body{display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(to bottom,var(--orange)0%,var(--orange)20%,var(--white)20%,var(--white)80%,var(--orange)80%,var(--orange)100%);
+    }
+
+    .search-container{background:var(--black);color:var(--white);width:min(92%,420px);padding:20px 28px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.5);text-align:center;z-index:1}
+    .search-container h1{font-size:26px;margin:0 0 6px}
+    .subtitle{font-size:14px;margin:0 0 16px;opacity:.85;font-style:italic}
+    .engine-select{margin-bottom:10px;text-align:left}
+    .engine-select select{width:100%;padding:8px;border-radius:6px;border:none;font-size:15px;background:var(--input-bg);color:var(--input-color)}
+    .search-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+    .search-row input[type="text"]{flex:1;padding:10px;font-size:15px;border-radius:8px;border:1px solid #ddd;outline:none;background:var(--input-bg);color:var(--input-color)}
+    #historyButton{width:40px;height:40px;background:var(--yellow);border:none;border-radius:6px;cursor:pointer;font-size:18px}
+    .button-row{display:flex;gap:8px;margin-bottom:10px}
+    .button-row button{flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;font-size:15px}
+    #translateButton{background:var(--green);color:#fff}#goButton{background:#0073e6;color:#fff}
+    #archiveButton{width:100%;padding:12px;border-radius:8px;border:none;background:var(--red);color:#fff;cursor:pointer}
+
+    .overlay{display:none;position:fixed;inset:0;background:var(--overlay-bg);align-items:center;justify-content:center;z-index:1000;overflow:auto}
+    .overlay.active{display:flex}
+    .panel{background:var(--panel-bg);color:var(--white);padding:16px;border-radius:8px;width:min(94%,560px);max-width:560px;max-height:90vh;overflow:auto;box-sizing:border-box}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+    .left-controls{display:flex;gap:8px;align-items:center}
+    .btn-gray{background:#6c757d;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .btn-white{background:#fff;color:#000;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .btn-yellow{background:var(--yellow);color:#000;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .btn-red{background:var(--red);color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .btn-blue{background:var(--blue);color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .menu-select{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:6px 8px;border-radius:6px}
+    .panel .title{font-size:18px;font-weight:700}
+    .description{color:var(--muted);font-size:14px;margin-bottom:10px}
+
+    .record-item{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;background:var(--card-bg);margin-bottom:8px;gap:8px}
+    .record-text{flex:1;color:var(--white);text-align:left;cursor:pointer;word-break:break-word;padding-right:8px}
+    .record-actions{display:flex;gap:6px}
+    .btn-save-record{background:var(--yellow);color:#000;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
+    .btn-clear-record{background:var(--red);color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
+
+    .bookmark-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .bookmark-card{background:var(--card-bg);padding:8px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;min-height:84px;transition:box-shadow .12s,outline .12s}
+    .bookmark-card img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#333}
+    .bookmark-name{font-size:12px;color:var(--white);text-align:center;word-break:break-word}
+    .bookmark-actions{display:flex;gap:6px;margin-top:6px}
+    .btn-edit-bookmark{background:#6c757d;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
+    .bookmark-card.edit-focus{outline:3px solid rgba(0,123,255,0.9); box-shadow:0 0 0 6px rgba(0,123,255,0.06)}
+    .bookmark-card.clear-mark{outline:3px solid rgba(220,53,69,0.9); box-shadow:0 0 0 4px rgba(220,53,69,0.06)}
+    .remove-controls{display:flex;align-items:center;gap:10px;margin:10px 0}
+    .count-badge{background:var(--green);color:#fff;padding:6px 10px;border-radius:8px;font-weight:700}
+
+    .add-form{display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+    .add-form input[type="text"],.add-form input[type="file"]{padding:8px;border-radius:6px;border:1px solid #ddd;color:var(--input-color);background:var(--input-bg)}
+    .add-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+    .left-actions,.right-actions{display:flex;gap:8px}
+
+    .btn-white.clear-mode {
+      outline: 3px solid rgba(220,53,69,0.9);
+      box-shadow: 0 0 0 6px rgba(220,53,69,0.06);
+    }
+
+    .fetch-popup{
+      position:fixed;left:50%;transform:translateX(-50%);top:12px;background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;border-radius:8px;z-index:2000;font-size:14px;
+      pointer-events:none;display:none;
+    }
+
+    @media (max-width:420px){
+      .bookmark-grid{grid-template-columns:repeat(4,1fr)}
+      .bookmark-card img{width:36px;height:36px}
+      .panel{padding:12px}
+    }
+  </style>
+</head>
+<body>
+  <div class="fetch-popup" id="fetchPopup">正在抓取網站圖示</div>
+
+  <div class="search-container">
+    <h1>TNTExplorer 探索器</h1>
+    <div class="subtitle">由TNH Minecraft負責監督，Copilot負責實行</div>
+
+    <div class="engine-select" aria-hidden="true">
+      <select id="engine">
+        <option value="https://www.google.com/search?num=70&udm=14&q=%s" selected>Google</option>
+        <option value="https://www.bing.com/search?q=%s">Bing</option>
+        <option value="https://www.youtube.com/results?search_query=%s">YouTube</option>
+        <option value="https://www.reddit.com/search/?q=%s">Reddit</option>
+      </select>
+    </div>
+
+    <form id="searchForm">
+      <div class="search-row">
+        <input type="text" id="query" placeholder="請輸入查詢或網址…" autocomplete="off"/>
+        <button type="button" id="historyButton">⧆</button>
+      </div>
+
+      <div class="button-row">
+        <button type="button" id="translateButton">翻譯</button>
+        <button type="button" id="goButton">前往</button>
+      </div>
+    </form>
+
+    <button id="archiveButton">查看舊版網頁</button>
+  </div>
+
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+      <div class="topbar">
+        <div class="left-controls">
+          <button id="closePanel" class="btn-gray">關閉</button>
+          <select id="panelMenu" class="menu-select" aria-label="選單位置">
+            <option value="bookmarks">書籤</option>
+            <option value="records">探索記錄</option>
+          </select>
+
+          <button id="toggleEditBtn" class="btn-gray">編輯</button>
+          <button id="addModeBtn" class="btn-yellow">新增</button>
+          <button id="clearIconBtn" class="btn-white" style="display:none">清除圖示</button>
+        </div>
+        <div class="title" id="panelTitle">書籤</div>
+      </div>
+
+      <div id="panelDescription">
+        <p id="exploreDesc" class="description" style="display:none">查看你的搜尋、翻譯、前往網站等紀錄</p>
+      </div>
+
+      <!-- BOOKMARKS -->
+      <div id="bookmarksView" class="content" style="display:block">
+        <div class="muted" style="margin-bottom:6px">新增書籤可上傳圖示；若不上傳，系統會嘗試從網址抓取網站圖示作為書籤圖示</div>
+
+        <!-- add/edit form -->
+        <div id="addForm" class="add-form" style="display:none">
+          <input type="file" id="iconFile" accept="image/*"/>
+          <input type="text" id="bookmarkName" placeholder="輸入書籤名"/>
+          <input type="text" id="bookmarkURL" placeholder="輸入書籤網址"/>
+          <div class="add-actions">
+            <div class="left-actions">
+              <button id="cancelAdd" class="btn-gray">返回</button>
+            </div>
+            <div class="right-actions">
+              <button id="confirmAdd" class="btn-yellow">新增</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="removeControls" style="display:none" class="remove-controls">
+          <div class="count-badge" id="selectedCount">0</div>
+          <button id="removeSelected" class="btn-red">移除所選</button>
+        </div>
+
+        <div id="bookmarkGrid" class="bookmark-grid" aria-live="polite"></div>
+      </div>
+
+      <!-- RECORDS -->
+      <div id="recordsView" class="content" style="display:none">
+        <div id="recordsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:fixed;left:0;right:0;bottom:18px;text-align:center;color:#fff;font-size:14px;z-index:1">
+    <a id="supportLink" href="https://www.youtube.com/@Minecraft_TryingTNH-db5pb" style="color:#fff;text-decoration:none">支持作者</a>
+    <div style="font-size:13px;margin-top:6px">版本號: 0.8.1d</div>
+  </div>
+
+  <script>
+    const STORAGE = { RECORDS: 'tntExplorerHistory', BOOKMARKS: 'tnt_explore_bookmarks' };
+
+    function loadJSON(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){ return []; } }
+    function saveJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
+    function uid(){ return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+    function normalizeKey(s){ return (s||'').trim().toLowerCase(); }
+    function isLikelyURL(s){ return /(:\/\/)|(^(?!\.)\S+\.[^\s]+$)/i.test(s) }
+
+    // UI refs
+    const fetchPopup = document.getElementById('fetchPopup');
+    const overlay = document.getElementById('overlay');
+    const historyButton = document.getElementById('historyButton');
+    const panelMenu = document.getElementById('panelMenu');
+    const panelTitle = document.getElementById('panelTitle');
+    const toggleEditBtn = document.getElementById('toggleEditBtn');
+    const addModeBtn = document.getElementById('addModeBtn');
+    const clearIconBtn = document.getElementById('clearIconBtn');
+    const addForm = document.getElementById('addForm');
+    const iconFile = document.getElementById('iconFile');
+    const bookmarkName = document.getElementById('bookmarkName');
+    const bookmarkURL = document.getElementById('bookmarkURL');
+    const cancelAdd = document.getElementById('cancelAdd');
+    const confirmAdd = document.getElementById('confirmAdd');
+    const bookmarkGrid = document.getElementById('bookmarkGrid');
+    const removeControls = document.getElementById('removeControls');
+    const selectedCount = document.getElementById('selectedCount');
+    const removeSelected = document.getElementById('removeSelected');
+    const recordsList = document.getElementById('recordsList');
+    const closePanel = document.getElementById('closePanel');
+    const exploreDesc = document.getElementById('exploreDesc');
+    const engineSelect = document.getElementById('engine');
+    const queryInput = document.getElementById('query');
+    const goButton = document.getElementById('goButton');
+    const translateButton = document.getElementById('translateButton');
+    const archiveButton = document.getElementById('archiveButton');
+
+    // state
+    let removeMode = false;
+    let addMode = false;
+    let editMode = false;
+    let editTargetId = null;
+    let clearIconMode = false; // only in edit mode
+    const selectedBookmarks = new Set();
+    const failedIconIds = new Set();
+
+    /* ---------- popup helpers ---------- */
+    let fetchPopupTimer = null;
+    function showFetchPopup(){ fetchPopup.style.display = 'block'; if(fetchPopupTimer) clearTimeout(fetchPopupTimer); fetchPopupTimer = setTimeout(()=>{ hideFetchPopup(); }, 12000); }
+    function hideFetchPopup(){ fetchPopup.style.display = 'none'; if(fetchPopupTimer){ clearTimeout(fetchPopupTimer); fetchPopupTimer = null; } }
+
+    /* ---------- storage helpers ---------- */
+    function loadRecordsRaw(){ return loadJSON(STORAGE.RECORDS); }
+    function saveRecordsRaw(arr){ saveJSON(STORAGE.RECORDS, arr); }
+    function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
+    function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
+
+    /* ---------- favicon fetch & persistence (multi-source) ---------- */
+    async function fetchFaviconDataURL(url){
+      if(!url) return null;
+      showFetchPopup();
+      try{
+        const dest = url.match(/^https?:\/\//i) ? url : ('https://' + url);
+        const u = new URL(dest);
+        const sources = [
+          `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`,
+          `${u.origin}/favicon.ico`,
+          `https://icons.duckduckgo.com/ip3/${u.hostname}.ico`,
+          `https://favicongrabber.com/api/grab/${u.hostname}`
+        ];
+        for(let i=0;i<sources.length;i++){
+          try{
+            const s = sources[i];
+            if(s.includes('favicongrabber.com')){
+              const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(s)}`;
+              const r = await fetch(wrap);
+              if(r.ok){
+                const json = await r.json().catch(()=>null);
+                if(json && Array.isArray(json.icons) && json.icons.length>0 && json.icons[0].src){
+                  const iconUrl = json.icons[0].src;
+                  const blob = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(iconUrl)}`).then(rr=>rr.blob()).catch(()=>null);
+                  if(blob && blob.size>0){
+                    const data = await blobToDataURL(blob);
+                    hideFetchPopup();
+                    return data;
+                  }
+                }
+              }
+            } else {
+              const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(s)}`;
+              const r = await fetch(wrap);
+              if(r.ok){
+                const blob = await r.blob();
+                if(blob && blob.size>0){
+                  const data = await blobToDataURL(blob);
+                  hideFetchPopup();
+                  return data;
+                }
+              }
+            }
+          }catch(e){}
+        }
+      }catch(e){}
+      hideFetchPopup();
+      return null;
+    }
+
+    function blobToDataURL(blob){
+      return new Promise((res, rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=>res(fr.result);
+        fr.onerror = rej;
+        fr.readAsDataURL(blob);
+      });
+    }
+
+    /* ---------- records ---------- */
+    function addRecord(text){
+      if(!text || !text.trim()) return;
+      const raw = loadRecordsRaw();
+      const usesString = raw.length === 0 || typeof raw[0] === 'string';
+      const key = normalizeKey(text);
+      let filtered;
+      if(usesString){
+        filtered = raw.filter(r => typeof r !== 'string' || normalizeKey(r) !== key);
+        filtered.push(text);
+      } else {
+        filtered = raw.filter(r => !(r && normalizeKey(r.text||'') === key));
+        filtered.push({ id: uid(), text });
+      }
+      saveRecordsRaw(filtered);
+    }
+
+    function renderRecords(){
+      const raw = loadRecordsRaw();
+      const items = raw.map(it => {
+        if(typeof it === 'string') return { id: uid(), text: it };
+        if(it && typeof it === 'object') return { id: it.id || uid(), text: it.text || (Object.values(it).find(v=>typeof v==='string')||'') };
+        return { id: uid(), text: '' };
+      }).reverse();
+
+      recordsList.innerHTML = '';
+      if(items.length === 0){ const p=document.createElement('div'); p.className='muted'; p.textContent=''; recordsList.appendChild(p); return; }
+
+      items.forEach(item=>{
+        const row = document.createElement('div'); row.className='record-item';
+        const txt = document.createElement('div'); txt.className='record-text'; txt.textContent = item.text || '';
+        txt.addEventListener('click', ()=>{ if(!item.text) return; queryInput.value = item.text; overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); });
+
+        const actions = document.createElement('div'); actions.className='record-actions';
+        const saveBtn = document.createElement('button'); saveBtn.className='btn-save-record'; saveBtn.textContent='儲存';
+        const clearBtn = document.createElement('button'); clearBtn.className='btn-clear-record'; clearBtn.textContent='清除';
+
+        // Save from records: fill both name and URL in add/edit form
+        saveBtn.addEventListener('click', ()=> {
+          openPanel('bookmarks');
+          enterAddMode();
+          if(isLikelyURL(item.text)){
+            bookmarkURL.value = item.text;
+            bookmarkName.value = item.text;
+          } else {
+            bookmarkName.value = item.text;
+            bookmarkURL.value = item.text;
+          }
+        });
+
+        clearBtn.addEventListener('click', ()=> {
+          const rawBefore = loadRecordsRaw();
+          const idx = rawBefore.findIndex(r => (typeof r==='string' && r === item.text) || (r && r.text === item.text));
+          if(idx !== -1){ rawBefore.splice(idx,1); saveRecordsRaw(rawBefore); renderRecords(); }
+        });
+
+        actions.appendChild(saveBtn); actions.appendChild(clearBtn);
+        row.appendChild(txt); row.appendChild(actions);
+        recordsList.appendChild(row);
+      });
+    }
+
+    /* ---------- bookmarks ---------- */
+    async function addBookmark({name, url, icon}) {
+      let finalIcon = icon || null;
+      if(!finalIcon && url && url.trim()){
+        finalIcon = await fetchFaviconDataURL(url).catch(()=>null);
+      }
+      const arr = loadBookmarks();
+      const key = normalizeKey((name||'') + '|' + (url||''));
+      const filtered = arr.filter(b => normalizeKey(b.name + '|' + (b.url||'')) !== key);
+      filtered.push({ id: uid(), name: name||'', url: url||'', icon: finalIcon });
+      saveBookmarks(filtered);
+    }
+
+    function renderBookmarks(){
+      const arr = loadBookmarks();
+      bookmarkGrid.innerHTML = '';
+      if(arr.length === 0){ const el=document.createElement('div'); el.className='muted'; el.textContent=''; bookmarkGrid.appendChild(el); return; }
+      arr.forEach(b=>{
+        const card = document.createElement('div'); card.className='bookmark-card'; card.dataset.id = b.id;
+        const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
+        img.onerror = ()=>{ failedIconIds.add(b.id); img.src = ''; };
+        img.onload = ()=>{ failedIconIds.delete(b.id); };
+
+        const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
+
+        const actionsWrap = document.createElement('div'); actionsWrap.className = 'bookmark-actions';
+        const editBtn = document.createElement('button'); editBtn.className = 'btn-edit-bookmark'; editBtn.textContent = '編輯';
+        // editBtn only visible when clearIconMode is active (per spec)
+        editBtn.style.display = (clearIconMode && editMode) ? 'inline-block' : 'none';
+
+        card.addEventListener('click', (e)=> {
+          // Quick-set name only when in add/edit mode and NOT in clear-icon mode
+          if((addMode || editMode) && !clearIconMode){
+            bookmarkName.value = b.name || '';
+            return;
+          }
+
+          // If in clear-icon mode and in edit mode: toggle red-mark on that card
+          if(editMode && clearIconMode){
+            if(card.classList.contains('clear-mark')){ card.classList.remove('clear-mark'); }
+            else { card.classList.add('clear-mark'); }
+            return;
+          }
+
+          if(removeMode){
+            if(card.classList.contains('selected')){ card.classList.remove('selected'); selectedBookmarks.delete(b.id); }
+            else { card.classList.add('selected'); selectedBookmarks.add(b.id); }
+            selectedCount.textContent = String(selectedBookmarks.size);
+            return;
+          }
+
+          if(b.url && b.url.trim()){
+            const dest = b.url.match(/^https?:\/\//i) ? b.url : ('https://' + b.url);
+            window.open(dest, '_blank');
+          } else {
+            queryInput.value = b.name || '';
+            overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
+          }
+        });
+
+        editBtn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          enterEditMode(b.id);
+        });
+
+        card.appendChild(img); card.appendChild(name);
+        actionsWrap.appendChild(editBtn);
+        card.appendChild(actionsWrap);
+
+        // show edit-focus (blue) when editing this bookmark and clearIconMode is not active
+        if(editMode && editTargetId === b.id && !clearIconMode) card.classList.add('edit-focus'); else card.classList.remove('edit-focus');
+
+        // show clear-mark (red) when this card has been marked (class toggled on click) OR when editing this bookmark and clearIconMode active
+        if(card.classList.contains('clear-mark') || (editMode && editTargetId === b.id && clearIconMode)) card.classList.add('clear-mark'); else card.classList.remove('clear-mark');
+
+        if(removeMode) card.classList.add('select-mode'); else card.classList.remove('select-mode');
+        if(selectedBookmarks.has(b.id)) card.classList.add('selected'); else card.classList.remove('selected');
+
+        bookmarkGrid.appendChild(card);
+      });
+      selectedCount.textContent = String(selectedBookmarks.size || 0);
+    }
+
+    /* ---------- panel controls ---------- */
+    function openPanel(defaultView='bookmarks'){ panelMenu.value = defaultView; switchView(defaultView); overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); }
+    function closePanelFunc(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); exitAddMode(); exitRemoveMode(); exitEditMode(); }
+    historyButton.addEventListener('click', ()=> openPanel('bookmarks'));
+    closePanel.addEventListener('click', closePanelFunc);
+    overlay.addEventListener('click', e => { if(e.target === overlay) closePanelFunc(); });
+    panelMenu.addEventListener('change', e => switchView(e.target.value));
+
+    function switchView(view){
+      exitAddMode(); exitRemoveMode(); exitEditMode();
+      if(view === 'bookmarks'){
+        document.getElementById('bookmarksView').style.display = 'block';
+        document.getElementById('recordsView').style.display = 'none';
+        panelTitle.textContent = '書籤';
+        exploreDesc.style.display = 'none';
+        addModeBtn.style.display = 'inline-block';
+        toggleEditBtn.style.display = 'inline-block';
+        clearIconBtn.style.display = 'none';
+        renderBookmarks();
+      } else {
+        document.getElementById('bookmarksView').style.display = 'none';
+        document.getElementById('recordsView').style.display = 'block';
+        panelTitle.textContent = '探索記錄';
+        exploreDesc.style.display = 'block';
+        addModeBtn.style.display = 'none';
+        toggleEditBtn.style.display = 'none';
+        clearIconBtn.style.display = 'none';
+        renderRecords();
+      }
+    }
+
+    /* ---------- add / edit / clear-icon mode ---------- */
+    function enterAddMode(){
+      addMode = true; editMode = false; editTargetId = null;
+      addModeBtn.style.display = 'none';
+      addForm.style.display = 'flex';
+      confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
+      toggleEditBtn.style.display = 'none';
+      removeControls.style.display = 'none';
+      clearIconMode = false;
+      clearIconBtn.style.display = 'none';
+      renderBookmarks();
+    }
+    function exitAddMode(){
+      addMode = false;
+      addModeBtn.style.display = 'inline-block';
+      addForm.style.display = 'none';
+      confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
+      if(panelMenu.value === 'bookmarks') toggleEditBtn.style.display = 'inline-block';
+      clearIconMode = false;
+      clearIconBtn.style.display = 'none';
+      renderBookmarks();
+      clearAddForm();
+    }
+
+    // top add button enters add mode when not already in add/edit
+    addModeBtn.addEventListener('click', ()=> {
+      if(panelMenu.value !== 'bookmarks') return;
+      if(!addMode && !editMode){ enterAddMode(); return; }
+    });
+
+    // cancel/back in add/edit: ensure frames and clear mode are cleared
+    cancelAdd.addEventListener('click', ()=> {
+      // if in edit mode, cancel edit and clear frames
+      if(editMode) exitEditMode();
+      else exitAddMode();
+    });
+
+    /* ---------- confirm add / save behavior ---------- */
+    confirmAdd.addEventListener('click', async ()=>{
+      const file = iconFile.files && iconFile.files[0];
+      const name = (bookmarkName.value || '').trim();
+      const url = (bookmarkURL.value || '').trim();
+      if(!name || !url){ alert('請輸入書籤名稱與網址'); return; }
+
+      // If editing and clearIconMode active: clear icon for this bookmark and immediately save (do NOT delete/recreate)
+      if(editMode && editTargetId && clearIconMode){
+        const arr = loadBookmarks();
+        const idx = arr.findIndex(b => b.id === editTargetId);
+        if(idx !== -1){
+          arr[idx].icon = null;
+          const newIcon = await fetchFaviconDataURL(arr[idx].url).catch(()=>null);
+          if(newIcon) arr[idx].icon = newIcon;
+          arr[idx].name = name;
+          arr[idx].url = url;
+          saveBookmarks(arr);
+        }
+        clearIconMode = false;
+        clearIconBtn.classList.remove('clear-mode');
+        exitEditMode();
+        renderBookmarks();
+        return;
+      }
+
+      if(editMode && editTargetId){
+        const arr = loadBookmarks();
+        const idx = arr.findIndex(b => b.id === editTargetId);
+        if(idx === -1){ alert('找不到要編輯的書籤'); return; }
+        let iconData = arr[idx].icon || null;
+        if(file) iconData = await fileToDataURL(file);
+        else if(!iconData || failedIconIds.has(editTargetId)) iconData = await fetchFaviconDataURL(url);
+        arr[idx].name = name; arr[idx].url = url; arr[idx].icon = iconData;
+        saveBookmarks(arr);
+        exitEditMode();
+        renderBookmarks();
+        return;
+      }
+
+      // Normal add flow
+      let iconData = null;
+      if(file) iconData = await fileToDataURL(file);
+      else iconData = await fetchFaviconDataURL(url);
+      await addBookmark({ name, url, icon: iconData });
+      exitAddMode();
+      renderBookmarks();
+    });
+
+    function clearAddForm(){ iconFile.value = ''; bookmarkName.value = ''; bookmarkURL.value = ''; }
+    function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); }); }
+
+    /* ---------- clear-icon control (only in edit mode) ---------- */
+    clearIconBtn.addEventListener('click', ()=>{
+      if(!editMode) return;
+      clearIconMode = !clearIconMode;
+      if(clearIconMode) clearIconBtn.classList.add('clear-mode'); else clearIconBtn.classList.remove('clear-mode');
+      // when toggling clear mode, ensure per-card edit button visibility updates
+      renderBookmarks();
+    });
+
+    /* ---------- remove mode ---------- */
+    toggleEditBtn.addEventListener('click', ()=> {
+      if(panelMenu.value !== 'bookmarks') return;
+      if(!removeMode) enterRemoveMode(); else exitRemoveMode();
+    });
+
+    function enterRemoveMode(){
+      removeMode = true;
+      toggleEditBtn.classList.remove('btn-gray'); toggleEditBtn.classList.add('btn-blue'); toggleEditBtn.textContent = '完成';
+      addModeBtn.style.display = 'none';
+      clearIconBtn.style.display = 'none';
+      removeControls.style.display = 'flex';
+      selectedBookmarks.clear();
+      renderBookmarks();
+    }
+    function exitRemoveMode(){
+      removeMode = false;
+      toggleEditBtn.classList.remove('btn-blue'); toggleEditBtn.classList.add('btn-gray'); toggleEditBtn.textContent = '編輯';
+      removeControls.style.display = 'none';
+      selectedBookmarks.clear();
+      if(panelMenu.value === 'bookmarks') addModeBtn.style.display = 'inline-block';
+      renderBookmarks();
+    }
+    removeSelected.addEventListener('click', ()=>{
+      if(selectedBookmarks.size === 0){ alert('未選擇任何書籤'); return; }
+      let arr = loadBookmarks(); arr = arr.filter(b => !selectedBookmarks.has(b.id)); saveBookmarks(arr);
+      selectedBookmarks.clear(); exitRemoveMode(); renderBookmarks();
+    });
+
+    /* ---------- edit mode ---------- */
+    function enterEditMode(id){
+      const arr = loadBookmarks();
+      const b = arr.find(x => x.id === id);
+      if(!b){ alert('找不到書籤'); return; }
+      openPanel('bookmarks');
+      exitRemoveMode();
+      addForm.style.display = 'flex';
+      editMode = true; editTargetId = id;
+      bookmarkName.value = b.name || '';
+      bookmarkURL.value = b.url || '';
+      confirmAdd.className = 'btn-blue'; confirmAdd.textContent = '儲存';
+      // hide top add button while editing; show clearIconBtn
+      addModeBtn.style.display = 'none';
+      clearIconBtn.style.display = 'inline-block';
+      clearIconMode = false;
+      clearIconBtn.classList.remove('clear-mode');
+      renderBookmarks();
+    }
+
+    function exitEditMode(){
+      // clear edit and clear states and remove visual frames
+      editMode = false; editTargetId = null;
+      confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
+      clearIconMode = false;
+      clearIconBtn.classList.remove('clear-mode');
+      clearIconBtn.style.display = 'none';
+      addModeBtn.style.display = 'inline-block';
+      // ensure add form hidden and frames cleared
+      addForm.style.display = 'none';
+      // remove any per-card clear-mark classes (visual cleanup)
+      const cards = document.querySelectorAll('.bookmark-card.clear-mark, .bookmark-card.edit-focus');
+      cards.forEach(c => { c.classList.remove('clear-mark'); c.classList.remove('edit-focus'); });
+      renderBookmarks();
+    }
+
+    /* ---------- main actions ---------- */
+    function getInputVal(){ return queryInput.value.trim(); }
+    function performGo(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); window.open(dest,'_blank'); } else { const tmpl = engineSelect.value; window.open(tmpl.replace('%s', encodeURIComponent(v)),'_blank'); } }
+    function performTranslate(){ const v = getInputVal(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } addRecord(v); if(isLikelyURL(v)){ const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); try{ const u=new URL(dest); const host=u.hostname.replace(/\./g,'-') + '.translate.goog'; const final=`https://${host}${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp&_x_tr_hist=true`; window.open(final,'_blank'); }catch(e){ alert('無效的網址格式'); } } else { const tran=`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`; window.open(tran,'_blank'); } }
+    function performArchive(){ const v = getInputVal(); if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; } addRecord(v); const dest = v.match(/^https?:\/\//i) ? v : ('https://' + v); const code = new Date().getFullYear() + '0000000000*'; window.open(`https://web.archive.org/web/${code}/${dest}`,'_blank'); }
+
+    document.getElementById('goButton').addEventListener('click', performGo);
+    document.getElementById('translateButton').addEventListener('click', performTranslate);
+    document.getElementById('archiveButton').addEventListener('click', performArchive);
+    document.getElementById('searchForm').addEventListener('submit', e=>{ e.preventDefault(); performGo(); });
+
+    /* ---------- init ---------- */
+    function init(){
+      if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
+      if(!localStorage.getItem(STORAGE.RECORDS)) saveRecordsRaw([]);
+      panelTitle.textContent = '書籤';
+      exitAddMode(); exitRemoveMode(); exitEditMode();
+    }
+    init();
+
+    // expose for debugging
+    window.renderBookmarks = renderBookmarks;
+    window.renderRecords = renderRecords;
+  </script>
+</body>
+</html>
