@@ -66,10 +66,11 @@
     .bookmark-card{background:var(--card-bg);padding:8px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;min-height:84px;transition:all .12s}
     .bookmark-card img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#333}
     .bookmark-name{font-size:12px;color:var(--white);text-align:center;word-break:break-word}
+    .bookmark-actions{display:flex;gap:6px;margin-top:6px}
+    .btn-edit-bookmark{background:#6c757d;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
     
     .bookmark-card.editing-mark{outline:3px solid var(--blue); box-shadow:0 0 0 4px rgba(0,123,255,0.06)}
     .bookmark-card.clear-mark{outline:3px solid var(--red); box-shadow:0 0 0 4px rgba(220,53,69,0.06)}
-    .bookmark-card.selected{outline:3px solid var(--green);}
     
     .remove-controls{display:flex;align-items:center;gap:10px;margin:10px 0}
     .count-badge{background:var(--green);color:#fff;padding:6px 10px;border-radius:8px;font-weight:700}
@@ -79,7 +80,7 @@
     .add-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
     .left-actions,.right-actions{display:flex;gap:8px}
 
-    .btn-white.clear-mode-active {
+    .btn-white.clear-mode {
       outline: 3px solid var(--red);
       background: var(--red);
       color: #fff;
@@ -104,7 +105,7 @@
     <h1>TNTExplorer 探索器</h1>
     <div class="subtitle">由TNH Minecraft負責監督，Gemini負責實行</div>
 
-    <div class="engine-select">
+    <div class="engine-select" aria-hidden="true">
       <select id="engine">
         <option value="https://www.google.com/search?num=70&udm=14&q=%s" selected>Google</option>
         <option value="https://www.bing.com/search?q=%s">Bing</option>
@@ -128,18 +129,18 @@
     <button id="archiveButton">查看舊版網頁</button>
   </div>
 
-  <div id="overlay" class="overlay">
-    <div class="panel">
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
       <div class="topbar">
         <div class="left-controls">
           <button id="closePanel" class="btn-gray">關閉</button>
-          <select id="panelMenu" class="menu-select">
+          <select id="panelMenu" class="menu-select" aria-label="選單位置">
             <option value="bookmarks">書籤</option>
             <option value="records">探索記錄</option>
           </select>
 
           <button id="toggleEditBtn" class="btn-gray">編輯</button>
-          <button id="clearIconTopBtn" class="btn-white" style="display:none">清除圖示</button>
+          <button id="clearIconBtn" class="btn-white" style="display:none">清除圖示</button>
           <button id="addModeBtn" class="btn-yellow">新增</button>
         </div>
         <div class="title" id="panelTitle">書籤</div>
@@ -149,8 +150,8 @@
         <p id="exploreDesc" class="description" style="display:none">查看你的搜尋、翻譯、前往網站等紀錄</p>
       </div>
 
-      <div id="bookmarksView" class="content">
-        <div class="muted" style="margin-bottom:6px; font-size: 13px;">若不上傳圖片，系統會自動抓取網站圖示</div>
+      <div id="bookmarksView" class="content" style="display:block">
+        <div class="muted" style="margin-bottom:6px">新增書籤可上傳圖示；若不上傳，系統會嘗試從網址抓取網站圖示作為書籤圖示</div>
 
         <div id="addForm" class="add-form" style="display:none">
           <input type="file" id="iconFile" accept="image/*"/>
@@ -171,7 +172,7 @@
           <button id="removeSelected" class="btn-red">移除所選</button>
         </div>
 
-        <div id="bookmarkGrid" class="bookmark-grid"></div>
+        <div id="bookmarkGrid" class="bookmark-grid" aria-live="polite"></div>
       </div>
 
       <div id="recordsView" class="content" style="display:none">
@@ -200,13 +201,13 @@
     const panelMenu = document.getElementById('panelMenu');
     const panelTitle = document.getElementById('panelTitle');
     const toggleEditBtn = document.getElementById('toggleEditBtn');
-    const clearIconTopBtn = document.getElementById('clearIconTopBtn');
     const addModeBtn = document.getElementById('addModeBtn');
     const addForm = document.getElementById('addForm');
     const iconFile = document.getElementById('iconFile');
     const bookmarkName = document.getElementById('bookmarkName');
     const bookmarkURL = document.getElementById('bookmarkURL');
     const cancelAdd = document.getElementById('cancelAdd');
+    const clearIconBtn = document.getElementById('clearIconBtn');
     const confirmAdd = document.getElementById('confirmAdd');
     const bookmarkGrid = document.getElementById('bookmarkGrid');
     const removeControls = document.getElementById('removeControls');
@@ -224,10 +225,16 @@
     let editTargetId = null;
     let clearIconMode = false; 
     const selectedBookmarks = new Set();
+    const failedIconIds = new Set();
 
     let fetchPopupTimer = null;
     function showFetchPopup(){ fetchPopup.style.display = 'block'; if(fetchPopupTimer) clearTimeout(fetchPopupTimer); fetchPopupTimer = setTimeout(()=>{ hideFetchPopup(); }, 12000); }
     function hideFetchPopup(){ fetchPopup.style.display = 'none'; if(fetchPopupTimer){ clearTimeout(fetchPopupTimer); fetchPopupTimer = null; } }
+
+    function loadRecordsRaw(){ return loadJSON(STORAGE.RECORDS); }
+    function saveRecordsRaw(arr){ saveJSON(STORAGE.RECORDS, arr); }
+    function loadBookmarks(){ return loadJSON(STORAGE.BOOKMARKS); }
+    function saveBookmarks(arr){ saveJSON(STORAGE.BOOKMARKS, arr); }
 
     async function fetchFaviconDataURL(url){
       if(!url) return null;
@@ -240,6 +247,7 @@
           `https://icon.horse/icon/${u.hostname}`,
           `${u.origin}/favicon.ico`
         ];
+        
         for(let src of sources){
           try {
             const wrap = `https://api.allorigins.win/raw?url=${encodeURIComponent(src)}`;
@@ -247,8 +255,7 @@
             if(r.ok){
               const blob = await r.blob();
               if(blob.size > 100){ 
-                const reader = new FileReader();
-                const data = await new Promise(res => { reader.onload = () => res(reader.result); reader.readAsDataURL(blob); });
+                const data = await blobToDataURL(blob);
                 hideFetchPopup();
                 return data;
               }
@@ -260,81 +267,134 @@
       return null;
     }
 
+    function blobToDataURL(blob){
+      return new Promise((res, rej)=>{
+        const fr = new FileReader();
+        fr.onload = ()=>res(fr.result);
+        fr.onerror = rej;
+        fr.readAsDataURL(blob);
+      });
+    }
+
     function addRecord(text){
       if(!text || !text.trim()) return;
-      let raw = loadJSON(STORAGE.RECORDS);
+      const raw = loadRecordsRaw();
       const key = normalizeKey(text);
-      raw = raw.filter(r => normalizeKey(typeof r === 'string' ? r : r.text) !== key);
-      raw.push({ id: uid(), text });
-      saveJSON(STORAGE.RECORDS, raw);
+      const filtered = raw.filter(r => {
+        const rText = (typeof r === 'string') ? r : r.text;
+        return normalizeKey(rText) !== key;
+      });
+      filtered.push({ id: uid(), text });
+      saveRecordsRaw(filtered);
     }
 
     function renderRecords(){
-      const raw = loadJSON(STORAGE.RECORDS).reverse();
+      const raw = loadRecordsRaw();
+      const items = raw.map(it => {
+        if(typeof it === 'string') return { id: uid(), text: it };
+        return { id: it.id || uid(), text: it.text || '' };
+      }).reverse();
+
       recordsList.innerHTML = '';
-      raw.forEach(item=>{
-        const itText = (typeof item === 'string') ? item : item.text;
+      if(items.length === 0) return;
+
+      items.forEach(item=>{
         const row = document.createElement('div'); row.className='record-item';
-        const txt = document.createElement('div'); txt.className='record-text'; txt.textContent = itText;
-        txt.addEventListener('click', ()=>{ queryInput.value = itText; closePanelFunc(); });
+        const txt = document.createElement('div'); txt.className='record-text'; txt.textContent = item.text || '';
+        txt.addEventListener('click', ()=>{ queryInput.value = item.text; closePanelFunc(); });
+
         const actions = document.createElement('div'); actions.className='record-actions';
         const saveBtn = document.createElement('button'); saveBtn.className='btn-save-record'; saveBtn.textContent='儲存';
+        const clearBtn = document.createElement('button'); clearBtn.className='btn-clear-record'; clearBtn.textContent='清除';
+
         saveBtn.addEventListener('click', ()=> {
           openPanel('bookmarks');
           enterAddMode();
-          bookmarkName.value = itText;
-          bookmarkURL.value = itText; 
+          bookmarkName.value = item.text || '';
+          bookmarkURL.value = item.text || ''; 
         });
-        const clearBtn = document.createElement('button'); clearBtn.className='btn-clear-record'; clearBtn.textContent='清除';
+
         clearBtn.addEventListener('click', ()=> {
-          let r2 = loadJSON(STORAGE.RECORDS);
-          r2 = r2.filter(r => (typeof r==='string' ? r : r.text) !== itText);
-          saveJSON(STORAGE.RECORDS, r2); renderRecords();
+          const rawBefore = loadRecordsRaw();
+          const idx = rawBefore.findIndex(r => (typeof r==='string' && r === item.text) || (r && r.text === item.text));
+          if(idx !== -1){ rawBefore.splice(idx,1); saveRecordsRaw(rawBefore); renderRecords(); }
         });
+
         actions.appendChild(saveBtn); actions.appendChild(clearBtn);
         row.appendChild(txt); row.appendChild(actions);
         recordsList.appendChild(row);
       });
     }
 
+    async function addBookmark({name, url, icon}) {
+      let finalIcon = icon || null;
+      if(!finalIcon && url && url.trim()){
+        finalIcon = await fetchFaviconDataURL(url).catch(()=>null);
+      }
+      const arr = loadBookmarks();
+      const key = normalizeKey(name + '|' + url);
+      const filtered = arr.filter(b => normalizeKey(b.name + '|' + b.url) !== key);
+      filtered.push({ id: uid(), name: name||'', url: url||'', icon: finalIcon });
+      saveBookmarks(filtered);
+    }
+
     function renderBookmarks(){
-      const arr = loadJSON(STORAGE.BOOKMARKS);
+      const arr = loadBookmarks();
       bookmarkGrid.innerHTML = '';
       arr.forEach(b=>{
-        const card = document.createElement('div'); card.className='bookmark-card';
-        if(editMode && editTargetId === b.id){
-           card.classList.add(clearIconMode ? 'clear-mark' : 'editing-mark');
-        }
-        if(removeMode && selectedBookmarks.has(b.id)) card.classList.add('selected');
+        const card = document.createElement('div'); card.className='bookmark-card'; card.dataset.id = b.id;
+        const img = document.createElement('img'); img.alt = b.name||''; img.src = b.icon || '';
+        img.onerror = ()=>{ failedIconIds.add(b.id); img.src = ''; };
+        
+        const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name || '';
+        const actionsWrap = document.createElement('div'); actionsWrap.className = 'bookmark-actions';
+        const editBtn = document.createElement('button'); editBtn.className = 'btn-edit-bookmark'; editBtn.textContent = '編輯';
+        editBtn.style.display = removeMode ? 'inline-block' : 'none';
 
-        const img = document.createElement('img'); img.src = b.icon || '';
-        const name = document.createElement('div'); name.className='bookmark-name'; name.textContent = b.name;
-
-        card.addEventListener('click', ()=> {
-          if(addMode){ bookmarkName.value = b.name; return; }
-          if(removeMode){
-            if(selectedBookmarks.has(b.id)) selectedBookmarks.delete(b.id);
-            else selectedBookmarks.add(b.id);
-            renderBookmarks();
-            selectedCount.textContent = selectedBookmarks.size;
+        card.addEventListener('click', (e)=> {
+          // 快速填寫名稱邏輯：在新增模式或編輯模式下都有效
+          if(addMode){
+            bookmarkName.value = b.name || '';
             return;
           }
-          if(editMode){ enterEditMode(b.id); return; }
-          
+
+          if(removeMode){
+            if(card.classList.contains('selected')){ card.classList.remove('selected'); selectedBookmarks.delete(b.id); }
+            else { card.classList.add('selected'); selectedBookmarks.add(b.id); }
+            selectedCount.textContent = String(selectedBookmarks.size);
+            return;
+          }
+
           if(b.url && b.url.trim()){
-            window.open(b.url.match(/^https?:\/\//i) ? b.url : ('https://' + b.url), '_blank');
+            const dest = b.url.match(/^https?:\/\//i) ? b.url : ('https://' + b.url);
+            window.open(dest, '_blank');
           } else {
-            queryInput.value = b.name; closePanelFunc();
+            queryInput.value = b.name || '';
+            closePanelFunc();
           }
         });
 
+        editBtn.addEventListener('click', (e)=>{ e.stopPropagation(); enterEditMode(b.id); });
+
         card.appendChild(img); card.appendChild(name);
+        actionsWrap.appendChild(editBtn);
+        card.appendChild(actionsWrap);
+
+        // 視覺外框處理
+        if(editMode && editTargetId === b.id){
+           card.classList.add(clearIconMode ? 'clear-mark' : 'editing-mark');
+        }
+
+        if(removeMode) card.classList.add('select-mode');
+        if(selectedBookmarks.has(b.id)) card.classList.add('selected');
+
         bookmarkGrid.appendChild(card);
       });
+      selectedCount.textContent = String(selectedBookmarks.size || 0);
     }
 
-    function openPanel(v='bookmarks'){ panelMenu.value = v; switchView(v); overlay.classList.add('active'); }
-    function closePanelFunc(){ overlay.classList.remove('active'); exitAddMode(); exitRemoveMode(); exitEditMode(); }
+    function openPanel(defaultView='bookmarks'){ panelMenu.value = defaultView; switchView(defaultView); overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); }
+    function closePanelFunc(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); exitAddMode(); exitRemoveMode(); exitEditMode(); }
     historyButton.addEventListener('click', ()=> openPanel('bookmarks'));
     closePanel.addEventListener('click', closePanelFunc);
     overlay.addEventListener('click', e => { if(e.target === overlay) closePanelFunc(); });
@@ -362,130 +422,167 @@
     }
 
     function enterAddMode(){
-      addMode = true; exitEditMode(false); exitRemoveMode(false);
+      addMode = true; editMode = false; editTargetId = null;
       addModeBtn.style.display = 'none';
-      toggleEditBtn.style.display = 'none';
       addForm.style.display = 'flex';
+      clearIconBtn.style.display = 'none'; // 新增模式不顯示清除
       confirmAdd.className = 'btn-yellow'; confirmAdd.textContent = '新增';
+      toggleEditBtn.style.display = 'none';
+      removeControls.style.display = 'none';
+      clearIconMode = false;
       renderBookmarks();
     }
     function exitAddMode(){
       addMode = false;
-      addModeBtn.style.display = (panelMenu.value==='bookmarks')?'inline-block':'none';
-      toggleEditBtn.style.display = (panelMenu.value==='bookmarks')?'inline-block':'none';
+      addModeBtn.style.display = 'inline-block';
       addForm.style.display = 'none';
+      if(panelMenu.value === 'bookmarks') toggleEditBtn.style.display = 'inline-block';
+      clearIconMode = false;
+      clearIconBtn.style.display = 'none';
+      clearIconBtn.classList.remove('clear-mode');
+      renderBookmarks();
       clearAddForm();
-      renderBookmarks();
-    }
-
-    function enterRemoveMode(){
-      removeMode = true; exitAddMode(); exitEditMode(false);
-      toggleEditBtn.className = 'btn-blue'; toggleEditBtn.textContent = '完成';
-      addModeBtn.style.display = 'none';
-      removeControls.style.display = 'flex';
-      selectedBookmarks.clear();
-      selectedCount.textContent = '0';
-      renderBookmarks();
-    }
-    function exitRemoveMode(refresh=true){
-      removeMode = false;
-      toggleEditBtn.className = 'btn-gray'; toggleEditBtn.textContent = '編輯';
-      removeControls.style.display = 'none';
-      if(panelMenu.value==='bookmarks') addModeBtn.style.display = 'inline-block';
-      if(refresh) renderBookmarks();
-    }
-
-    function enterEditMode(id){
-      const b = loadJSON(STORAGE.BOOKMARKS).find(x => x.id === id);
-      if(!b) return;
-      editMode = true; editTargetId = id; addMode = true;
-      toggleEditBtn.style.display = 'none';
-      clearIconTopBtn.style.display = 'inline-block';
-      addForm.style.display = 'flex';
-      bookmarkName.value = b.name;
-      bookmarkURL.value = b.url;
-      confirmAdd.className = 'btn-blue'; confirmAdd.textContent = '儲存';
-      renderBookmarks();
-    }
-    function exitEditMode(refresh=true){
-      editMode = false; editTargetId = null; clearIconMode = false;
-      clearIconTopBtn.style.display = 'none';
-      clearIconTopBtn.classList.remove('clear-mode-active');
-      if(refresh) renderBookmarks();
     }
 
     addModeBtn.addEventListener('click', enterAddMode);
-    cancelAdd.addEventListener('click', ()=>{ if(editMode) exitEditMode(); else exitAddMode(); });
-    toggleEditBtn.addEventListener('click', ()=>{ if(!removeMode) enterRemoveMode(); else exitRemoveMode(); });
-    
-    clearIconTopBtn.addEventListener('click', ()=>{
+    cancelAdd.addEventListener('click', exitAddMode);
+
+    clearIconBtn.addEventListener('click', ()=> {
       clearIconMode = !clearIconMode;
-      clearIconTopBtn.classList.toggle('clear-mode-active', clearIconMode);
+      if(clearIconMode) clearIconBtn.classList.add('clear-mode'); else clearIconBtn.classList.remove('clear-mode');
       renderBookmarks();
     });
 
     confirmAdd.addEventListener('click', async ()=>{
-      const name = bookmarkName.value.trim();
-      const url = bookmarkURL.value.trim();
-      if(!name || !url) return;
+      const file = iconFile.files && iconFile.files[0];
+      const name = (bookmarkName.value || '').trim();
+      const url = (bookmarkURL.value || '').trim();
+      if(!name || !url){ alert('請輸入書籤名稱與網址'); return; }
 
-      let iconData = null;
-      if(iconFile.files[0]){
-        const fr = new FileReader();
-        iconData = await new Promise(res=>{ fr.onload=()=>res(fr.result); fr.readAsDataURL(iconFile.files[0]); });
-      }
-
-      const arr = loadJSON(STORAGE.BOOKMARKS);
-      if(editMode){
-        const idx = arr.findIndex(x => x.id === editTargetId);
+      // 編輯並清除圖示邏輯
+      if(clearIconMode && editMode && editTargetId){
+        const arr = loadBookmarks();
+        const idx = arr.findIndex(b => b.id === editTargetId);
         if(idx !== -1){
-          if(clearIconMode) iconData = await fetchFaviconDataURL(url);
-          else if(!iconData) iconData = arr[idx].icon;
-          arr[idx] = { ...arr[idx], name, url, icon: iconData };
-          saveJSON(STORAGE.BOOKMARKS, arr);
+          arr[idx].icon = await fetchFaviconDataURL(url).catch(()=>null);
+          arr[idx].name = name;
+          arr[idx].url = url;
+          saveBookmarks(arr);
         }
-        exitEditMode(); exitAddMode();
-      } else {
-        if(!iconData) iconData = await fetchFaviconDataURL(url);
-        arr.push({ id: uid(), name, url, icon: iconData });
-        saveJSON(STORAGE.BOOKMARKS, arr);
-        exitAddMode();
+        exitEditMode();
+        return;
       }
-    });
 
-    removeSelected.addEventListener('click', ()=>{
-      let arr = loadJSON(STORAGE.BOOKMARKS);
-      arr = arr.filter(b => !selectedBookmarks.has(b.id));
-      saveJSON(STORAGE.BOOKMARKS, arr);
-      exitRemoveMode();
+      // 一般編輯邏輯
+      if(editMode && editTargetId){
+        const arr = loadBookmarks();
+        const idx = arr.findIndex(b => b.id === editTargetId);
+        if(idx === -1) return;
+        let iconData = arr[idx].icon || null;
+        if(file) iconData = await fileToDataURL(file);
+        else if(!iconData || failedIconIds.has(editTargetId)) iconData = await fetchFaviconDataURL(url);
+        arr[idx].name = name; arr[idx].url = url; arr[idx].icon = iconData;
+        saveBookmarks(arr);
+        exitEditMode();
+        return;
+      }
+
+      // 新增邏輯
+      let iconData = file ? await fileToDataURL(file) : await fetchFaviconDataURL(url);
+      await addBookmark({ name, url, icon: iconData });
+      exitAddMode();
+      renderBookmarks();
     });
 
     function clearAddForm(){ iconFile.value = ''; bookmarkName.value = ''; bookmarkURL.value = ''; }
+    function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); }); }
+
+    toggleEditBtn.addEventListener('click', ()=> {
+      if(!removeMode) enterRemoveMode(); else exitRemoveMode();
+    });
+
+    function enterRemoveMode(){
+      removeMode = true;
+      toggleEditBtn.className = 'btn-blue'; toggleEditBtn.textContent = '完成';
+      addModeBtn.style.display = 'none';
+      removeControls.style.display = 'flex';
+      selectedBookmarks.clear();
+      renderBookmarks();
+    }
+    function exitRemoveMode(){
+      removeMode = false;
+      toggleEditBtn.className = 'btn-gray'; toggleEditBtn.textContent = '編輯';
+      removeControls.style.display = 'none';
+      if(panelMenu.value === 'bookmarks') addModeBtn.style.display = 'inline-block';
+      renderBookmarks();
+    }
+    removeSelected.addEventListener('click', ()=>{
+      if(selectedBookmarks.size === 0) return;
+      let arr = loadBookmarks(); arr = arr.filter(b => !selectedBookmarks.has(b.id)); saveBookmarks(arr);
+      selectedBookmarks.clear(); exitRemoveMode(); renderBookmarks();
+    });
+
+    function enterEditMode(id){
+      const arr = loadBookmarks();
+      const b = arr.find(x => x.id === id);
+      if(!b) return;
+      openPanel('bookmarks');
+      exitRemoveMode();
+      addMode = true; editMode = true; editTargetId = id;
+      addModeBtn.style.display = 'none';
+      addForm.style.display = 'flex';
+      
+      // 介面修正：在上方顯示清除圖示，隱藏原本多餘的編輯按鈕
+      toggleEditBtn.style.display = 'none';
+      clearIconBtn.style.display = 'inline-block';
+      
+      bookmarkName.value = b.name || '';
+      bookmarkURL.value = b.url || '';
+      confirmAdd.className = 'btn-blue'; confirmAdd.textContent = '儲存';
+      renderBookmarks();
+    }
+    function exitEditMode(){
+      editMode = false; editTargetId = null;
+      exitAddMode();
+    }
 
     function performGo(){ 
-      const v = queryInput.value.trim(); if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } 
+      const v = queryInput.value.trim(); 
+      if(!v){ alert('請輸入有效URL或想查詢的東西'); return; } 
       addRecord(v); 
-      if(isLikelyURL(v)) window.open(v.match(/^https?:\/\//i) ? v : ('https://' + v),'_blank'); 
-      else window.open(engineSelect.value.replace('%s', encodeURIComponent(v)),'_blank'); 
+      if(isLikelyURL(v)){ 
+        window.open(v.match(/^https?:\/\//i) ? v : ('https://' + v),'_blank'); 
+      } else { 
+        window.open(engineSelect.value.replace('%s', encodeURIComponent(v)),'_blank'); 
+      } 
     }
     
     document.getElementById('goButton').addEventListener('click', performGo);
     document.getElementById('translateButton').addEventListener('click', ()=> {
-      const v = queryInput.value.trim(); if(!v) return; addRecord(v);
+      const v = queryInput.value.trim();
+      if(!v) return;
+      addRecord(v);
       if(isLikelyURL(v)){
         const u = new URL(v.match(/^https?:\/\//i) ? v : ('https://' + v));
         window.open(`https://${u.hostname.replace(/\./g,'-')}.translate.goog${u.pathname}?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`,'_blank');
-      } else window.open(`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`,'_blank');
+      } else {
+        window.open(`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}&op=translate`,'_blank');
+      }
     });
     document.getElementById('archiveButton').addEventListener('click', ()=> {
-      const v = queryInput.value.trim(); if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; } addRecord(v);
+      const v = queryInput.value.trim();
+      if(!v || !isLikelyURL(v)){ alert('請輸入有效URL'); return; }
+      addRecord(v);
       window.open(`https://web.archive.org/web/${new Date().getFullYear()}0000000000*/${v.match(/^https?:\/\//i) ? v : ('https://' + v)}`,'_blank');
     });
     document.getElementById('searchForm').addEventListener('submit', e=>{ e.preventDefault(); performGo(); });
 
-    if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveJSON(STORAGE.BOOKMARKS, []);
-    if(!localStorage.getItem(STORAGE.RECORDS)) saveJSON(STORAGE.RECORDS, []);
-    renderBookmarks();
+    function init(){
+      if(!localStorage.getItem(STORAGE.BOOKMARKS)) saveBookmarks([]);
+      if(!localStorage.getItem(STORAGE.RECORDS)) saveRecordsRaw([]);
+      exitAddMode(); exitRemoveMode(); exitEditMode();
+    }
+    init();
   </script>
 </body>
 </html>
