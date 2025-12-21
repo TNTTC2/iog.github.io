@@ -297,7 +297,6 @@
       saveRecordsRaw(filtered);
     }
 
-    /* 探索記錄渲染修復：確保每個清除按鈕都能正確關聯 ID */
     function renderRecords(){
       const raw = loadRecordsRaw();
       const items = raw.map(it => (typeof it === 'string' ? {id: uid(), text: it} : it)).reverse();
@@ -306,25 +305,22 @@
         const row = document.createElement('div'); row.className='record-item';
         const txt = document.createElement('div'); txt.className='record-text'; txt.textContent = item.text;
         txt.onclick = ()=>{ queryInput.value = item.text; closePanelFunc(); };
-        
         const actions = document.createElement('div'); actions.className='record-actions';
-        
         const saveBtn = document.createElement('button'); saveBtn.className='btn-save-record'; saveBtn.textContent='儲存';
         saveBtn.onclick = ()=> { openPanel('bookmarks'); enterAddMode(); bookmarkName.value = item.text; bookmarkURL.value = item.text; };
         
         const clearBtn = document.createElement('button'); clearBtn.className='btn-clear-record'; clearBtn.textContent='清除';
+        // 修正：確保每一項的清除功能都能正確綁定
         clearBtn.onclick = ()=> { 
           const current = loadRecordsRaw();
-          // 使用 ID 或 Text 進行過濾
           const updated = current.filter(r => {
-             const rId = typeof r === 'string' ? null : r.id;
-             const rText = typeof r === 'string' ? r : r.text;
-             return (rId !== item.id && rText !== item.text);
+            const rid = typeof r === 'object' ? r.id : null;
+            const rtxt = typeof r === 'object' ? r.text : r;
+            return rid !== item.id && rtxt !== item.text;
           });
           saveRecordsRaw(updated); 
           renderRecords(); 
         };
-        
         actions.append(saveBtn, clearBtn); row.append(txt, actions); recordsList.append(row);
       });
     }
@@ -501,21 +497,20 @@
     engineSelect.onchange = () => localStorage.setItem(STORAGE.ENGINE, engineSelect.value);
 
     function performGo(){
-      const v = queryInput.value.trim(); if(!v) return alert('請輸入有效URL或想查詢的東西');
+      const v = queryInput.value.trim(); 
+      if(!v) return alert('請輸入有效URL或想查詢的東西');
       addRecord(v);
       if(isLikelyURL(v)) window.open(v.match(/^https?:\/\//i) ? v : 'https://'+v, '_blank');
       else window.open(engineSelect.value.replace('%s', encodeURIComponent(v)), '_blank');
     }
 
-    /* 翻譯按鈕修復：復原標準彈出/分頁打開行為 */
     function performTranslate(){
-      const v = queryInput.value.trim(); if(!v) return;
+      const v = queryInput.value.trim(); 
+      // 修復：復原翻譯按鈕的空輸入提示彈窗
+      if(!v) return alert('請輸入有效URL或想查詢的東西');
       addRecord(v);
-      if(isLikelyURL(v)) {
-        window.open(`https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(v)}`, '_blank');
-      } else {
-        window.open(`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}`, '_blank');
-      }
+      if(isLikelyURL(v)) window.open(`https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(v)}`, '_blank');
+      else window.open(`https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(v)}`, '_blank');
     }
 
     document.getElementById('goButton').onclick = performGo;
