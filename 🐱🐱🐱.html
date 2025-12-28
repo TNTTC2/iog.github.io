@@ -2,114 +2,97 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🐱🐱🐱</title>
     
-    <script>
-        const appName = "🐱🐱🐱";
-        const appIcon = "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG";
-    </script>
-
-    <link rel="icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
-    <link id="manifest-placeholder" rel="manifest">
 
     <style>
-        * {
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body, html {
             width: 100%;
             height: 100%;
-            background-color: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: #000;
+            color: white;
             overflow: hidden;
-            touch-action: manipulation;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
         }
 
-        /* 遮罩層樣式 */
+        /* 遮罩層：改用絕對定位兼容 iOS 6 */
         #overlay {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            transition: opacity 0.5s ease;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            text-align: center;
             cursor: pointer;
         }
 
         .instruction {
-            color: white;
-            font-size: 28px;
+            margin-top: 100px;
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 40px;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        /* 👆 Emoji 樣式：修正為 45 度 */
         .finger-emoji {
-            font-size: 80px;
-            transform: rotate(45deg); 
-            animation: fingerMove 1s ease-in-out infinite;
+            font-size: 60px;
+            margin-top: 50px;
+            display: block;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+            -webkit-animation: fingerMove 1s infinite;
         }
 
-        /* 指向 45 度方向嘅動態 */
-        @keyframes fingerMove {
-            0%, 100% { transform: rotate(45deg) translate(0, 0); }
-            50% { transform: rotate(45deg) translate(15px, -15px); } /* 向右上方微動 */
+        @-webkit-keyframes fingerMove {
+            0% { -webkit-transform: rotate(45deg) translate(0,0); }
+            50% { -webkit-transform: rotate(45deg) translate(10px, -10px); }
+            100% { -webkit-transform: rotate(45deg) translate(0,0); }
         }
 
+        /* 貓咪容器：傳統置中法 */
         .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            margin-left: -150px;
+            margin-top: -150px;
+            text-align: center;
         }
 
         .bouncing-img {
-            max-width: 80%;
-            max-height: 80vh;
-            object-fit: contain;
-            animation: bounceScale 1.2s ease-in-out infinite;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            height: auto;
+            -webkit-animation: bounceScale 1.2s infinite ease-in-out;
         }
 
+        /* 旋轉動畫 */
         .flipping {
-            animation: flipAnimation 0.8s ease-in-out !important;
+            -webkit-animation: flipAnimation 0.8s 1 linear !important;
         }
 
-        @keyframes bounceScale {
-            0%, 100% { transform: scale(0.9); }
-            50% { transform: scale(1.1); }
+        @-webkit-keyframes bounceScale {
+            0% { -webkit-transform: scale(0.9); }
+            50% { -webkit-transform: scale(1.1); }
+            100% { -webkit-transform: scale(0.9); }
         }
 
-        @keyframes flipAnimation {
-            0% { transform: scale(0.9) rotate(0deg); }
-            100% { transform: scale(0.9) rotate(360deg); }
+        @-webkit-keyframes flipAnimation {
+            0% { -webkit-transform: rotate(0deg) scale(0.9); }
+            100% { -webkit-transform: rotate(360deg) scale(0.9); }
         }
     </style>
 </head>
-<body>
+<body onclick="">
 
-    <div id="overlay">
+    <div id="overlay" onclick="closeOverlay()">
         <div class="instruction">篤一下隻貓</div>
         <div class="finger-emoji">👆</div>
     </div>
@@ -117,48 +100,37 @@
     <div class="container">
         <img id="catImg" class="bouncing-img" 
              src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" 
-             alt="🐱🐱🐱">
+             onclick="doFlip(event)">
     </div>
 
     <script>
-        // PWA Manifest
-        const manifest = {
-            "short_name": appName,
-            "name": appName,
-            "icons": [{"src": appIcon, "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}],
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#000000"
-        };
-        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
-
-        // Service Worker
-        if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('fetch', function(event) {});`;
-            const swBlob = new Blob([swCode], {type: 'text/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+        // 關閉遮罩
+        function closeOverlay() {
+            var ov = document.getElementById('overlay');
+            ov.style.display = 'none';
         }
 
-        // 點擊關閉遮罩
-        const overlay = document.getElementById('overlay');
-        overlay.addEventListener('click', function() {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 500);
-        });
+        // 執行打關斗
+        function doFlip(e) {
+            // 防止觸發父層點擊
+            if (e && e.stopPropagation) e.stopPropagation();
+            
+            var img = document.getElementById('catImg');
+            if (img.className.indexOf('flipping') !== -1) return;
+            
+            img.className = 'bouncing-img flipping';
+            
+            setTimeout(function() {
+                img.className = 'bouncing-img';
+            }, 850);
+        }
 
-        // 貓咪打關斗
-        const img = document.getElementById('catImg');
-        img.addEventListener('click', function() {
-            if (img.classList.contains('flipping')) return;
-            img.classList.add('flipping');
-            setTimeout(() => {
-                img.classList.remove('flipping');
-            }, 800);
-        });
+        // PWA 註冊（iOS 6 會無視呢段，但唔會報錯）
+        if ('serviceWorker' in navigator) {
+            var swCode = "self.addEventListener('fetch', function(e) {});";
+            var blob = new Blob([swCode], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        }
     </script>
 </body>
 </html>
