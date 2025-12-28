@@ -30,28 +30,52 @@
             height: 100%;
             background-color: #000000;
             display: flex;
-            flex-direction: column; /* 改為垂直排列 */
             justify-content: center;
             align-items: center;
             overflow: hidden;
             touch-action: manipulation;
-            cursor: pointer;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* 頂部文字樣式 */
-        .instruction {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 20px;
-            position: absolute;
-            top: 10%; /* 定位喺頂部 */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* 文字發光 */
-            letter-spacing: 2px;
-            pointer-events: none; /* 防止文字遮擋點擊 */
+        /* 遮罩層樣式 */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75); /* 半透明深色 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+            cursor: pointer;
         }
 
+        /* 遮罩層入面嘅文字 */
+        .instruction {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 👆 Emoji 樣式 */
+        .finger-emoji {
+            font-size: 80px;
+            transform: rotate(135deg); /* 135度旋轉 */
+            animation: fingerMove 1s ease-in-out infinite;
+        }
+
+        @keyframes fingerMove {
+            0%, 100% { transform: rotate(135deg) translate(0, 0); }
+            50% { transform: rotate(135deg) translate(-20px, -20px); }
+        }
+
+        /* 主遊戲容器 */
         .container {
             width: 100%;
             height: 100%;
@@ -63,7 +87,7 @@
 
         .bouncing-img {
             max-width: 80%;
-            max-height: 70vh;
+            max-height: 80vh;
             object-fit: contain;
             animation: bounceScale 1.2s ease-in-out infinite;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -86,7 +110,10 @@
 </head>
 <body>
 
-    <div class="instruction">篤一下隻貓</div>
+    <div id="overlay">
+        <div class="instruction">篤一下隻貓</div>
+        <div class="finger-emoji">👆</div>
+    </div>
 
     <div class="container">
         <img id="catImg" class="bouncing-img" 
@@ -114,6 +141,15 @@
             const swBlob = new Blob([swCode], {type: 'text/javascript'});
             navigator.serviceWorker.register(URL.createObjectURL(swBlob));
         }
+
+        // 控制遮罩層關閉
+        const overlay = document.getElementById('overlay');
+        overlay.addEventListener('click', function() {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        });
 
         // 點擊打關斗
         const img = document.getElementById('catImg');
