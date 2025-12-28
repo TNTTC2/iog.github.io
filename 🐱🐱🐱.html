@@ -10,106 +10,67 @@
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
 
     <style>
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            -webkit-user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
+        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
 
-        body, html {
-            width: 100%; height: 100%;
-            background-color: #000;
-            overflow: hidden;
-        }
-
-        #timer {
-            position: absolute; top: 20px; right: 20px;
-            color: #666; font-size: 24px; font-weight: bold; z-index: 100;
-        }
+        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
+        #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 28px; z-index: 100; text-shadow: 0 0 10px #000; }
 
         /* 外層：位置與呼吸 */
         #catBox {
-            position: absolute;
-            width: 280px; height: 280px;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 50;
+            position: absolute; width: 280px; height: 280px; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; justify-content: center; align-items: center; z-index: 50;
         }
-
-        .breathing {
-            animation: bounce 1.2s infinite ease-in-out;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translate(-50%, -50%) scale(0.9); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-        }
+        .breathing { animation: bounce 1.2s infinite ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
 
         /* 內層：旋轉 */
-        #catImg {
-            width: 100%; height: auto;
-            display: block;
-            will-change: transform;
-        }
+        #catImg { width: 100%; height: auto; display: block; will-change: transform; }
+        .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
+        .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
+        @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .flipping-anim {
-            animation: rotateFull 0.8s ease-in-out;
-        }
-
-        .spinning-anim {
-            animation: rotateInfinite 0.3s infinite linear;
-        }
-
-        @keyframes rotateFull {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes rotateInfinite {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        /* 食物樣式 */
+        .food { position: absolute; font-size: 40px; cursor: move; z-index: 60; transition: opacity 0.3s; user-select: none; }
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 10000; display: flex; flex-direction: column; 
+            background-color: rgba(0, 0, 0, 0.6); z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
         }
+        .finger-45 { font-size: 80px; transform: rotate(45deg); -webkit-transform: rotate(45deg); display: inline-block; }
     </style>
 </head>
 <body>
 
     <div id="timer">7s</div>
+    <div id="stamina">⚡ ⚡ ⚡</div>
 
     <div id="startOverlay" class="overlay" onclick="startApp()">
-        <div style="color:white; font-size:28px; font-weight:bold;">篤一下隻貓</div>
-        <div style="font-size:80px;">👆</div>
+        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下隻貓</div>
+        <div class="finger-45">👆</div>
     </div>
 
     <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()">
         <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
-        <div style="color:#ccc; margin-top:10px;">點擊黑幕補救</div>
+        <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
+        <div class="finger-45" style="margin-top:20px;">👆</div>
     </div>
 
     <div id="catBox" class="breathing">
-        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="cat" onclick="hitCat(event)">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="cat" onpointerdown="hitCat(event)">
     </div>
 
     <script>
-        var timeLeft = 7;
-        var hitCount = 0;
-        var isCrazy = false;
-        var isFlipping = false; // 動畫鎖
-        var gameLoop, crazyLoop;
+        let timeLeft = 7, stamina = 3, hitCount = 0;
+        let isCrazy = false, isFlipping = false;
+        let gameLoop, crazyLoop, foodLoop;
 
         const catBox = document.getElementById('catBox');
         const catImg = document.getElementById('catImg');
-
-        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        const staminaDiv = document.getElementById('stamina');
 
         function startApp() {
             document.getElementById('startOverlay').style.display = 'none';
@@ -117,41 +78,77 @@
         }
 
         function resetGame() {
-            clearInterval(gameLoop);
-            clearInterval(crazyLoop);
+            clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop);
             document.getElementById('angryOverlay').style.display = 'none';
+            document.querySelectorAll('.food').forEach(f => f.remove());
             
-            timeLeft = 7;
-            hitCount = 0;
-            isCrazy = false;
-            isFlipping = false;
-            updateTimer();
+            timeLeft = 7; stamina = 3; hitCount = 0;
+            isCrazy = false; isFlipping = false;
+            updateUI();
 
             catBox.className = 'breathing';
-            catBox.style.width = "280px";
-            catBox.style.height = "280px";
-            catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-            catBox.style.top = "50%";
-            catBox.style.left = "50%";
+            catBox.style.width = "280px"; catBox.style.height = "280px";
+            catBox.style.top = "50%"; catBox.style.left = "50%";
             catImg.className = '';
+            staminaDiv.style.display = 'block';
 
             gameLoop = setInterval(() => {
                 timeLeft--;
-                updateTimer();
+                updateUI();
                 if (timeLeft <= 0) startCrazyMode();
             }, 1000);
+
+            foodLoop = setInterval(spawnFood, 3000);
         }
 
-        function updateTimer() {
+        function updateUI() {
             document.getElementById('timer').innerHTML = timeLeft + "s";
+            staminaDiv.innerHTML = "⚡ ".repeat(stamina) || "EMPTY";
+        }
+
+        function spawnFood() {
+            if (isCrazy) return;
+            const foods = ['🐟', '🍖', '🐡'];
+            const type = foods[Math.floor(Math.random() * foods.length)];
+            const f = document.createElement('div');
+            f.className = 'food';
+            f.innerHTML = type;
+            f.style.left = (Math.random() * 80 + 10) + "%";
+            f.style.top = (Math.random() * 80 + 10) + "%";
+            document.body.appendChild(f);
+
+            // 拖曳邏輯
+            f.onpointerdown = function(e) {
+                f.setPointerCapture(e.pointerId);
+                f.onpointermove = function(ev) {
+                    f.style.left = ev.clientX - 20 + 'px';
+                    f.style.top = ev.clientY - 20 + 'px';
+                    checkEat(f);
+                };
+            };
+            f.onpointerup = () => { f.onpointermove = null; };
+
+            setTimeout(() => { if(f) f.remove(); }, 2000);
+        }
+
+        function checkEat(f) {
+            const cRect = catBox.getBoundingClientRect();
+            const fRect = f.getBoundingClientRect();
+            if (!(fRect.right < cRect.left || fRect.left > cRect.right || fRect.bottom < cRect.top || fRect.top > cRect.bottom)) {
+                if (f.innerHTML === '🐟') stamina = Math.min(5, stamina + 1);
+                if (f.innerHTML === '🍖') stamina = Math.min(5, stamina + 2);
+                if (f.innerHTML === '🐡') { f.remove(); startCrazyMode(); return; }
+                f.remove();
+                updateUI();
+            }
         }
 
         function startCrazyMode() {
-            clearInterval(gameLoop);
+            clearInterval(gameLoop); clearInterval(foodLoop);
             isCrazy = true;
+            staminaDiv.style.display = 'none';
             document.getElementById('timer').innerHTML = "RUN!!";
             catBox.style.width = "140px";
-            catBox.style.height = "140px";
             runCrazyMove(80);
         }
 
@@ -159,49 +156,35 @@
             clearInterval(crazyLoop);
             let startTime = Date.now();
             crazyLoop = setInterval(() => {
-                if (Date.now() - startTime >= 5000) {
-                    document.getElementById('angryOverlay').style.display = 'flex';
-                }
-                let x = Math.random() * 80 + 10;
-                let y = Math.random() * 80 + 10;
-                catBox.style.left = x + "%";
-                catBox.style.top = y + "%";
+                if (Date.now() - startTime >= 5000) document.getElementById('angryOverlay').style.display = 'flex';
+                catBox.style.left = (Math.random() * 80 + 10) + "%";
+                catBox.style.top = (Math.random() * 80 + 10) + "%";
             }, speed);
         }
 
         function hitCat(e) {
-            if (e) e.stopPropagation();
-
             if (!isCrazy) {
-                // 【核心修正】如果轉緊，直接 return，唔做任何野（包括唔重設計時）
-                if (isFlipping) return;
-                
+                if (isFlipping || stamina <= 0) return;
                 isFlipping = true;
-                
-                // 只有喺非旋轉狀態下點擊先會重設計時
-                resetGame();
-                isFlipping = true; // resetGame 會將 isFlipping 變返 false，所以要再 set 返 true 鎖住
-
-                catImg.className = "";
-                void catImg.offsetWidth; 
+                stamina--;
+                resetTimerOnly(); // 只重設計時，唔重設體力
                 catImg.className = "flipping-anim";
-
-                setTimeout(() => {
-                    catImg.className = "";
-                    isFlipping = false; // 轉完先解鎖
-                }, 800);
-
+                setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
             } else {
                 hitCount++;
-                if (hitCount === 1) {
-                    catImg.className = "spinning-anim";
-                    catBox.style.transition = "all 0.05s linear";
-                    runCrazyMove(50);
-                } else if (hitCount >= 3) {
-                    catImg.className = "flipping-anim";
-                    setTimeout(resetGame, 200);
-                }
+                if (hitCount === 1) { catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
+                else if (hitCount >= 3) { catImg.className = "flipping-anim"; setTimeout(resetGame, 200); }
             }
+        }
+
+        function resetTimerOnly() {
+            clearInterval(gameLoop);
+            timeLeft = 7;
+            updateUI();
+            gameLoop = setInterval(() => {
+                timeLeft--; updateUI();
+                if (timeLeft <= 0) startCrazyMode();
+            }, 1000);
         }
     </script>
 </body>
