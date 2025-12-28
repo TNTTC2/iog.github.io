@@ -13,36 +13,37 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
 
-        /* 遮罩層 */
-        #overlay {
+        /* 遮罩層樣式 */
+        .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; text-align: center;
+            background-color: rgba(0, 0, 0, 0.6); /* 增加透明度 */
+            z-index: 10000; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; cursor: pointer; text-align: center;
         }
 
-        .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+        #angryOverlay { display: none; background-color: rgba(0, 0, 0, 0.4); z-index: 10001; }
+
+        .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px #f00; }
+        .sub-text { color: #ccc; font-size: 18px; }
         .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; transform: rotate(45deg); -webkit-transform: rotate(45deg); }
 
-        /* 圖片容器 */
+        /* 圖片容器 - 新機預設放大 */
         #catBox {
             position: absolute; top: 50%; left: 50%;
-            width: 220px; height: 220px;
-            margin-left: -110px; margin-top: -110px;
+            width: 280px; height: 280px;
+            margin-left: -140px; margin-top: -140px;
             display: flex; justify-content: center; align-items: center;
-            /* 預設平滑度 */
-            transition: all 0.1s linear;
-            -webkit-transition: all 0.1s linear;
-            z-index: 50;
-            will-change: left, top; /* 提醒瀏覽器準備硬件加速 */
+            transition: all 0.1s linear; -webkit-transition: all 0.1s linear;
+            z-index: 50; will-change: left, top, transform;
         }
 
         #catImg {
             width: 100%; height: auto; display: block;
             -webkit-animation: bScale 1.2s infinite ease-in-out;
+            transition: width 0.3s ease;
         }
 
-        #timer { position: absolute; top: 20px; right: 20px; color: #444; font-size: 24px; font-weight: bold; z-index: 100; }
+        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
 
         /* 動畫 */
         @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
@@ -53,9 +54,14 @@
 </head>
 <body onclick="">
 
-    <div id="overlay" onclick="startApp()">
+    <div id="startOverlay" class="overlay" onclick="startApp()">
         <div class="instruction">篤一下隻貓</div>
         <div class="finger">👆</div>
+    </div>
+
+    <div id="angryOverlay" class="overlay" onclick="resetGame()">
+        <div class="instruction">隻貓嬲咗</div>
+        <div class="sub-text">再篤佢補救</div>
     </div>
 
     <div id="timer">10s</div>
@@ -66,31 +72,33 @@
 
     <script>
         var timeLeft = 10;
+        var crazyTime = 0;
         var gameLoop = null;
         var crazyLoop = null;
         var catBox = document.getElementById('catBox');
-        var img = document.getElementById('catImg');
-
-        // 偵測是否為舊機
+        var catImg = document.getElementById('catImg');
         var isOldDevice = !('transition' in document.body.style || '-webkit-transition' in document.body.style);
 
         function startApp() {
-            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('startOverlay').style.display = 'none';
             resetGame();
         }
 
         function resetGame() {
             clearInterval(gameLoop);
             clearInterval(crazyLoop);
+            document.getElementById('angryOverlay').style.display = 'none';
             timeLeft = 10;
+            crazyTime = 0;
             updateTimer();
             
-            // 返回中心：用較慢嘅速度滑返去，增加質感
+            // 復原尺寸同位置
+            catImg.style.width = "100%";
             catBox.style.transition = "all 0.4s ease-out";
             catBox.style.left = '50%';
             catBox.style.top = '50%';
-            catBox.style.marginLeft = '-110px';
-            catBox.style.marginTop = '-110px';
+            catBox.style.marginLeft = '-140px';
+            catBox.style.marginTop = '-140px';
 
             gameLoop = setInterval(function() {
                 timeLeft--;
@@ -107,19 +115,27 @@
             clearInterval(gameLoop);
             document.getElementById('timer').innerHTML = "!! RUN !!";
 
+            // 暴走狀態縮細一倍
+            catImg.style.width = "50%";
+
             if (!isOldDevice) {
-                // 新機：大幅減少停留時間 (80ms) 同 提升滑動速度 (0.08s)
                 catBox.style.transition = "all 0.08s linear";
             } else {
                 catBox.style.transition = "none";
             }
 
-            var moveDelay = isOldDevice ? 150 : 80; // 新機停留時間極短
+            var moveDelay = isOldDevice ? 150 : 80;
 
             crazyLoop = setInterval(function() {
-                // 隨機計算位置，稍微留返啲邊界位費事佢飛出螢幕
-                var x = Math.random() * (window.innerWidth - 180) + 90;
-                var y = Math.random() * (window.innerHeight - 180) + 90;
+                crazyTime += moveDelay;
+                
+                // 5秒後彈出嬲嬲黑幕 (5000ms)
+                if (crazyTime >= 5000) {
+                    document.getElementById('angryOverlay').style.display = 'flex';
+                }
+
+                var x = Math.random() * (window.innerWidth - 150) + 75;
+                var y = Math.random() * (window.innerHeight - 150) + 75;
                 
                 catBox.style.marginLeft = '0';
                 catBox.style.marginTop = '0';
@@ -130,10 +146,10 @@
 
         function hitCat(e) {
             if (e && e.stopPropagation) e.stopPropagation();
-            if (img.className.indexOf('flipping') !== -1) return;
+            if (catImg.className.indexOf('flipping') !== -1) return;
 
-            img.className = "flipping";
-            setTimeout(function() { img.className = ""; }, 500);
+            catImg.className = "flipping";
+            setTimeout(function() { catImg.className = ""; }, 500);
             resetGame();
         }
     </script>
