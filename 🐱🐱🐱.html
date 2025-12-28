@@ -13,10 +13,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
 
-        /* 遮罩層樣式 */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* 增加透明度 */
+            background-color: rgba(0, 0, 0, 0.6);
             z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; cursor: pointer; text-align: center;
         }
@@ -25,9 +24,8 @@
 
         .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px #f00; }
         .sub-text { color: #ccc; font-size: 18px; }
-        .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; transform: rotate(45deg); -webkit-transform: rotate(45deg); }
+        .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; transform: rotate(45deg); }
 
-        /* 圖片容器 - 新機預設放大 */
         #catBox {
             position: absolute; top: 50%; left: 50%;
             width: 280px; height: 280px;
@@ -45,11 +43,17 @@
 
         #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
 
-        /* 動畫 */
+        /* 動畫定義 */
         @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
         @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.95);} 50%{-webkit-transform:scale(1.1);} }
-        @-webkit-keyframes flip { 0%{-webkit-transform:rotate(0deg);} 100%{-webkit-transform:rotate(360deg);} }
+        
+        /* 持續旋轉動畫 */
+        .infinite-spin { -webkit-animation: spinMove 0.4s infinite linear !important; }
+        @-webkit-keyframes spinMove { from {-webkit-transform: rotate(0deg);} to {-webkit-transform: rotate(360deg);} }
+
+        /* 成功復原旋轉 */
         .flipping { -webkit-animation: flip 0.5s 1 linear !important; }
+        @-webkit-keyframes flip { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
     </style>
 </head>
 <body onclick="">
@@ -73,8 +77,10 @@
     <script>
         var timeLeft = 10;
         var crazyTime = 0;
+        var hitCount = 0; // 記錄點擊次數
         var gameLoop = null;
         var crazyLoop = null;
+        var isCrazy = false;
         var catBox = document.getElementById('catBox');
         var catImg = document.getElementById('catImg');
         var isOldDevice = !('transition' in document.body.style || '-webkit-transition' in document.body.style);
@@ -90,9 +96,11 @@
             document.getElementById('angryOverlay').style.display = 'none';
             timeLeft = 10;
             crazyTime = 0;
+            hitCount = 0;
+            isCrazy = false;
             updateTimer();
             
-            // 復原尺寸同位置
+            catImg.className = ""; // 移除所有旋轉狀態
             catImg.style.width = "100%";
             catBox.style.transition = "all 0.4s ease-out";
             catBox.style.left = '50%';
@@ -113,23 +121,17 @@
 
         function startCrazyMode() {
             clearInterval(gameLoop);
+            isCrazy = true;
             document.getElementById('timer').innerHTML = "!! RUN !!";
-
-            // 暴走狀態縮細一倍
             catImg.style.width = "50%";
+            
+            runCrazyLogic(isOldDevice ? 150 : 80);
+        }
 
-            if (!isOldDevice) {
-                catBox.style.transition = "all 0.08s linear";
-            } else {
-                catBox.style.transition = "none";
-            }
-
-            var moveDelay = isOldDevice ? 150 : 80;
-
+        function runCrazyLogic(delay) {
+            clearInterval(crazyLoop);
             crazyLoop = setInterval(function() {
-                crazyTime += moveDelay;
-                
-                // 5秒後彈出嬲嬲黑幕 (5000ms)
+                crazyTime += delay;
                 if (crazyTime >= 5000) {
                     document.getElementById('angryOverlay').style.display = 'flex';
                 }
@@ -141,16 +143,34 @@
                 catBox.style.marginTop = '0';
                 catBox.style.left = x + 'px';
                 catBox.style.top = y + 'px';
-            }, moveDelay);
+            }, delay);
         }
 
         function hitCat(e) {
             if (e && e.stopPropagation) e.stopPropagation();
-            if (catImg.className.indexOf('flipping') !== -1) return;
-
-            catImg.className = "flipping";
-            setTimeout(function() { catImg.className = ""; }, 500);
-            resetGame();
+            
+            if (!isCrazy) {
+                // 平時模式：篤一下就旋轉並 Reset
+                catImg.className = "flipping";
+                setTimeout(function() { catImg.className = ""; }, 500);
+                resetGame();
+            } else {
+                // 暴走模式：需要篤三下
+                hitCount++;
+                
+                if (hitCount === 1) {
+                    // 第一下：加速 + 旋轉
+                    catImg.classList.add("infinite-spin");
+                    if (!isOldDevice) {
+                        catBox.style.transition = "all 0.05s linear";
+                        runCrazyLogic(50); // 加速到 50ms
+                    }
+                } else if (hitCount >= 3) {
+                    // 第三下：復原
+                    catImg.className = "flipping";
+                    setTimeout(function() { resetGame(); }, 500);
+                }
+            }
         }
     </script>
 </body>
