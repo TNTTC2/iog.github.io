@@ -44,7 +44,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75); /* 半透明深色 */
+            background-color: rgba(0, 0, 0, 0.75);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -54,7 +54,6 @@
             cursor: pointer;
         }
 
-        /* 遮罩層入面嘅文字 */
         .instruction {
             color: white;
             font-size: 28px;
@@ -63,19 +62,19 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        /* 👆 Emoji 樣式 */
+        /* 👆 Emoji 樣式：修正為 45 度 */
         .finger-emoji {
             font-size: 80px;
-            transform: rotate(135deg); /* 135度旋轉 */
+            transform: rotate(45deg); 
             animation: fingerMove 1s ease-in-out infinite;
         }
 
+        /* 指向 45 度方向嘅動態 */
         @keyframes fingerMove {
-            0%, 100% { transform: rotate(135deg) translate(0, 0); }
-            50% { transform: rotate(135deg) translate(-20px, -20px); }
+            0%, 100% { transform: rotate(45deg) translate(0, 0); }
+            50% { transform: rotate(45deg) translate(15px, -15px); } /* 向右上方微動 */
         }
 
-        /* 主遊戲容器 */
         .container {
             width: 100%;
             height: 100%;
@@ -122,7 +121,7 @@
     </div>
 
     <script>
-        // PWA Manifest 動態生成
+        // PWA Manifest
         const manifest = {
             "short_name": appName,
             "name": appName,
@@ -135,14 +134,14 @@
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
-        // 註冊 Service Worker
+        // Service Worker
         if ('serviceWorker' in navigator) {
             const swCode = `self.addEventListener('fetch', function(event) {});`;
             const swBlob = new Blob([swCode], {type: 'text/javascript'});
             navigator.serviceWorker.register(URL.createObjectURL(swBlob));
         }
 
-        // 控制遮罩層關閉
+        // 點擊關閉遮罩
         const overlay = document.getElementById('overlay');
         overlay.addEventListener('click', function() {
             overlay.style.opacity = '0';
@@ -151,7 +150,7 @@
             }, 500);
         });
 
-        // 點擊打關斗
+        // 貓咪打關斗
         const img = document.getElementById('catImg');
         img.addEventListener('click', function() {
             if (img.classList.contains('flipping')) return;
