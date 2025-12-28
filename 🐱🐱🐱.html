@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🐱🐱🐱</title>
+    
+    <link rel="icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+    
+    <style>
+        /* 基本樣式設定 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000000; /* 黑色底色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* 隱藏捲軸 */
+            touch-action: none; /* 防止手機縮放干擾 */
+        }
+
+        /* 圖片容器 */
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 彈下彈下動畫圖片 */
+        .bouncing-img {
+            max-width: 85%; /* 手機螢幕占比 */
+            max-height: 80vh;
+            object-fit: contain;
+            /* 動畫設定：1.2秒一個循環，平滑縮放，無限重覆 */
+            animation: bounceScale 1.2s ease-in-out infinite;
+        }
+
+        /* 定義縮放動畫 (關鍵影格) */
+        @keyframes bounceScale {
+            0% {
+                transform: scale(0.9);
+            }
+            50% {
+                transform: scale(1.15); /* 放大 15% 營造彈性感 */
+            }
+            100% {
+                transform: scale(0.9);
+            }
+        }
+
+        /* 兼容舊版瀏覽器 */
+        @-webkit-keyframes bounceScale {
+            0% { -webkit-transform: scale(0.9); }
+            50% { -webkit-transform: scale(1.15); }
+            100% { -webkit-transform: scale(0.9); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img class="bouncing-img" 
+             src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" 
+             alt="🐱🐱🐱">
+    </div>
+
+</body>
+</html>
