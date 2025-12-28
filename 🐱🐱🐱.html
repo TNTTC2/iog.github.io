@@ -24,7 +24,7 @@
 
         .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px #f00; }
         .sub-text { color: #ccc; font-size: 18px; }
-        .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; transform: rotate(45deg); -webkit-transform: rotate(45deg); }
+        .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; transform: rotate(45deg); }
 
         #catBox {
             position: absolute; top: 50%; left: 50%;
@@ -46,11 +46,9 @@
         @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
         @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.95);} 50%{-webkit-transform:scale(1.1);} }
         
-        /* 瘋狂模式持續旋轉 */
         .infinite-spin { -webkit-animation: spinMove 0.3s infinite linear !important; }
         @-webkit-keyframes spinMove { from {-webkit-transform: rotate(0deg);} to {-webkit-transform: rotate(360deg);} }
 
-        /* 一般打關斗：0.6秒完成 */
         .flipping { -webkit-animation: flip 0.6s 1 ease-in-out !important; }
         @-webkit-keyframes flip { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
     </style>
@@ -67,20 +65,20 @@
         <div class="sub-text">點擊黑幕補救</div>
     </div>
 
-    <div id="timer">10s</div>
+    <div id="timer">7s</div>
 
     <div id="catBox">
         <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="🐱" onclick="hitCat(event)">
     </div>
 
     <script>
-        var timeLeft = 10;
+        var timeLeft = 7; // 改為 7 秒
         var crazyTime = 0;
         var hitCount = 0;
         var gameLoop = null;
         var crazyLoop = null;
         var isCrazy = false;
-        var isAnimating = false; // 新增：判斷是否正在打關斗
+        var isAnimating = false;
         var catBox = document.getElementById('catBox');
         var catImg = document.getElementById('catImg');
         var isOldDevice = !('transition' in document.body.style || '-webkit-transition' in document.body.style);
@@ -94,7 +92,7 @@
             clearInterval(gameLoop);
             clearInterval(crazyLoop);
             document.getElementById('angryOverlay').style.display = 'none';
-            timeLeft = 10;
+            timeLeft = 7; // 重設為 7 秒
             crazyTime = 0;
             hitCount = 0;
             isCrazy = false;
@@ -147,35 +145,35 @@
         function hitCat(e) {
             if (e && e.stopPropagation) e.stopPropagation();
             
-            // 情況 A：一般狀態 (未暴走)
             if (!isCrazy) {
-                if (isAnimating) return; // 如果打緊關斗，點擊無效，唔會重設時間
+                if (isAnimating) return; 
                 
                 isAnimating = true;
                 catImg.className = "flipping";
                 
-                // 動畫完咗之後先准再點，且呢度唔會 call resetGame()，所以時間繼續行
+                // 瞬間重設計時器
+                resetGame(); 
+                
+                // 動畫完結後標記
                 setTimeout(function() {
                     catImg.className = "";
                     isAnimating = false;
                 }, 600);
             } 
-            // 情況 B：暴走狀態
             else {
                 hitCount++;
                 if (hitCount === 1) {
-                    // 第一下：變身瘋狂旋轉 + 加速
                     catImg.className = "infinite-spin";
                     if (!isOldDevice) {
                         catBox.style.transition = "all 0.05s linear";
                         runCrazyLogic(50); 
                     }
                 } else if (hitCount >= 3) {
-                    // 第三下：成功制服，打個關斗返埋位
                     catImg.className = "flipping";
+                    // 點完第三下瞬間重設
                     setTimeout(function() {
                         resetGame();
-                    }, 600);
+                    }, 100); 
                 }
             }
         }
