@@ -4,63 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🐱🐱🐱</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
+    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
-        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.5s; }
+        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
+
         #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
         #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 28px; z-index: 100; text-shadow: 0 0 10px #000; }
+
         #catBox {
-            position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50;
+            position: absolute; width: 280px; height: 280px; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; justify-content: center; align-items: center; z-index: 50;
         }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+
         #catImg { width: 100%; height: auto; display: block; will-change: transform; }
         .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+
+        .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
+
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); z-index: 10000; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
+        }
         .finger-45 { font-size: 80px; transform: rotate(45deg); display: inline-block; }
     </style>
 </head>
 <body>
+
     <div id="timer">7s</div>
     <div id="stamina">⚡ ⚡ ⚡</div>
-    <div id="startOverlay" class="overlay" onclick="startApp()"><div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下隻貓</div><div class="finger-45">👆</div></div>
-    <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()"><div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div><div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div><div class="finger-45" style="margin-top:20px;">👆</div></div>
-    <div id="catBox" class="breathing"><img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="cat" onpointerdown="hitCat(event)"></div>
+
+    <div id="startOverlay" class="overlay" onclick="startApp()">
+        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下隻貓</div>
+        <div class="finger-45">👆</div>
+    </div>
+
+    <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()">
+        <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
+        <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
+        <div class="finger-45" style="margin-top:20px;">👆</div>
+    </div>
+
+    <div id="catBox" class="breathing">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="cat" onpointerdown="hitCat(event)">
+    </div>
 
     <script>
         let timeLeft = 7, stamina = 3, hitCount = 0;
         let isCrazy = false, isFlipping = false;
         let gameLoop, crazyLoop, foodLoop;
-        let lastSecHits = 0, crazyWins = 0, specialStatus = "normal", specialCounter = 0;
+        
+        let lastSecHits = 0, crazyWins = 0;
+        let specialStatus = "normal"; // normal, golden, devil
+        let specialCounter = 0; 
 
         const catBox = document.getElementById('catBox');
         const catImg = document.getElementById('catImg');
         const staminaDiv = document.getElementById('stamina');
 
-        function startApp() { document.getElementById('startOverlay').style.display = 'none'; resetGame(); }
-
-        function updateBg() {
-            if (isCrazy) document.body.style.backgroundColor = "#400";
-            else if (specialStatus === "golden") document.body.style.backgroundColor = "#4a3c00";
-            else if (specialStatus === "devil") document.body.style.backgroundColor = "#1a0033";
-            else document.body.style.backgroundColor = "#000";
+        function startApp() {
+            document.getElementById('startOverlay').style.display = 'none';
+            resetGame();
         }
 
         function resetGame() {
             clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop);
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
-            timeLeft = 7; hitCount = 0; isCrazy = false; isFlipping = false;
-            updateBg(); updateUI();
-            catBox.className = 'breathing'; catBox.style.width = "280px"; catBox.style.height = "280px";
-            catBox.style.top = "50%"; catBox.style.left = "50%"; catImg.className = ''; staminaDiv.style.display = 'block';
+            applyBg();
+            
+            timeLeft = (specialStatus === "devil") ? 70 : 7;
+            hitCount = 0; isCrazy = false; isFlipping = false;
+            updateUI();
+
+            catBox.className = 'breathing';
+            catBox.style.width = "280px"; catBox.style.height = "280px";
+            catBox.style.top = "50%"; catBox.style.left = "50%";
+            catImg.className = '';
+            staminaDiv.style.display = 'block';
+
             gameLoop = setInterval(tick, 1000);
             foodLoop = setInterval(spawnFood, 3000);
+        }
+
+        function applyBg() {
+            if (specialStatus === "golden") document.body.style.backgroundColor = "#4a3c00";
+            else if (specialStatus === "devil") document.body.style.backgroundColor = "#1a0033";
+            else document.body.style.backgroundColor = "#000";
         }
 
         function tick() {
@@ -69,14 +111,21 @@
                 if (specialStatus === "golden" && specialCounter > 0) {
                     specialCounter--;
                     timeLeft = 7;
-                    if (specialCounter <= 0) { specialStatus = "normal"; updateBg(); }
+                    if (specialCounter <= 0) exitSpecial();
                 } else if (specialStatus === "devil") {
-                    specialStatus = "normal"; resetGame(); return;
+                    exitSpecial();
+                    resetGame(); // 70s 完結唔暴走，直接 reset
                 } else {
                     startCrazyMode(false);
                 }
             }
             updateUI();
+        }
+
+        function exitSpecial() {
+            specialStatus = "normal";
+            specialCounter = 0;
+            applyBg();
         }
 
         function updateUI() {
@@ -89,54 +138,84 @@
             if (isCrazy) return;
             let f = document.createElement('div');
             f.className = 'food';
-            if (specialStatus === "devil") {
-                f.innerHTML = (Math.random() < 0.2) ? '🐠' : ['🐟', '🍖', '🐡', '🦈'][Math.floor(Math.random()*4)];
-            } else if (lastSecHits >= 3 && specialStatus !== "golden") {
+            
+            let possibleFoods = ['🐟', '🍖', '🐡'];
+            if (specialStatus === "devil") possibleFoods.push('🐠'); // 惡魔狀態出黃金魚（陷阱）
+
+            if (lastSecHits >= 3 && specialStatus !== "golden") {
                 f.innerHTML = '🐠'; lastSecHits = 0;
             } else if (crazyWins >= 3) {
                 f.innerHTML = '🦈'; crazyWins = 0;
             } else {
-                f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random()*3)];
+                f.innerHTML = possibleFoods[Math.floor(Math.random() * possibleFoods.length)];
             }
+
             let x, y, cRect = catBox.getBoundingClientRect();
-            do { x = Math.random()*(window.innerWidth-60)+30; y = Math.random()*(window.innerHeight-60)+30;
-            } while (x > cRect.left-50 && x < cRect.right+50 && y > cRect.top-50 && y < cRect.bottom+50);
-            f.style.left = x + "px"; f.style.top = y + "px"; document.body.appendChild(f);
-            f.onpointerdown = (e) => { f.setPointerCapture(e.pointerId); f.onpointermove = (ev) => { f.style.left = ev.clientX-25+'px'; f.style.top = ev.clientY-25+'px'; checkEat(f); }; };
+            do {
+                x = Math.random() * (window.innerWidth - 60) + 30;
+                y = Math.random() * (window.innerHeight - 60) + 30;
+            } while (x > cRect.left - 50 && x < cRect.right + 50 && y > cRect.top - 50 && y < cRect.bottom + 50);
+
+            f.style.left = x + "px"; f.style.top = y + "px";
+            document.body.appendChild(f);
+
+            f.onpointerdown = function(e) {
+                f.setPointerCapture(e.pointerId);
+                f.onpointermove = (ev) => { f.style.left = ev.clientX-25+'px'; f.style.top = ev.clientY-25+'px'; checkEat(f); };
+            };
             f.onpointerup = () => f.onpointermove = null;
             setTimeout(() => f.parentElement && f.remove(), 2000);
         }
 
         function checkEat(f) {
-            const cRect = catBox.getBoundingClientRect(), fRect = f.getBoundingClientRect();
+            const cRect = catBox.getBoundingClientRect();
+            const fRect = f.getBoundingClientRect();
             if (fRect.left < cRect.right-20 && fRect.right > cRect.left+20 && fRect.top < cRect.bottom-20 && fRect.bottom > cRect.top+20) {
                 const type = f.innerHTML; f.remove();
-                if (specialStatus === "devil" && type === '🐠') { specialStatus = "normal"; stamina = 0; resetGame(); return; }
-                if (type === '🦈') { specialStatus = "devil"; timeLeft = 70; updateBg(); }
-                else if (type === '🐠') { specialStatus = "golden"; specialCounter = 10; updateBg(); }
-                else if (specialStatus === "devil") { stamina = Math.min(10, stamina + 5); }
-                else if (type === '🐡' && specialStatus === "golden") { stamina = Math.min(10, stamina + 3); specialCounter--; if(specialCounter<=0){specialStatus="normal";updateBg();} }
-                else if (type === '🐡') { startCrazyMode(true); return; }
-                else if (type === '🐟') stamina = Math.min(10, stamina + 1);
+                
+                if (type === '🐠') {
+                    if (specialStatus === "devil") {
+                        stamina = 0; exitSpecial(); // 惡魔食黃金魚 = 能量衝突
+                    } else {
+                        specialStatus = "golden"; specialCounter = 10;
+                    }
+                } else if (type === '🦈') {
+                    specialStatus = "devil"; timeLeft = 70; // 直接填滿 70s
+                } else if (specialStatus === "devil") {
+                    stamina = Math.min(10, stamina + 5);
+                } else if (type === '🐡' && specialStatus === "golden" && specialCounter > 0) {
+                    stamina = Math.min(10, stamina + 3); specialCounter--;
+                } else if (type === '🐡') { 
+                    startCrazyMode(true); return; 
+                } else if (type === '🐟') stamina = Math.min(10, stamina + 1);
                 else if (type === '🍖') stamina = Math.min(10, stamina + 2);
+                
+                if (specialCounter <= 0 && specialStatus === "golden") exitSpecial();
                 updateUI();
+                applyBg();
             }
         }
 
-        function startCrazyMode(isP) {
-            clearInterval(gameLoop); clearInterval(foodLoop); isCrazy = true;
-            staminaDiv.style.display = 'none'; updateBg();
-            document.getElementById('timer').innerHTML = isP ? "POISON!!" : "RUN!!";
+        function startCrazyMode(isPoisoned) {
+            clearInterval(gameLoop); clearInterval(foodLoop);
+            isCrazy = true; staminaDiv.style.display = 'none';
+            document.body.style.backgroundColor = "#400";
+            document.getElementById('timer').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
             catBox.style.width = "140px";
-            if (isP || hitCount >= 1) { hitCount = 1; catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
-            else { runCrazyMove(80); }
+            if (isPoisoned || hitCount >= 1) { 
+                hitCount = 1; catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
+            } else { 
+                runCrazyMove(80); 
+            }
         }
 
         function runCrazyMove(speed) {
-            clearInterval(crazyLoop); let startTime = Date.now();
+            clearInterval(crazyLoop);
+            let startTime = Date.now();
             crazyLoop = setInterval(() => {
                 if (Date.now() - startTime >= 5000) { document.getElementById('angryOverlay').style.display = 'flex'; clearInterval(crazyLoop); }
-                catBox.style.left = (Math.random()*80+10)+"%"; catBox.style.top = (Math.random()*80+10)+"%";
+                catBox.style.left = (Math.random() * 80 + 10) + "%";
+                catBox.style.top = (Math.random() * 80 + 10) + "%";
             }, speed);
         }
 
@@ -146,12 +225,23 @@
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true; stamina--;
                 if (timeLeft <= 1) lastSecHits++; else lastSecHits = 0;
-                clearInterval(gameLoop); timeLeft = (specialStatus === "devil") ? timeLeft : 7; updateUI(); gameLoop = setInterval(tick, 1000);
-                catImg.className = "flipping-anim"; setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
+                
+                // 重設計時
+                clearInterval(gameLoop);
+                timeLeft = (specialStatus === "devil") ? 70 : 7;
+                gameLoop = setInterval(tick, 1000);
+
+                catImg.className = "flipping-anim";
+                setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
+                updateUI();
             } else {
                 hitCount++;
                 if (hitCount === 1) { catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
-                else if (hitCount >= 3) { if (catImg.className === "spinning-anim") crazyWins++; else crazyWins = 0; catImg.className = "flipping-anim"; setTimeout(resetGame, 200); }
+                else if (hitCount >= 3) {
+                    if (catImg.className === "spinning-anim") crazyWins++; else crazyWins = 0;
+                    catImg.className = "flipping-anim";
+                    setTimeout(resetGame, 200);
+                }
             }
         }
     </script>
