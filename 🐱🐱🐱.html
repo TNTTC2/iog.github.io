@@ -21,103 +21,95 @@
             width: 100%; height: 100%;
             background-color: #000;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* 黑幕層 */
+        #timer {
+            position: absolute; top: 20px; right: 20px;
+            color: #666; font-size: 24px; font-weight: bold; z-index: 100;
+        }
+
+        /* 貓咪本體 */
+        #cat {
+            position: absolute;
+            width: 280px; height: auto;
+            cursor: pointer;
+            /* 初始位置：正中間 */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            /* 平滑移動 */
+            transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* 基礎呼吸效果 */
+        .breathing {
+            animation: bounce 1.2s infinite ease-in-out;
+            -webkit-animation: bounce 1.2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.9); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* 打關斗動畫：由 JS 動態控制 */
+        .flip-now {
+            animation: flipAnim 0.8s linear !important;
+            -webkit-animation: flipAnim 0.8s linear !important;
+        }
+
+        @keyframes flipAnim {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.9); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) scale(0.9); }
+        }
+
+        /* 暴走旋轉 */
+        .spinning {
+            animation: spinLoop 0.3s infinite linear !important;
+            -webkit-animation: spinLoop 0.3s infinite linear !important;
+        }
+
+        @keyframes spinLoop {
+            from { transform: translate(-50%, -50%) rotate(0deg) scale(0.7); }
+            to { transform: translate(-50%, -50%) rotate(360deg) scale(0.7); }
+        }
+
+        /* 遮罩 */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
             z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
         }
-
-        #angryOverlay { display: none; background-color: rgba(0, 0, 0, 0.4); z-index: 10001; }
-
-        .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-        .finger { font-size: 80px; animation: fMove 1s infinite; }
-
-        /* 貓咪外盒：負責位移 */
-        #catBox {
-            position: absolute; top: 50%; left: 50%;
-            width: 280px; height: 280px;
-            margin-left: -140px; margin-top: -140px;
-            z-index: 50;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: left, top;
-        }
-
-        /* 貓咪圖片：負責呼吸與旋轉 */
-        #catImg {
-            width: 100%; height: auto; display: block;
-            /* 預設呼吸動畫 */
-            animation: bounceScale 1.2s ease-in-out infinite;
-        }
-
-        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
-
-        /* --- 動畫定義 --- */
-        
-        /* 呼吸 */
-        @keyframes bounceScale {
-            0%, 100% { transform: scale(0.9); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* 核心：打關斗 (獨立 Animation) */
-        /* 使用單獨的 Class 覆蓋呼吸動畫 */
-        .do-flip {
-            animation: flipAction 0.8s ease-in-out !important;
-        }
-
-        @keyframes flipAction {
-            0% { transform: rotate(0deg) scale(0.9); }
-            100% { transform: rotate(360deg) scale(0.9); }
-        }
-
-        /* 暴走旋轉 */
-        .do-spin {
-            animation: spinAction 0.3s infinite linear !important;
-        }
-
-        @keyframes spinAction {
-            from { transform: rotate(0deg) scale(0.9); }
-            to { transform: rotate(360deg) scale(0.9); }
-        }
-
-        @keyframes fMove { 0%,100%{transform:rotate(45deg) translate(0,0);} 50%{transform:rotate(45deg) translate(15px,-15px);} }
     </style>
 </head>
 <body>
 
-    <div id="startOverlay" class="overlay" onclick="startApp()">
-        <div class="instruction">篤一下隻貓</div>
-        <div class="finger">👆</div>
-    </div>
-
-    <div id="angryOverlay" class="overlay" onclick="resetGame()">
-        <div class="instruction">隻貓嬲咗</div>
-        <div class="sub-text" style="color:#ccc; font-size:18px;">點擊黑幕補救</div>
-    </div>
-
     <div id="timer">7s</div>
 
-    <div id="catBox">
-        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="🐱" onclick="hitCat(event)">
+    <div id="startOverlay" class="overlay" onclick="startApp()">
+        <div style="color:white; font-size:28px; font-weight:bold;">篤一下隻貓</div>
+        <div style="font-size:80px;">👆</div>
     </div>
 
+    <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()">
+        <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
+        <div style="color:#ccc; margin-top:10px;">點擊黑幕補救</div>
+    </div>
+
+    <img id="cat" class="breathing" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="cat" onclick="hitCat(event)">
+
     <script>
-        // 禁止縮放
-        document.addEventListener('gesturestart', (e) => e.preventDefault());
-        
         var timeLeft = 7;
         var hitCount = 0;
-        var gameLoop, crazyLoop;
         var isCrazy = false;
-        var isFlipping = false; // 動畫狀態鎖
-        
-        const catBox = document.getElementById('catBox');
-        const catImg = document.getElementById('catImg');
+        var isFlipping = false;
+        var gameLoop, crazyLoop;
+        const cat = document.getElementById('cat');
+
+        // 禁止縮放
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
 
         function startApp() {
             document.getElementById('startOverlay').style.display = 'none';
@@ -134,16 +126,13 @@
             isCrazy = false;
             isFlipping = false;
             updateTimer();
-            
-            // 重置貓咪外觀與位置
-            catImg.className = ""; 
-            catBox.style.width = "280px";
-            catBox.style.height = "280px";
-            catBox.style.marginLeft = "-140px";
-            catBox.style.marginTop = "-140px";
-            catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-            catBox.style.left = '50%';
-            catBox.style.top = '50%';
+
+            // 復原貓咪：位置、大小、動畫
+            cat.className = 'breathing';
+            cat.style.width = "280px";
+            cat.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            cat.style.top = "50%";
+            cat.style.left = "50%";
 
             gameLoop = setInterval(() => {
                 timeLeft--;
@@ -159,60 +148,59 @@
         function startCrazyMode() {
             clearInterval(gameLoop);
             isCrazy = true;
-            document.getElementById('timer').innerHTML = "!! RUN !!";
-            catBox.style.width = "140px";
-            catBox.style.height = "140px";
-            catBox.style.marginLeft = "-70px";
-            catBox.style.marginTop = "-70px";
-            runCrazyLogic(80);
+            document.getElementById('timer').innerHTML = "RUN!!";
+            cat.style.width = "160px"; // 暴走變細少少
+            runCrazyMove(80);
         }
 
-        function runCrazyLogic(delay) {
+        function runCrazyMove(speed) {
             clearInterval(crazyLoop);
             let startTime = Date.now();
             crazyLoop = setInterval(() => {
                 if (Date.now() - startTime >= 5000) {
                     document.getElementById('angryOverlay').style.display = 'flex';
                 }
-                const x = Math.random() * (window.innerWidth - 100) + 50;
-                const y = Math.random() * (window.innerHeight - 100) + 50;
-                catBox.style.left = x + 'px';
-                catBox.style.top = y + 'px';
-                catBox.style.marginLeft = '0';
-                catBox.style.marginTop = '0';
-            }, delay);
+                let x = Math.random() * 80 + 10; // 10% - 90%
+                let y = Math.random() * 80 + 10;
+                cat.style.left = x + "%";
+                cat.style.top = y + "%";
+            }, speed);
         }
 
         function hitCat(e) {
             if (e) e.stopPropagation();
-            
-            // 模式 A: 一般模式
+
             if (!isCrazy) {
-                if (isFlipping) return; // 0.8秒內不准連點
-
-                isFlipping = true;
-                // 執行打關斗
-                catImg.classList.add('do-flip');
+                if (isFlipping) return;
                 
-                // 【關鍵】同時重設計時器
-                resetGame(); 
+                // 1. 觸發打關斗
+                isFlipping = true;
+                cat.classList.remove('breathing');
+                void cat.offsetWidth; // 強制重繪
+                cat.classList.add('flip-now');
 
-                // 動畫結束後移除 Class
+                // 2. 瞬間重設計時
+                resetGame();
+
+                // 3. 動畫完結後換回呼吸
                 setTimeout(() => {
-                    catImg.classList.remove('do-flip');
+                    if (!isCrazy) {
+                        cat.classList.remove('flip-now');
+                        cat.classList.add('breathing');
+                    }
                     isFlipping = false;
                 }, 800);
-            } 
-            // 模式 B: 暴走模式
-            else {
+
+            } else {
+                // 暴走模式
                 hitCount++;
                 if (hitCount === 1) {
-                    catImg.className = "do-spin"; // 開始瘋狂旋轉
-                    catBox.style.transition = "all 0.04s linear";
-                    runCrazyLogic(50); 
+                    cat.className = "spinning";
+                    cat.style.transition = "all 0.05s linear";
+                    runCrazyMove(50);
                 } else if (hitCount >= 3) {
-                    // 第三下制服
-                    catImg.className = "do-flip";
+                    // 制服成功：先做一次打關斗動畫再重設
+                    cat.className = "flip-now";
                     setTimeout(resetGame, 200);
                 }
             }
