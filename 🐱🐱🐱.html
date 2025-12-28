@@ -2,148 +2,126 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🐱🐱🐱</title>
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAs4AAAW+CAYAAAB3aaZj...">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
+        /* 基礎復原：確保全螢幕不溢出 */
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #000; overflow: hidden; 
+        }
 
-        /* 遮罩層 */
+        /* 遮罩層：確保覆蓋全屏且可點擊 */
         #overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); z-index: 1000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: opacity 0.5s; -webkit-transition: opacity 0.5s;
+            background: rgba(0, 0, 0, 0.85); z-index: 9999;
+            text-align: center; cursor: pointer; display: block;
         }
 
-        .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 40px; text-shadow: 0 0 10px #fff; }
-        .finger-emoji { font-size: 80px; transform: rotate(45deg); -webkit-transform: rotate(45deg); animation: fMove 1s infinite; -webkit-animation: fMove 1s infinite; }
-        
-        /* 倒數顯示器 */
-        #timerDisplay {
-            position: absolute; top: 5%; right: 5%; color: #555; font-size: 20px; font-weight: bold; z-index: 50;
+        .instruction { color: white; font-size: 24px; margin-top: 100px; font-weight: bold; }
+        .finger { font-size: 60px; margin-top: 30px; -webkit-animation: move 1s infinite; }
+
+        /* 核心復原：圖片容器使用傳統置中法，避免 Flexbox 支援問題 */
+        #catContainer {
+            position: absolute; 
+            top: 50%; left: 50%;
+            width: 280px; height: 280px;
+            margin-left: -140px; margin-top: -140px;
+            text-align: center;
         }
 
-        /* 貓咪容器 */
-        #catWrapper {
-            position: absolute; top: 50%; left: 50%;
-            width: 250px; height: 250px;
-            margin-left: -125px; margin-top: -125px;
-            transition: all 0.1s linear; -webkit-transition: all 0.1s linear;
-        }
-
-        .bouncing-img {
+        #catImg {
             width: 100%; height: auto;
-            animation: bScale 1.2s infinite ease-in-out;
-            -webkit-animation: bScale 1.2s infinite ease-in-out;
+            -webkit-animation: bounce 1.2s infinite ease-in-out;
+            cursor: pointer;
         }
 
-        /* 動畫效果 */
-        .flipping { animation: fAni 0.8s 1 ease-in-out !important; -webkit-animation: fAni 0.8s 1 ease-in-out !important; }
-        
-        @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
-        @keyframes fMove { 0%,100%{transform:rotate(45deg) translate(0,0);} 50%{transform:rotate(45deg) translate(15px,-15px);} }
-        
-        @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.9);} 50%{-webkit-transform:scale(1.1);} }
-        @keyframes bScale { 0%,100%{transform:scale(0.9);} 50%{transform:scale(1.1);} }
+        /* 計時器：放在角落不干擾顯示 */
+        #timer {
+            position: absolute; top: 10px; right: 10px;
+            color: #444; font-family: Arial; font-size: 18px;
+        }
 
-        @-webkit-keyframes fAni { 0%{-webkit-transform:rotate(0deg) scale(0.9);} 100%{-webkit-transform:rotate(360deg) scale(0.9);} }
-        @keyframes fAni { 0%{transform:rotate(0deg) scale(0.9);} 100%{transform:rotate(360deg) scale(0.9);} }
+        /* 動畫 */
+        @-webkit-keyframes bounce { 0%, 100% { -webkit-transform: scale(0.9); } 50% { -webkit-transform: scale(1.05); } }
+        @-webkit-keyframes flip { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
+        .flipping { -webkit-animation: flip 0.8s 1 linear !important; }
     </style>
 </head>
 <body onclick="">
 
-    <div id="overlay" onclick="startGame()">
+    <div id="overlay" onclick="startMeow()">
         <div class="instruction">篤一下隻貓</div>
-        <div class="finger-emoji">👆</div>
+        <div class="finger">👆</div>
     </div>
 
-    <div id="timerDisplay"></div>
+    <div id="timer"></div>
 
-    <div id="catWrapper">
-        <img id="catImg" class="bouncing-img" 
-             src="data:image/png;base64,這裡請填入你txt檔案內完整的Base64編碼" 
-             onclick="handleCatClick(event)">
+    <div id="catContainer">
+        <img id="catImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAs4AAAW+CAYAAAB3aaZj..." onclick="hitCat(event)">
     </div>
 
     <script>
         var timeLeft = 10;
-        var timerInterval = null;
-        var isCrazyMode = false;
-        var crazyInterval = null;
-        var catWrapper = document.getElementById('catWrapper');
-        var timerDisplay = document.getElementById('timerDisplay');
+        var gameTimer = null;
+        var crazyTimer = null;
+        var isCrazy = false;
+        var catBox = document.getElementById('catContainer');
+        var timerTxt = document.getElementById('timer');
 
-        function startGame() {
+        function startMeow() {
             document.getElementById('overlay').style.display = 'none';
-            resetTimer();
+            resetGame();
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            clearInterval(crazyInterval);
-            isCrazyMode = false;
+        function resetGame() {
+            clearInterval(gameTimer);
+            clearInterval(crazyTimer);
+            isCrazy = false;
             timeLeft = 10;
-            updateTimerDisplay();
             
-            // 返回中心
-            catWrapper.style.position = 'absolute';
-            catWrapper.style.top = '50%';
-            catWrapper.style.left = '50%';
-            catWrapper.style.marginLeft = '-125px';
-            catWrapper.style.marginTop = '-125px';
+            // 復原位置
+            catBox.style.left = '50%';
+            catBox.style.top = '50%';
+            catBox.style.marginLeft = '-140px';
+            catBox.style.marginTop = '-140px';
+            timerTxt.innerHTML = "10s";
 
-            timerInterval = setInterval(function() {
+            gameTimer = setInterval(function() {
                 timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    startCrazyMode();
-                }
+                timerTxt.innerHTML = timeLeft + "s";
+                if (timeLeft <= 0) goCrazy();
             }, 1000);
         }
 
-        function updateTimerDisplay() {
-            timerDisplay.innerHTML = timeLeft > 0 ? timeLeft + "s" : "RUN!!";
+        function goCrazy() {
+            clearInterval(gameTimer);
+            isCrazy = true;
+            timerTxt.innerHTML = "RUN!";
+            crazyTimer = setInterval(function() {
+                var newX = Math.random() * (window.innerWidth - 200) + 100;
+                var newY = Math.random() * (window.innerHeight - 200) + 100;
+                catBox.style.marginLeft = '0';
+                catBox.style.marginTop = '0';
+                catBox.style.left = newX + 'px';
+                catBox.style.top = newY + 'px';
+            }, 150);
         }
 
-        function startCrazyMode() {
-            clearInterval(timerInterval);
-            isCrazyMode = true;
-            crazyInterval = setInterval(function() {
-                // 隨機計算螢幕位置
-                var x = Math.random() * (window.innerWidth - 200);
-                var y = Math.random() * (window.innerHeight - 200);
-                catWrapper.style.marginLeft = '0';
-                catWrapper.style.marginTop = '0';
-                catWrapper.style.left = x + 'px';
-                catWrapper.style.top = y + 'px';
-            }, 150); // 每 0.15 秒跳一次，極速！
-        }
-
-        function handleCatClick(e) {
+        function hitCat(e) {
             if (e && e.stopPropagation) e.stopPropagation();
             var img = document.getElementById('catImg');
             
-            if (img.className.indexOf('flipping') !== -1) return;
-
             // 觸發旋轉
-            img.className = "bouncing-img flipping";
-            setTimeout(function() {
-                img.className = "bouncing-img";
-            }, 800);
+            img.className = "flipping";
+            setTimeout(function() { img.className = ""; }, 800);
 
-            // 重設計時器
-            resetTimer();
+            // 重設計時
+            resetGame();
         }
-
-        // 簡單適應螢幕旋轉
-        window.onresize = function() { if(!isCrazyMode) resetTimer(); };
     </script>
 </body>
 </html>
