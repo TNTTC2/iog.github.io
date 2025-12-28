@@ -16,7 +16,6 @@
         #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
         #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 28px; z-index: 100; text-shadow: 0 0 10px #000; }
 
-        /* 外層：位置與呼吸 */
         #catBox {
             position: absolute; width: 280px; height: 280px; top: 50%; left: 50%;
             transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -25,22 +24,20 @@
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
 
-        /* 內層：旋轉 */
         #catImg { width: 100%; height: auto; display: block; will-change: transform; }
         .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* 食物樣式 */
-        .food { position: absolute; font-size: 40px; cursor: move; z-index: 60; transition: opacity 0.3s; user-select: none; }
+        .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; pointer-events: auto; }
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6); z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
         }
-        .finger-45 { font-size: 80px; transform: rotate(45deg); -webkit-transform: rotate(45deg); display: inline-block; }
+        .finger-45 { font-size: 80px; transform: rotate(45deg); display: inline-block; }
     </style>
 </head>
 <body>
@@ -95,7 +92,7 @@
             gameLoop = setInterval(() => {
                 timeLeft--;
                 updateUI();
-                if (timeLeft <= 0) startCrazyMode();
+                if (timeLeft <= 0) startCrazyMode(false);
             }, 1000);
 
             foodLoop = setInterval(spawnFood, 3000);
@@ -113,67 +110,103 @@
             const f = document.createElement('div');
             f.className = 'food';
             f.innerHTML = type;
-            f.style.left = (Math.random() * 80 + 10) + "%";
-            f.style.top = (Math.random() * 80 + 10) + "%";
+
+            // 確保食物生成時避開貓咪區域 (catBox 範圍)
+            let x, y;
+            const cRect = catBox.getBoundingClientRect();
+            do {
+                x = Math.random() * (window.innerWidth - 60) + 30;
+                y = Math.random() * (window.innerHeight - 60) + 30;
+            } while (x > cRect.left - 50 && x < cRect.right + 50 && y > cRect.top - 50 && y < cRect.bottom + 50);
+
+            f.style.left = x + "px";
+            f.style.top = y + "px";
             document.body.appendChild(f);
 
-            // 拖曳邏輯
             f.onpointerdown = function(e) {
                 f.setPointerCapture(e.pointerId);
                 f.onpointermove = function(ev) {
-                    f.style.left = ev.clientX - 20 + 'px';
-                    f.style.top = ev.clientY - 20 + 'px';
+                    f.style.left = ev.clientX - 25 + 'px';
+                    f.style.top = ev.clientY - 25 + 'px';
                     checkEat(f);
                 };
             };
             f.onpointerup = () => { f.onpointermove = null; };
-
-            setTimeout(() => { if(f) f.remove(); }, 2000);
+            setTimeout(() => { if(f.parentElement) f.remove(); }, 2000);
         }
 
         function checkEat(f) {
             const cRect = catBox.getBoundingClientRect();
             const fRect = f.getBoundingClientRect();
-            if (!(fRect.right < cRect.left || fRect.left > cRect.right || fRect.bottom < cRect.top || fRect.top > cRect.bottom)) {
-                if (f.innerHTML === '🐟') stamina = Math.min(5, stamina + 1);
-                if (f.innerHTML === '🍖') stamina = Math.min(5, stamina + 2);
-                if (f.innerHTML === '🐡') { f.remove(); startCrazyMode(); return; }
+            const padding = 20; // 判定範圍微調
+
+            if (fRect.left < cRect.right - padding && fRect.right > cRect.left + padding &&
+                fRect.top < cRect.bottom - padding && fRect.bottom > cRect.top + padding) {
+                
+                const type = f.innerHTML;
                 f.remove();
+
+                if (type === '🐟') stamina = Math.min(5, stamina + 1);
+                else if (type === '🍖') stamina = Math.min(5, stamina + 2);
+                else if (type === '🐡') { 
+                    startCrazyMode(true); // 進入中毒極速暴走
+                    return; 
+                }
                 updateUI();
             }
         }
 
-        function startCrazyMode() {
+        function startCrazyMode(isPoisoned) {
             clearInterval(gameLoop); clearInterval(foodLoop);
             isCrazy = true;
             staminaDiv.style.display = 'none';
-            document.getElementById('timer').innerHTML = "RUN!!";
+            document.getElementById('timer').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
             catBox.style.width = "140px";
-            runCrazyMove(80);
+            
+            if (isPoisoned) {
+                // 🐡 直接中毒：旋轉動畫 + 極速位移
+                hitCount = 1; // 跳過第一階段
+                catImg.className = "spinning-anim";
+                catBox.style.transition = "all 0.05s linear";
+                runCrazyMove(50);
+            } else {
+                // 普通暴走
+                runCrazyMove(80);
+            }
         }
 
         function runCrazyMove(speed) {
             clearInterval(crazyLoop);
             let startTime = Date.now();
             crazyLoop = setInterval(() => {
-                if (Date.now() - startTime >= 5000) document.getElementById('angryOverlay').style.display = 'flex';
+                if (Date.now() - startTime >= 5000) {
+                    document.getElementById('angryOverlay').style.display = 'flex';
+                    clearInterval(crazyLoop);
+                }
                 catBox.style.left = (Math.random() * 80 + 10) + "%";
                 catBox.style.top = (Math.random() * 80 + 10) + "%";
             }, speed);
         }
 
         function hitCat(e) {
+            if (e) e.stopPropagation();
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true;
                 stamina--;
-                resetTimerOnly(); // 只重設計時，唔重設體力
+                resetTimerOnly();
                 catImg.className = "flipping-anim";
                 setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
             } else {
                 hitCount++;
-                if (hitCount === 1) { catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
-                else if (hitCount >= 3) { catImg.className = "flipping-anim"; setTimeout(resetGame, 200); }
+                if (hitCount === 1) {
+                    catImg.className = "spinning-anim";
+                    catBox.style.transition = "all 0.05s linear";
+                    runCrazyMove(50);
+                } else if (hitCount >= 3) {
+                    catImg.className = "flipping-anim";
+                    setTimeout(resetGame, 200);
+                }
             }
         }
 
@@ -183,7 +216,7 @@
             updateUI();
             gameLoop = setInterval(() => {
                 timeLeft--; updateUI();
-                if (timeLeft <= 0) startCrazyMode();
+                if (timeLeft <= 0) startCrazyMode(false);
             }, 1000);
         }
     </script>
