@@ -31,26 +31,30 @@
             width: 280px; height: 280px;
             margin-left: -140px; margin-top: -140px;
             display: flex; justify-content: center; align-items: center;
-            transition: all 0.1s linear; -webkit-transition: all 0.1s linear;
             z-index: 50; will-change: left, top, transform;
+            /* 初始 transition */
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #catImg {
             width: 100%; height: auto; display: block;
             -webkit-animation: bScale 1.2s infinite ease-in-out;
-            transition: width 0.3s ease;
         }
 
         #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
 
+        /* 動畫效果 */
         @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
         @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.95);} 50%{-webkit-transform:scale(1.1);} }
         
+        /* 瘋狂模式持續旋轉 */
         .infinite-spin { -webkit-animation: spinMove 0.3s infinite linear !important; }
         @-webkit-keyframes spinMove { from {-webkit-transform: rotate(0deg);} to {-webkit-transform: rotate(360deg);} }
 
-        .flipping { -webkit-animation: flip 0.6s 1 ease-in-out !important; }
-        @-webkit-keyframes flip { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
+        /* 打關斗動畫 */
+        .flipping { -webkit-animation: flipAnim 0.6s 1 ease-in-out !important; }
+        @-webkit-keyframes flipAnim { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
     </style>
 </head>
 <body onclick="">
@@ -72,13 +76,13 @@
     </div>
 
     <script>
-        var timeLeft = 7; // 改為 7 秒
+        var timeLeft = 7;
         var crazyTime = 0;
         var hitCount = 0;
         var gameLoop = null;
         var crazyLoop = null;
         var isCrazy = false;
-        var isAnimating = false;
+        var isAnimating = false; // 動畫鎖
         var catBox = document.getElementById('catBox');
         var catImg = document.getElementById('catImg');
         var isOldDevice = !('transition' in document.body.style || '-webkit-transition' in document.body.style);
@@ -92,7 +96,8 @@
             clearInterval(gameLoop);
             clearInterval(crazyLoop);
             document.getElementById('angryOverlay').style.display = 'none';
-            timeLeft = 7; // 重設為 7 秒
+            
+            timeLeft = 7;
             crazyTime = 0;
             hitCount = 0;
             isCrazy = false;
@@ -101,6 +106,7 @@
             
             catImg.className = ""; 
             catImg.style.width = "100%";
+            // 回位時用順滑動畫
             catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             catBox.style.left = '50%';
             catBox.style.top = '50%';
@@ -133,8 +139,13 @@
                 if (crazyTime >= 5000) {
                     document.getElementById('angryOverlay').style.display = 'flex';
                 }
-                var x = Math.random() * (window.innerWidth - 150) + 75;
-                var y = Math.random() * (window.innerHeight - 150) + 75;
+                
+                // 增加位移距離：利用全螢幕寬度減去較細嘅貓咪尺寸
+                // 增大隨機範圍，令佢可以飛得更遠
+                var padding = 50; 
+                var x = Math.random() * (window.innerWidth - 100) + 50;
+                var y = Math.random() * (window.innerHeight - 100) + 50;
+                
                 catBox.style.marginLeft = '0';
                 catBox.style.marginTop = '0';
                 catBox.style.left = x + 'px';
@@ -145,35 +156,34 @@
         function hitCat(e) {
             if (e && e.stopPropagation) e.stopPropagation();
             
+            // 情況一：一般模式
             if (!isCrazy) {
-                if (isAnimating) return; 
+                if (isAnimating) return; // 動畫緊就唔比篤，亦唔會重設
                 
                 isAnimating = true;
-                catImg.className = "flipping";
+                catImg.className = "flipping"; // 觸發打關斗
                 
-                // 瞬間重設計時器
-                resetGame(); 
+                resetGame(); // 觸發打關斗嗰一刻重設 7 秒
                 
-                // 動畫完結後標記
                 setTimeout(function() {
                     catImg.className = "";
                     isAnimating = false;
                 }, 600);
             } 
+            // 情況二：暴走模式
             else {
                 hitCount++;
                 if (hitCount === 1) {
+                    // 第一下：變身瘋狂旋轉 + 大幅加速
                     catImg.className = "infinite-spin";
                     if (!isOldDevice) {
-                        catBox.style.transition = "all 0.05s linear";
+                        catBox.style.transition = "all 0.04s linear"; // 再快少少
                         runCrazyLogic(50); 
                     }
                 } else if (hitCount >= 3) {
+                    // 第三下：制服成功
                     catImg.className = "flipping";
-                    // 點完第三下瞬間重設
-                    setTimeout(function() {
-                        resetGame();
-                    }, 100); 
+                    setTimeout(resetGame, 100);
                 }
             }
         }
