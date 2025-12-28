@@ -2,125 +2,142 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🐱🐱🐱</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
 
     <style>
-        /* 基礎復原：確保全螢幕不溢出 */
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: #000; overflow: hidden; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
 
-        /* 遮罩層：確保覆蓋全屏且可點擊 */
+        /* 遮罩層 */
         #overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 9999;
-            text-align: center; cursor: pointer; display: block;
+            background-color: rgba(0, 0, 0, 0.9); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; text-align: center;
         }
 
-        .instruction { color: white; font-size: 24px; margin-top: 100px; font-weight: bold; }
-        .finger { font-size: 60px; margin-top: 30px; -webkit-animation: move 1s infinite; }
+        .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px #fff; }
+        #statusText { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; transform: rotate(45deg); -webkit-transform: rotate(45deg); }
 
-        /* 核心復原：圖片容器使用傳統置中法，避免 Flexbox 支援問題 */
-        #catContainer {
-            position: absolute; 
-            top: 50%; left: 50%;
+        /* 圖片容器 - 穩定置中 */
+        #catBox {
+            position: absolute; top: 50%; left: 50%;
             width: 280px; height: 280px;
             margin-left: -140px; margin-top: -140px;
-            text-align: center;
+            display: flex; justify-content: center; align-items: center;
         }
 
         #catImg {
-            width: 100%; height: auto;
-            -webkit-animation: bounce 1.2s infinite ease-in-out;
-            cursor: pointer;
+            width: 100%; height: auto; display: block;
+            -webkit-animation: bScale 1.2s infinite ease-in-out;
         }
 
-        /* 計時器：放在角落不干擾顯示 */
-        #timer {
-            position: absolute; top: 10px; right: 10px;
-            color: #444; font-family: Arial; font-size: 18px;
-        }
+        #timer { position: absolute; top: 20px; right: 20px; color: #444; font-size: 24px; font-weight: bold; z-index: 100; }
 
-        /* 動畫 */
-        @-webkit-keyframes bounce { 0%, 100% { -webkit-transform: scale(0.9); } 50% { -webkit-transform: scale(1.05); } }
-        @-webkit-keyframes flip { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
-        .flipping { -webkit-animation: flip 0.8s 1 linear !important; }
+        /* 動畫定義 */
+        @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
+        @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.95);} 50%{-webkit-transform:scale(1.1);} }
+        @-webkit-keyframes flip { 0%{-webkit-transform:rotate(0deg);} 100%{-webkit-transform:rotate(360deg);} }
+        .flipping { -webkit-animation: flip 0.7s 1 linear !important; }
     </style>
 </head>
 <body onclick="">
 
-    <div id="overlay" onclick="startMeow()">
+    <div id="overlay" onclick="tryStart()">
         <div class="instruction">篤一下隻貓</div>
+        <div id="statusText">正在連線至圖片...</div>
         <div class="finger">👆</div>
     </div>
 
-    <div id="timer"></div>
+    <div id="timer">10s</div>
 
-    <div id="catContainer">
-        <img id="catImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAs4AAAW+CAYAAAB3aaZj..." onclick="hitCat(event)">
+    <div id="catBox">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="🐱" onclick="hitCat(event)">
     </div>
 
     <script>
+        var imgUrl = "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG";
         var timeLeft = 10;
-        var gameTimer = null;
-        var crazyTimer = null;
-        var isCrazy = false;
-        var catBox = document.getElementById('catContainer');
-        var timerTxt = document.getElementById('timer');
+        var gameLoop = null;
+        var crazyLoop = null;
+        var img = document.getElementById('catImg');
+        var status = document.getElementById('statusText');
 
-        function startMeow() {
+        // 監控圖片加載狀態
+        img.onload = function() { status.innerText = "圖片已就緒"; };
+        img.onerror = function() { status.innerText = "圖片載入失敗，點擊重試"; };
+
+        function tryStart() {
+            // 偵測圖片是否正常加載 (智慧偵測)
+            if (!img.complete || img.naturalWidth === 0) {
+                status.innerText = "重新嘗試載入圖片...";
+                img.src = imgUrl + "?t=" + new Date().getTime(); // 加隨機數強制重刷
+                
+                // 給 300ms 緩衝
+                setTimeout(function() {
+                    if (img.complete && img.naturalWidth > 0) go();
+                }, 300);
+            } else {
+                go();
+            }
+        }
+
+        function go() {
             document.getElementById('overlay').style.display = 'none';
             resetGame();
         }
 
         function resetGame() {
-            clearInterval(gameTimer);
-            clearInterval(crazyTimer);
-            isCrazy = false;
+            clearInterval(gameLoop);
+            clearInterval(crazyLoop);
             timeLeft = 10;
+            updateTimer();
             
-            // 復原位置
-            catBox.style.left = '50%';
-            catBox.style.top = '50%';
-            catBox.style.marginLeft = '-140px';
-            catBox.style.marginTop = '-140px';
-            timerTxt.innerHTML = "10s";
+            var box = document.getElementById('catBox');
+            box.style.left = '50%';
+            box.style.top = '50%';
+            box.style.marginLeft = '-140px';
+            box.style.marginTop = '-140px';
 
-            gameTimer = setInterval(function() {
+            gameLoop = setInterval(function() {
                 timeLeft--;
-                timerTxt.innerHTML = timeLeft + "s";
-                if (timeLeft <= 0) goCrazy();
+                updateTimer();
+                if (timeLeft <= 0) startRun();
             }, 1000);
         }
 
-        function goCrazy() {
-            clearInterval(gameTimer);
-            isCrazy = true;
-            timerTxt.innerHTML = "RUN!";
-            crazyTimer = setInterval(function() {
-                var newX = Math.random() * (window.innerWidth - 200) + 100;
-                var newY = Math.random() * (window.innerHeight - 200) + 100;
-                catBox.style.marginLeft = '0';
-                catBox.style.marginTop = '0';
-                catBox.style.left = newX + 'px';
-                catBox.style.top = newY + 'px';
+        function updateTimer() {
+            document.getElementById('timer').innerHTML = timeLeft + "s";
+        }
+
+        function startRun() {
+            clearInterval(gameLoop);
+            document.getElementById('timer').innerHTML = "RUN!";
+            crazyLoop = setInterval(function() {
+                var x = Math.random() * (window.innerWidth - 200) + 100;
+                var y = Math.random() * (window.innerHeight - 200) + 100;
+                var box = document.getElementById('catBox');
+                box.style.marginLeft = '0';
+                box.style.marginTop = '0';
+                box.style.left = x + 'px';
+                box.style.top = y + 'px';
             }, 150);
         }
 
         function hitCat(e) {
             if (e && e.stopPropagation) e.stopPropagation();
-            var img = document.getElementById('catImg');
-            
-            // 觸發旋轉
-            img.className = "flipping";
-            setTimeout(function() { img.className = ""; }, 800);
+            if (img.className.indexOf('flipping') !== -1) return;
 
-            // 重設計時
-            resetGame();
+            img.className = "flipping";
+            setTimeout(function() { img.className = ""; }, 700);
+            resetGame(); // 篤到就重設計時
         }
     </script>
 </body>
