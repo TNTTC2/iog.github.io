@@ -28,7 +28,7 @@
             color: #666; font-size: 24px; font-weight: bold; z-index: 100;
         }
 
-        /* 外層控制：位置與呼吸 */
+        /* 外層：位置與呼吸 */
         #catBox {
             position: absolute;
             width: 280px; height: 280px;
@@ -48,14 +48,13 @@
             50% { transform: translate(-50%, -50%) scale(1.1); }
         }
 
-        /* 內層控制：純旋轉動畫 */
+        /* 內層：旋轉 */
         #catImg {
             width: 100%; height: auto;
             display: block;
             will-change: transform;
         }
 
-        /* 旋轉動畫定義 */
         .flipping-anim {
             animation: rotateFull 0.8s ease-in-out;
         }
@@ -74,7 +73,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 遮罩 */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
@@ -105,13 +103,12 @@
         var timeLeft = 7;
         var hitCount = 0;
         var isCrazy = false;
-        var isFlipping = false;
+        var isFlipping = false; // 動畫鎖
         var gameLoop, crazyLoop;
 
         const catBox = document.getElementById('catBox');
         const catImg = document.getElementById('catImg');
 
-        // 禁止縮放
         document.addEventListener('gesturestart', (e) => e.preventDefault());
 
         function startApp() {
@@ -130,15 +127,12 @@
             isFlipping = false;
             updateTimer();
 
-            // 復原位置與呼吸
             catBox.className = 'breathing';
             catBox.style.width = "280px";
             catBox.style.height = "280px";
             catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             catBox.style.top = "50%";
             catBox.style.left = "50%";
-            
-            // 清除旋轉
             catImg.className = '';
 
             gameLoop = setInterval(() => {
@@ -179,22 +173,22 @@
             if (e) e.stopPropagation();
 
             if (!isCrazy) {
+                // 【核心修正】如果轉緊，直接 return，唔做任何野（包括唔重設計時）
                 if (isFlipping) return;
                 
-                // 觸發打關斗
                 isFlipping = true;
                 
-                // 瞬間重設計時
+                // 只有喺非旋轉狀態下點擊先會重設計時
                 resetGame();
-                
-                // 再次確保重設後的狀態下執行旋轉
+                isFlipping = true; // resetGame 會將 isFlipping 變返 false，所以要再 set 返 true 鎖住
+
                 catImg.className = "";
-                void catImg.offsetWidth; // 強制刷新
+                void catImg.offsetWidth; 
                 catImg.className = "flipping-anim";
 
                 setTimeout(() => {
                     catImg.className = "";
-                    isFlipping = false;
+                    isFlipping = false; // 轉完先解鎖
                 }, 800);
 
             } else {
@@ -204,9 +198,6 @@
                     catBox.style.transition = "all 0.05s linear";
                     runCrazyMove(50);
                 } else if (hitCount >= 3) {
-                    // 第三下成功：先轉最後一圈再 Reset
-                    catImg.className = "";
-                    void catImg.offsetWidth;
                     catImg.className = "flipping-anim";
                     setTimeout(resetGame, 200);
                 }
