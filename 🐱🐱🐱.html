@@ -7,24 +7,32 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+    <link id="manifest-placeholder" rel="manifest">
 
     <style>
-        /* 禁止縮放與連點 */
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            touch-action: manipulation; /* 禁止連點縮放 */
             -webkit-user-select: none;
         }
-        
-        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; }
 
+        body, html {
+            width: 100%; height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* 遮罩層樣式 */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
             z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
+            cursor: pointer;
         }
 
         #angryOverlay { display: none; background-color: rgba(0, 0, 0, 0.4); z-index: 10001; }
@@ -32,48 +40,59 @@
         .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
         .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; }
 
-        /* 外層：負責位置與呼吸 */
+        /* 貓咪容器 - 負責位移與縮小 */
         #catBox {
             position: absolute; top: 50%; left: 50%;
             width: 280px; height: 280px;
             margin-left: -140px; margin-top: -140px;
+            display: flex; justify-content: center; align-items: center;
             z-index: 50;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             -webkit-transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 內層：負責旋轉與縮放 */
+        /* 貓咪圖片 - 負責呼吸同打關斗 */
         #catImg {
             width: 100%; height: auto; display: block;
-            -webkit-animation: bScale 1.2s infinite ease-in-out;
+            animation: bounceScale 1.2s ease-in-out infinite;
+            -webkit-animation: bounceScale 1.2s ease-in-out infinite;
         }
 
+        /* 7秒計時器 */
         #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
 
         /* 動畫庫 */
-        @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.95);} 50%{-webkit-transform:scale(1.1);} }
-        @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
-
-        /* 核心修復：打關斗 (0.8s) */
-        .flipping { 
-            -webkit-animation: flip08 0.8s 1 linear !important; 
+        @keyframes bounceScale {
+            0%, 100% { transform: scale(0.9); }
+            50% { transform: scale(1.1); }
         }
-        @-webkit-keyframes flip08 { 
-            0% { -webkit-transform: rotate(0deg); } 
-            100% { -webkit-transform: rotate(360deg); } 
+
+        /* 修復版打關斗動畫 (0.8s) */
+        .flipping {
+            animation: flipAnimation 0.8s ease-in-out !important;
+            -webkit-animation: flipAnimation 0.8s ease-in-out !important;
+        }
+
+        @keyframes flipAnimation {
+            0% { transform: scale(0.9) rotate(0deg); }
+            100% { transform: scale(0.9) rotate(360deg); }
         }
 
         /* 暴走旋轉 */
-        .infinite-spin { 
-            -webkit-animation: spin3 0.3s infinite linear !important; 
+        .infinite-spin {
+            animation: spinLoop 0.3s infinite linear !important;
+            -webkit-animation: spinLoop 0.3s infinite linear !important;
         }
-        @-webkit-keyframes spin3 { 
-            from {-webkit-transform: rotate(0deg);} 
-            to {-webkit-transform: rotate(360deg);} 
+
+        @keyframes spinLoop {
+            from { transform: scale(0.9) rotate(0deg); }
+            to { transform: scale(0.9) rotate(360deg); }
         }
+
+        @keyframes fMove { 0%,100%{transform:rotate(45deg) translate(0,0);} 50%{transform:rotate(45deg) translate(15px,-15px);} }
     </style>
 </head>
-<body onclick="">
+<body>
 
     <div id="startOverlay" class="overlay" onclick="startApp()">
         <div class="instruction">篤一下隻貓</div>
@@ -92,22 +111,25 @@
     </div>
 
     <script>
-        // 禁止縮放手勢
+        // PWA Manifest 動態注入
+        const manifest = { "short_name": "🐱🐱🐱", "name": "🐱🐱🐱", "icons": [{ "src": "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG", "sizes": "512x512", "type": "image/png" }], "start_url": ".", "display": "standalone", "background_color": "#000000", "theme_color": "#000000" };
+        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
+
+        // 禁止 Safari 縮放手勢
         document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
         var lastTouchEnd = 0;
         document.addEventListener('touchend', function(e) {
             var now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+            if (now - lastTouchEnd <= 300) e.preventDefault();
             lastTouchEnd = now;
         }, false);
 
         var timeLeft = 7;
         var crazyTime = 0;
         var hitCount = 0;
-        var gameLoop = null;
-        var crazyLoop = null;
+        var gameLoop = null, crazyLoop = null;
         var isCrazy = false;
-        var isAnimating = false;
         var catBox = document.getElementById('catBox');
         var catImg = document.getElementById('catImg');
 
@@ -119,26 +141,21 @@
         function resetGame() {
             clearInterval(gameLoop);
             clearInterval(crazyLoop);
-            document.getElementById('angryOverlay').style.display = 'flex';
             document.getElementById('angryOverlay').style.display = 'none';
-            
             timeLeft = 7;
             crazyTime = 0;
             hitCount = 0;
             isCrazy = false;
-            isAnimating = false;
             updateTimer();
             
-            // 徹底移除所有動畫 Class 並強制重繪
             catImg.className = ""; 
-            catImg.style.width = "100%";
-            
-            // 回位
+            catBox.style.width = "280px";
+            catBox.style.height = "280px";
+            catBox.style.marginLeft = "-140px";
+            catBox.style.marginTop = "-140px";
             catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             catBox.style.left = '50%';
             catBox.style.top = '50%';
-            catBox.style.marginLeft = '-140px';
-            catBox.style.marginTop = '-140px';
 
             gameLoop = setInterval(function() {
                 timeLeft--;
@@ -155,7 +172,11 @@
             clearInterval(gameLoop);
             isCrazy = true;
             document.getElementById('timer').innerHTML = "!! RUN !!";
-            catImg.style.width = "50%";
+            // 暴走尺寸縮細
+            catBox.style.width = "140px";
+            catBox.style.height = "140px";
+            catBox.style.marginLeft = "-70px";
+            catBox.style.marginTop = "-70px";
             runCrazyLogic(80);
         }
 
@@ -163,15 +184,14 @@
             clearInterval(crazyLoop);
             crazyLoop = setInterval(function() {
                 crazyTime += delay;
-                if (crazyTime >= 5000) {
-                    document.getElementById('angryOverlay').style.display = 'flex';
-                }
+                if (crazyTime >= 5000) document.getElementById('angryOverlay').style.display = 'flex';
+                
                 var x = Math.random() * (window.innerWidth - 100) + 50;
                 var y = Math.random() * (window.innerHeight - 100) + 50;
-                catBox.style.marginLeft = '0';
-                catBox.style.marginTop = '0';
                 catBox.style.left = x + 'px';
                 catBox.style.top = y + 'px';
+                catBox.style.marginLeft = '0';
+                catBox.style.marginTop = '0';
             }, delay);
         }
 
@@ -179,33 +199,25 @@
             if (e && e.stopPropagation) e.stopPropagation();
             
             if (!isCrazy) {
-                if (isAnimating) return; 
+                // 一般模式：打關斗期間禁止重複觸發
+                if (catImg.classList.contains('flipping')) return;
                 
-                isAnimating = true;
-                // 強制觸發重繪 (Reflow) 以確保動畫每次都執行
-                catImg.className = "";
-                void catImg.offsetWidth; 
+                catImg.classList.add('flipping');
+                resetGame(); // 瞬間重設計時器
                 
-                catImg.className = "flipping";
-                resetGame(); // 瞬間重設 7s
-
-                setTimeout(function() {
-                    if (!isCrazy) catImg.className = "";
-                    isAnimating = false;
-                }, 800); 
-            } 
-            else {
+                setTimeout(() => {
+                    catImg.classList.remove('flipping');
+                }, 800);
+            } else {
+                // 暴走模式：點擊三下
                 hitCount++;
                 if (hitCount === 1) {
                     catImg.className = "infinite-spin";
                     catBox.style.transition = "all 0.04s linear";
-                    runCrazyLogic(50); 
+                    runCrazyLogic(50); // 加速大跳躍
                 } else if (hitCount >= 3) {
-                    // 第三下制服：先打關斗，再 reset
-                    catImg.className = "";
-                    void catImg.offsetWidth;
-                    catImg.className = "flipping";
-                    setTimeout(resetGame, 200);
+                    catImg.className = "flipping"; // 最後制服動作
+                    setTimeout(resetGame, 150);
                 }
             }
         }
