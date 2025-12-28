@@ -8,141 +8,142 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
-    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
-    <link id="manifest-placeholder" rel="manifest">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAs4AAAW+CAYAAAB3aaZj...">
 
     <style>
-        /* 基礎樣式（全版本通用） */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: Helvetica, Arial, sans-serif; }
+        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
 
-        /* 遮罩層 - 使用傳統絕對定位以支援 iOS 6 */
+        /* 遮罩層 */
         #overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.8); z-index: 1000;
-            display: block; text-align: center; cursor: pointer;
-            transition: opacity 0.5s; -webkit-transition: opacity 0.5s;
+            background-color: rgba(0, 0, 0, 0.85); z-index: 1000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: opacity 0.5s; -webkit-transition: opacity 0.5s;
         }
 
-        .instruction {
-            color: white; font-size: 28px; font-weight: bold;
-            position: absolute; width: 100%; top: 20%;
-            text-shadow: 0 0 10px #fff;
+        .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 40px; text-shadow: 0 0 10px #fff; }
+        .finger-emoji { font-size: 80px; transform: rotate(45deg); -webkit-transform: rotate(45deg); animation: fMove 1s infinite; -webkit-animation: fMove 1s infinite; }
+        
+        /* 倒數顯示器 */
+        #timerDisplay {
+            position: absolute; top: 5%; right: 5%; color: #555; font-size: 20px; font-weight: bold; z-index: 50;
         }
 
-        .finger-emoji {
-            font-size: 80px; position: absolute; width: 100%; top: 40%;
-            display: block;
-            transform: rotate(45deg); -webkit-transform: rotate(45deg);
-            animation: fingerMove 1s infinite; -webkit-animation: fingerMove 1s infinite;
-        }
-
-        /* 貓咪容器 - 傳統置中法確保 iOS 6 不跑位 */
-        .container {
+        /* 貓咪容器 */
+        #catWrapper {
             position: absolute; top: 50%; left: 50%;
-            width: 80%; height: auto;
-            transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%);
-            text-align: center;
+            width: 250px; height: 250px;
+            margin-left: -125px; margin-top: -125px;
+            transition: all 0.1s linear; -webkit-transition: all 0.1s linear;
         }
 
         .bouncing-img {
-            width: 100%; max-width: 400px; height: auto;
-            animation: bounceScale 1.2s infinite ease-in-out;
-            -webkit-animation: bounceScale 1.2s infinite ease-in-out;
+            width: 100%; height: auto;
+            animation: bScale 1.2s infinite ease-in-out;
+            -webkit-animation: bScale 1.2s infinite ease-in-out;
         }
 
-        /* 打關斗動畫 */
-        .flipping {
-            animation: flipAnimation 0.8s 1 ease-in-out !important;
-            -webkit-animation: flipAnimation 0.8s 1 ease-in-out !important;
-        }
+        /* 動畫效果 */
+        .flipping { animation: fAni 0.8s 1 ease-in-out !important; -webkit-animation: fAni 0.8s 1 ease-in-out !important; }
+        
+        @-webkit-keyframes fMove { 0%,100%{-webkit-transform:rotate(45deg) translate(0,0);} 50%{-webkit-transform:rotate(45deg) translate(15px,-15px);} }
+        @keyframes fMove { 0%,100%{transform:rotate(45deg) translate(0,0);} 50%{transform:rotate(45deg) translate(15px,-15px);} }
+        
+        @-webkit-keyframes bScale { 0%,100%{-webkit-transform:scale(0.9);} 50%{-webkit-transform:scale(1.1);} }
+        @keyframes bScale { 0%,100%{transform:scale(0.9);} 50%{transform:scale(1.1);} }
 
-        /* 動畫定義（帶前綴以支援舊版） */
-        @-webkit-keyframes fingerMove {
-            0%, 100% { -webkit-transform: rotate(45deg) translate(0, 0); }
-            50% { -webkit-transform: rotate(45deg) translate(15px, -15px); }
-        }
-        @keyframes fingerMove {
-            0%, 100% { transform: rotate(45deg) translate(0, 0); }
-            50% { transform: rotate(45deg) translate(15px, -15px); }
-        }
-
-        @-webkit-keyframes bounceScale {
-            0%, 100% { -webkit-transform: scale(0.9); }
-            50% { -webkit-transform: scale(1.1); }
-        }
-        @keyframes bounceScale {
-            0%, 100% { transform: scale(0.9); }
-            50% { transform: scale(1.1); }
-        }
-
-        @-webkit-keyframes flipAnimation {
-            0% { -webkit-transform: rotate(0deg) scale(0.9); }
-            100% { -webkit-transform: rotate(360deg) scale(0.9); }
-        }
-        @keyframes flipAnimation {
-            0% { transform: rotate(0deg) scale(0.9); }
-            100% { transform: rotate(360deg) scale(0.9); }
-        }
+        @-webkit-keyframes fAni { 0%{-webkit-transform:rotate(0deg) scale(0.9);} 100%{-webkit-transform:rotate(360deg) scale(0.9);} }
+        @keyframes fAni { 0%{transform:rotate(0deg) scale(0.9);} 100%{transform:rotate(360deg) scale(0.9);} }
     </style>
 </head>
-<body onclick=""> <div id="overlay" onclick="handleOverlayClick()">
+<body onclick="">
+
+    <div id="overlay" onclick="startGame()">
         <div class="instruction">篤一下隻貓</div>
         <div class="finger-emoji">👆</div>
     </div>
 
-    <div class="container">
+    <div id="timerDisplay"></div>
+
+    <div id="catWrapper">
         <img id="catImg" class="bouncing-img" 
-             src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" 
+             src="data:image/png;base64,這裡請填入你txt檔案內完整的Base64編碼" 
              onclick="handleCatClick(event)">
     </div>
 
     <script>
-        // 智能偵測 PWA 支援
-        if ('serviceWorker' in navigator && window.Blob && URL.createObjectURL) {
-            // 新版方法：註冊 Service Worker 與 Manifest
-            const manifest = {
-                "short_name": "🐱🐱🐱",
-                "name": "🐱🐱🐱",
-                "icons": [{"src": "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG", "sizes": "512x512", "type": "image/png"}],
-                "start_url": ".", "display": "standalone", "background_color": "#000", "theme_color": "#000"
-            };
-            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-            document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
+        var timeLeft = 10;
+        var timerInterval = null;
+        var isCrazyMode = false;
+        var crazyInterval = null;
+        var catWrapper = document.getElementById('catWrapper');
+        var timerDisplay = document.getElementById('timerDisplay');
 
-            const swCode = "self.addEventListener('fetch', function(e) {});";
-            const swBlob = new Blob([swCode], {type: 'text/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(err){});
+        function startGame() {
+            document.getElementById('overlay').style.display = 'none';
+            resetTimer();
         }
 
-        // 關閉遮罩函數 (全相容)
-        function handleOverlayClick() {
-            var overlay = document.getElementById('overlay');
-            if (overlay.style.opacity !== undefined) {
-                overlay.style.opacity = '0';
-                setTimeout(function() { overlay.style.display = 'none'; }, 500);
-            } else {
-                overlay.style.display = 'none';
-            }
+        function resetTimer() {
+            clearInterval(timerInterval);
+            clearInterval(crazyInterval);
+            isCrazyMode = false;
+            timeLeft = 10;
+            updateTimerDisplay();
+            
+            // 返回中心
+            catWrapper.style.position = 'absolute';
+            catWrapper.style.top = '50%';
+            catWrapper.style.left = '50%';
+            catWrapper.style.marginLeft = '-125px';
+            catWrapper.style.marginTop = '-125px';
+
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    startCrazyMode();
+                }
+            }, 1000);
         }
 
-        // 點擊貓咪函數 (全相容)
+        function updateTimerDisplay() {
+            timerDisplay.innerHTML = timeLeft > 0 ? timeLeft + "s" : "RUN!!";
+        }
+
+        function startCrazyMode() {
+            clearInterval(timerInterval);
+            isCrazyMode = true;
+            crazyInterval = setInterval(function() {
+                // 隨機計算螢幕位置
+                var x = Math.random() * (window.innerWidth - 200);
+                var y = Math.random() * (window.innerHeight - 200);
+                catWrapper.style.marginLeft = '0';
+                catWrapper.style.marginTop = '0';
+                catWrapper.style.left = x + 'px';
+                catWrapper.style.top = y + 'px';
+            }, 150); // 每 0.15 秒跳一次，極速！
+        }
+
         function handleCatClick(e) {
             if (e && e.stopPropagation) e.stopPropagation();
             var img = document.getElementById('catImg');
             
-            // 偵測是否已經在動畫中
-            var currentClass = img.className || "";
-            if (currentClass.indexOf('flipping') !== -1) return;
+            if (img.className.indexOf('flipping') !== -1) return;
 
-            // 加入 flipping 類名
-            img.className = currentClass + " flipping";
-
-            // 動畫結束後移除
+            // 觸發旋轉
+            img.className = "bouncing-img flipping";
             setTimeout(function() {
-                img.className = currentClass.replace(" flipping", "");
-            }, 850);
+                img.className = "bouncing-img";
+            }, 800);
+
+            // 重設計時器
+            resetTimer();
         }
+
+        // 簡單適應螢幕旋轉
+        window.onresize = function() { if(!isCrazyMode) resetTimer(); };
     </script>
 </body>
 </html>
