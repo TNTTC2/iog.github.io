@@ -7,15 +7,13 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
-    <link id="manifest-placeholder" rel="manifest">
 
     <style>
         * {
             margin: 0; padding: 0; box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation; /* 禁止連點縮放 */
+            touch-action: manipulation;
             -webkit-user-select: none;
         }
 
@@ -23,70 +21,68 @@
             width: 100%; height: 100%;
             background-color: #000;
             overflow: hidden;
-            font-family: sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* 遮罩層樣式 */
+        /* 黑幕層 */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
             z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
-            cursor: pointer;
         }
 
         #angryOverlay { display: none; background-color: rgba(0, 0, 0, 0.4); z-index: 10001; }
 
         .instruction { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-        .finger { font-size: 80px; -webkit-animation: fMove 1s infinite; }
+        .finger { font-size: 80px; animation: fMove 1s infinite; }
 
-        /* 貓咪容器 - 負責位移與縮小 */
+        /* 貓咪外盒：負責位移 */
         #catBox {
             position: absolute; top: 50%; left: 50%;
             width: 280px; height: 280px;
             margin-left: -140px; margin-top: -140px;
-            display: flex; justify-content: center; align-items: center;
             z-index: 50;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            -webkit-transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: left, top;
         }
 
-        /* 貓咪圖片 - 負責呼吸同打關斗 */
+        /* 貓咪圖片：負責呼吸與旋轉 */
         #catImg {
             width: 100%; height: auto; display: block;
+            /* 預設呼吸動畫 */
             animation: bounceScale 1.2s ease-in-out infinite;
-            -webkit-animation: bounceScale 1.2s ease-in-out infinite;
         }
 
-        /* 7秒計時器 */
         #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
 
-        /* 動畫庫 */
+        /* --- 動畫定義 --- */
+        
+        /* 呼吸 */
         @keyframes bounceScale {
             0%, 100% { transform: scale(0.9); }
             50% { transform: scale(1.1); }
         }
 
-        /* 修復版打關斗動畫 (0.8s) */
-        .flipping {
-            animation: flipAnimation 0.8s ease-in-out !important;
-            -webkit-animation: flipAnimation 0.8s ease-in-out !important;
+        /* 核心：打關斗 (獨立 Animation) */
+        /* 使用單獨的 Class 覆蓋呼吸動畫 */
+        .do-flip {
+            animation: flipAction 0.8s ease-in-out !important;
         }
 
-        @keyframes flipAnimation {
-            0% { transform: scale(0.9) rotate(0deg); }
-            100% { transform: scale(0.9) rotate(360deg); }
+        @keyframes flipAction {
+            0% { transform: rotate(0deg) scale(0.9); }
+            100% { transform: rotate(360deg) scale(0.9); }
         }
 
         /* 暴走旋轉 */
-        .infinite-spin {
-            animation: spinLoop 0.3s infinite linear !important;
-            -webkit-animation: spinLoop 0.3s infinite linear !important;
+        .do-spin {
+            animation: spinAction 0.3s infinite linear !important;
         }
 
-        @keyframes spinLoop {
-            from { transform: scale(0.9) rotate(0deg); }
-            to { transform: scale(0.9) rotate(360deg); }
+        @keyframes spinAction {
+            from { transform: rotate(0deg) scale(0.9); }
+            to { transform: rotate(360deg) scale(0.9); }
         }
 
         @keyframes fMove { 0%,100%{transform:rotate(45deg) translate(0,0);} 50%{transform:rotate(45deg) translate(15px,-15px);} }
@@ -111,27 +107,17 @@
     </div>
 
     <script>
-        // PWA Manifest 動態注入
-        const manifest = { "short_name": "🐱🐱🐱", "name": "🐱🐱🐱", "icons": [{ "src": "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG", "sizes": "512x512", "type": "image/png" }], "start_url": ".", "display": "standalone", "background_color": "#000000", "theme_color": "#000000" };
-        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
-
-        // 禁止 Safari 縮放手勢
-        document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
-        var lastTouchEnd = 0;
-        document.addEventListener('touchend', function(e) {
-            var now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) e.preventDefault();
-            lastTouchEnd = now;
-        }, false);
-
+        // 禁止縮放
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        
         var timeLeft = 7;
-        var crazyTime = 0;
         var hitCount = 0;
-        var gameLoop = null, crazyLoop = null;
+        var gameLoop, crazyLoop;
         var isCrazy = false;
-        var catBox = document.getElementById('catBox');
-        var catImg = document.getElementById('catImg');
+        var isFlipping = false; // 動畫狀態鎖
+        
+        const catBox = document.getElementById('catBox');
+        const catImg = document.getElementById('catImg');
 
         function startApp() {
             document.getElementById('startOverlay').style.display = 'none';
@@ -142,12 +128,14 @@
             clearInterval(gameLoop);
             clearInterval(crazyLoop);
             document.getElementById('angryOverlay').style.display = 'none';
+            
             timeLeft = 7;
-            crazyTime = 0;
             hitCount = 0;
             isCrazy = false;
+            isFlipping = false;
             updateTimer();
             
+            // 重置貓咪外觀與位置
             catImg.className = ""; 
             catBox.style.width = "280px";
             catBox.style.height = "280px";
@@ -157,7 +145,7 @@
             catBox.style.left = '50%';
             catBox.style.top = '50%';
 
-            gameLoop = setInterval(function() {
+            gameLoop = setInterval(() => {
                 timeLeft--;
                 updateTimer();
                 if (timeLeft <= 0) startCrazyMode();
@@ -172,7 +160,6 @@
             clearInterval(gameLoop);
             isCrazy = true;
             document.getElementById('timer').innerHTML = "!! RUN !!";
-            // 暴走尺寸縮細
             catBox.style.width = "140px";
             catBox.style.height = "140px";
             catBox.style.marginLeft = "-70px";
@@ -182,12 +169,13 @@
 
         function runCrazyLogic(delay) {
             clearInterval(crazyLoop);
-            crazyLoop = setInterval(function() {
-                crazyTime += delay;
-                if (crazyTime >= 5000) document.getElementById('angryOverlay').style.display = 'flex';
-                
-                var x = Math.random() * (window.innerWidth - 100) + 50;
-                var y = Math.random() * (window.innerHeight - 100) + 50;
+            let startTime = Date.now();
+            crazyLoop = setInterval(() => {
+                if (Date.now() - startTime >= 5000) {
+                    document.getElementById('angryOverlay').style.display = 'flex';
+                }
+                const x = Math.random() * (window.innerWidth - 100) + 50;
+                const y = Math.random() * (window.innerHeight - 100) + 50;
                 catBox.style.left = x + 'px';
                 catBox.style.top = y + 'px';
                 catBox.style.marginLeft = '0';
@@ -196,28 +184,36 @@
         }
 
         function hitCat(e) {
-            if (e && e.stopPropagation) e.stopPropagation();
+            if (e) e.stopPropagation();
             
+            // 模式 A: 一般模式
             if (!isCrazy) {
-                // 一般模式：打關斗期間禁止重複觸發
-                if (catImg.classList.contains('flipping')) return;
+                if (isFlipping) return; // 0.8秒內不准連點
+
+                isFlipping = true;
+                // 執行打關斗
+                catImg.classList.add('do-flip');
                 
-                catImg.classList.add('flipping');
-                resetGame(); // 瞬間重設計時器
-                
+                // 【關鍵】同時重設計時器
+                resetGame(); 
+
+                // 動畫結束後移除 Class
                 setTimeout(() => {
-                    catImg.classList.remove('flipping');
+                    catImg.classList.remove('do-flip');
+                    isFlipping = false;
                 }, 800);
-            } else {
-                // 暴走模式：點擊三下
+            } 
+            // 模式 B: 暴走模式
+            else {
                 hitCount++;
                 if (hitCount === 1) {
-                    catImg.className = "infinite-spin";
+                    catImg.className = "do-spin"; // 開始瘋狂旋轉
                     catBox.style.transition = "all 0.04s linear";
-                    runCrazyLogic(50); // 加速大跳躍
+                    runCrazyLogic(50); 
                 } else if (hitCount >= 3) {
-                    catImg.className = "flipping"; // 最後制服動作
-                    setTimeout(resetGame, 150);
+                    // 第三下制服
+                    catImg.className = "do-flip";
+                    setTimeout(resetGame, 200);
                 }
             }
         }
