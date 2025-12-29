@@ -14,11 +14,14 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
 
-        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
+        /* 拉低計時器位置，避開狀態列 */
+        #timer { position: absolute; top: 50px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
         #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; }
+        
         #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
         
-        #pauseBtn { position: absolute; top: 20px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
+        /* 拉低暫停按鈕位置 */
+        #pauseBtn { position: absolute; top: 50px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
 
         #catBox {
             position: absolute; width: 280px; height: 280px; top: 50%; left: 50%;
@@ -205,9 +208,8 @@
             let f = document.createElement('div');
             f.className = 'food';
             
-            // 修復後食物生成邏輯
             let pool = ['🐟', '🍖', '🐡'];
-            if (config.spawnMode === 1) { /* 鎖定黃金規則: 無特殊 */ }
+            if (config.spawnMode === 1) { /* 黃金規則 */ }
             else if (config.spawnMode === 2) { pool.push('🐠'); }
             else {
                 if (specialStatus === "devil") pool.push('🐠');
@@ -235,7 +237,6 @@
             };
             f.onpointerup = () => f.onpointermove = null;
             
-            // 暫停時不移除食物
             let foodExistTimer = setInterval(() => {
                 if (!isPaused) {
                     f.remove();
