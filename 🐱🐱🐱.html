@@ -51,7 +51,7 @@
         <div class="finger-45">👆</div>
     </div>
 
-    <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()">
+    <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
         <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
         <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
         <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
@@ -68,7 +68,7 @@
         let gameLoop, crazyLoop, foodLoop;
         
         let lastSecHits = 0, crazyWins = 0;
-        let specialStatus = "normal"; // normal, golden, devil
+        let specialStatus = "normal"; 
         let specialCounter = 0; 
 
         const catBox = document.getElementById('catBox');
@@ -77,10 +77,21 @@
 
         function startApp() {
             document.getElementById('startOverlay').style.display = 'none';
+            fullRestart();
+        }
+
+        // 徹底重設遊戲狀態 (分數、體力、狀態)
+        function fullRestart() {
             score = 0;
+            stamina = 3;
+            specialStatus = "normal";
+            specialCounter = 0;
+            lastSecHits = 0;
+            crazyWins = 0;
             resetGame();
         }
 
+        // 刷新回合畫面 (唔重設分數同體力，用於暴走結束後恢復)
         function resetGame() {
             clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop);
             document.getElementById('angryOverlay').style.display = 'none';
@@ -240,7 +251,6 @@
                 isFlipping = true; stamina--; score += 1;
                 if (timeLeft <= 1) lastSecHits++; else lastSecHits = 0;
                 
-                // 【核心修復】如果唔係惡魔狀態，先會進行時間重設
                 if (specialStatus !== "devil") {
                     clearInterval(gameLoop);
                     timeLeft = 7;
