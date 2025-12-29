@@ -17,15 +17,25 @@
         #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; }
         #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
         #pauseBtn { position: absolute; top: 50px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
-        #catBox { position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50; }
+        
+        /* 核心位置設定：確保 transform 永遠維持 translate(-50%, -50%) */
+        #catBox { 
+            position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; justify-content: center; align-items: center; z-index: 50; 
+        }
+        
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
         .paused-anim { animation-play-state: paused !important; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+        
         #catImg { width: 100%; height: auto; display: block; will-change: transform; }
         .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .finger-45 { font-size: 80px; transform: rotate(45deg); display: inline-block; }
@@ -95,10 +105,8 @@
 
         initCatImage();
 
-        // --- 核心變數 ---
         let config = { normT: 7, crazyT: 5, goldT: 7, devilT: 70, initS: 3, initMode: 0, spawnMode: 0 };
         const defaultConfig = "7,5,7,70,3,0,0";
-
         let timeLeft = 7, stamina = 3, score = 0, hitCount = 0;
         let isCrazy = false, isFlipping = false, isPaused = false, isDebugLocked = false;
         let gameLoop, crazyLoop, foodLoop;
@@ -114,7 +122,6 @@
             gameLoop = null; crazyLoop = null; foodLoop = null;
         }
 
-        // 生成當前代碼（用於同步暫停介面）
         function getCurrentDebugCode() {
             let m = (isCrazy) ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
             return `${config.normT},${config.crazyT},${config.goldT},${config.devilT},${stamina},${m},${config.spawnMode}`;
@@ -137,9 +144,7 @@
                 catBox.classList.add('paused-anim');
             } else {
                 let codeFromBox = document.getElementById('debugPause').value;
-                // 只有當玩家手動改過暫停框入面嘅內容，先會鎖定 Debug
                 if (codeFromBox !== getCurrentDebugCode()) isDebugLocked = true;
-                
                 applyConfig(codeFromBox, true);
                 document.getElementById('pauseOverlay').style.display = 'none';
                 catBox.classList.remove('paused-anim');
@@ -157,9 +162,7 @@
 
         function applyConfig(code, isMidGame) {
             let newCfg = parseDebug(code);
-            // 顯示標籤邏輯
             document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
-            
             if (isMidGame) {
                 clearAllIntervals();
                 stamina = newCfg.initS;
@@ -174,18 +177,14 @@
                 } else {
                     specialStatus = "normal"; isCrazy = false; resetGame();
                 }
-            } else {
-                config = newCfg;
-            }
+            } else { config = newCfg; }
             updateUI();
         }
 
         function fullRestart() {
             clearAllIntervals();
             const code = document.getElementById('debugEnd').value;
-            // 重新開始時重置檢查
             if (code !== defaultConfig) isDebugLocked = true;
-            
             applyConfig(code, false);
             score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; isPaused = false;
             hitCount = 0;
@@ -200,12 +199,25 @@
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
             applyBg();
+            
+            // --- 核心修復：強制重置位置 ---
+            catBox.style.transition = "none"; // 暫時關閉過渡效果
+            catBox.style.left = "50%";
+            catBox.style.top = "50%";
+            catBox.style.transform = "translate(-50%, -50%)";
+            catBox.style.width = "280px";
+            catBox.style.height = "280px";
+            
+            // 強制重繪 (Reflow)
+            void catBox.offsetWidth; 
+            
+            catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            catBox.className = 'breathing';
+            // --- 修復完畢 ---
+
             timeLeft = (specialStatus === "devil") ? config.devilT : config.normT;
             hitCount = 0; isCrazy = false; isFlipping = false; crazyTimeElapsed = 0;
             updateUI();
-            catBox.className = 'breathing';
-            catBox.style.width = "280px"; catBox.style.height = "280px";
-            catBox.style.top = "50%"; catBox.style.left = "50%";
             catImg.className = '';
             staminaDiv.style.display = 'block';
             if (!isPaused) { gameLoop = setInterval(tick, 1000); foodLoop = setInterval(spawnFood, 3000); }
@@ -295,6 +307,7 @@
             document.body.style.backgroundColor = "#400";
             document.getElementById('timeVal').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
             catBox.style.width = "140px";
+            catBox.style.height = "140px";
             catBox.className = '';
             crazyTimeElapsed = 0; crazyTimeStart = Date.now();
             if (isPoisoned || hitCount >= 1) { 
@@ -339,7 +352,9 @@
                 if (hitCount === 1) { catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
                 else if (hitCount >= 3) {
                     if (catImg.className === "spinning-anim") { crazyWins++; score += 5; }
-                    catImg.className = "flipping-anim"; setTimeout(resetGame, 200);
+                    catImg.className = "flipping-anim"; 
+                    // 這裡觸發 resetGame，位置會被正確重置
+                    setTimeout(resetGame, 200);
                 }
             }
         }
