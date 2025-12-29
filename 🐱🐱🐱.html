@@ -13,13 +13,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
         
-        /* UI 元素 */
         #timer { position: absolute; top: 60px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
         #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; }
-        #stamina { position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
+        #stamina { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
         #pauseBtn { position: absolute; top: 60px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
         
-        /* 貓咪容器 */
         #catBox { position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50; }
         #catBox.shrunk { width: 110px !important; height: 110px !important; opacity: 0.7; }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
@@ -30,22 +28,16 @@
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
-        /* 食物 */
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
-        
-        /* 遮罩層樣式 - 改為 Flex 佈局以配合底部除錯欄 */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: env(safe-area-inset-bottom); }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; }
         .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
         
-        /* 除錯功能區塊 - 固定置底 */
-        .debug-section { width: 100%; padding: 20px; background: rgba(20, 20, 20, 0.8); border-top: 1px solid #333; margin-top: auto; }
-        .debug-label { color: #888; font-size: 12px; margin-bottom: 8px; letter-spacing: 2px; }
+        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(20, 20, 20, 0.9); border-top: 1px solid #333; margin-top: auto; }
+        .debug-label { color: #888; font-size: 12px; margin-bottom: 8px; letter-spacing: 1px; }
         .debug-input { width: 90%; max-width: 350px; background: #222; border: 1px solid #444; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; -webkit-user-select: text; touch-action: auto; outline: none; }
-        .debug-input:focus { border-color: #ffcc00; background: #333; }
 
-        /* 教學彈窗 */
-        #guideBox { color: #ddd; text-align: left; max-width: 320px; font-size: 14px; line-height: 1.6; background: rgba(40,40,40,0.9); padding: 20px; border-radius: 15px; border: 1px solid #444; margin-top: 20px; }
-        #guideBox .btn { display: block; background: #fff; color: #000; text-align: center; padding: 12px; border-radius: 8px; margin-top: 15px; font-weight: bold; }
+        #guideBox { color: #ddd; text-align: left; max-width: 320px; font-size: 14px; line-height: 1.6; background: rgba(40,40,40,0.9); padding: 20px; border-radius: 15px; border: 1px solid #444; }
+        #guideBox .btn { display: block; background: #fff; color: #000; text-align: center; padding: 12px; border-radius: 8px; margin-top: 15px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -55,9 +47,8 @@
             <div id="guideBox">
                 <h2 style="text-align:center; color:#fff; margin-bottom:10px;">🐱 貓咪玩耍指南</h2>
                 <p>• <b>同貓玩耍</b>：點擊打關斗，消耗 ⚡️體力。</p>
-                <p>• <b>留意心情</b>：時間到貓咪會暴走！</p>
                 <p>• <b>縮小遠離</b>：貓咪變細時無法餵食，點擊佢復原。</p>
-                <p>• <b>?? 傳聞 ??</b>：連續達成特定條件可引來 🐠 <b>黃金魚</b> 或 🦈 <b>惡魔魚</b>...</p>
+                <p>• <b>傳說驚喜</b>：死線前玩耍引來 🐠，連續安撫引來 🦈。</p>
                 <p style="font-size:11px; color:#ff3300; margin-top:10px;"><b>!!連撳安撫!!</b>：暴走時請瘋狂點擊！</p>
                 <div class="btn" onclick="closeGuide()">我知喇！</div>
             </div>
@@ -74,7 +65,7 @@
     <div id="startOverlay" class="overlay" style="display:none;" onclick="startApp()">
         <div class="overlay-content">
             <div style="color:white; font-size:28px; font-weight:bold;">篤一下隻貓</div>
-            <span class="finger-45" style="font-size:60px; transform:rotate(45deg);">👆</span>
+            <span style="font-size:60px; transform:rotate(45deg); display:inline-block; margin-top:15px;">👆</span>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
@@ -85,7 +76,6 @@
     <div id="pauseOverlay" class="overlay" style="display:none;" onclick="togglePause()">
         <div class="overlay-content">
             <div style="color:white; font-size:28px; font-weight:bold;">繼續玩貓</div>
-            <span class="finger-45" style="font-size:60px; transform:rotate(45deg);">👆</span>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
@@ -97,7 +87,6 @@
         <div class="overlay-content">
             <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
             <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
-            <span class="finger-45" style="font-size:60px; transform:rotate(45deg);">👆</span>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
@@ -125,8 +114,7 @@
             try {
                 const canvas = document.createElement('canvas');
                 canvas.width = imgEl.width; canvas.height = imgEl.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(imgEl, 0, 0);
+                const ctx = canvas.getContext('2d'); ctx.drawImage(imgEl, 0, 0);
                 localStorage.setItem('cat_b64', canvas.toDataURL('image/png'));
             } catch (e) {}
         }
@@ -145,14 +133,8 @@
         const staminaDiv = document.getElementById('stamina');
         const pauseBtn = document.getElementById('pauseBtn');
 
-        function closeGuide() {
-            document.getElementById('guideOverlay').style.display = 'none';
-            document.getElementById('startOverlay').style.display = 'flex';
-        }
-
-        function clearAllIntervals() {
-            clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop); clearInterval(shrinkLoop);
-        }
+        function closeGuide() { document.getElementById('guideOverlay').style.display = 'none'; document.getElementById('startOverlay').style.display = 'flex'; }
+        function clearAllIntervals() { clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); }
 
         function getCurrentDebugCode() {
             let m = (isCrazy) ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
@@ -169,18 +151,14 @@
                 document.getElementById('pauseOverlay').style.display = 'flex';
                 catBox.classList.add('paused-anim');
             } else {
-                let codeFromBox = document.getElementById('debugPause').value;
-                if (codeFromBox !== getCurrentDebugCode()) isDebugLocked = true;
-                applyConfig(codeFromBox, true);
+                applyConfig(document.getElementById('debugPause').value, true);
                 document.getElementById('pauseOverlay').style.display = 'none';
                 catBox.classList.remove('paused-anim');
             }
         }
 
         function startApp() {
-            const code = document.getElementById('debugStart').value;
-            if (code !== defaultConfig) isDebugLocked = true;
-            applyConfig(code, false);
+            applyConfig(document.getElementById('debugStart').value, false);
             document.getElementById('startOverlay').style.display = 'none';
             pauseBtn.style.display = 'block';
             fullRestart();
@@ -188,15 +166,14 @@
 
         function applyConfig(code, isMidGame) {
             const parts = code.split(',').map(s => s.trim()).filter(s => s !== "").map(Number);
+            if (code !== defaultConfig) isDebugLocked = true;
             let newCfg = (parts.length === 7 && !parts.some(isNaN)) ? 
-                { normT: parts[0], crazyT: parts[1], goldenFishTime: parts[2], devilFishTime: parts[3], initS: parts[4], initMode: parts[5], spawnMode: parts[6] } : 
-                { normT: 7, crazyT: 5, goldenFishTime: 7, devilFishTime: 100, initS: 3, initMode: 0, spawnMode: 0 };
+                { normT: parts[0], crazyT: parts[1], goldenFishTime: parts[2], devilFishTime: parts[3], initS: parts[4], initMode: parts[5], spawnMode: parts[6] } : config;
             
             document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             if (isMidGame) {
                 clearAllIntervals();
-                stamina = newCfg.initS;
-                config = newCfg;
+                stamina = newCfg.initS; config = newCfg;
                 if (newCfg.initMode === 1) { hitCount = 1; startCrazyMode(false); }
                 else if (newCfg.initMode === 2) { specialStatus = "golden"; specialCounter = 10; resetGame(); }
                 else if (newCfg.initMode === 3) { specialStatus = "devil"; resetGame(); }
@@ -207,11 +184,8 @@
 
         function fullRestart() {
             clearAllIntervals();
-            const code = document.getElementById('debugEnd').value;
-            if (code !== defaultConfig) isDebugLocked = true;
-            applyConfig(code, false);
-            score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; isPaused = false;
-            hitCount = 0; isShrunk = false;
+            applyConfig(document.getElementById('debugEnd').value, false);
+            score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; isPaused = false; hitCount = 0; isShrunk = false;
             if (config.initMode === 1) startCrazyMode(false);
             else if (config.initMode === 2) { specialStatus = "golden"; specialCounter = 10; resetGame(); }
             else if (config.initMode === 3) { specialStatus = "devil"; resetGame(); }
@@ -223,35 +197,20 @@
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
             applyBg();
-            
-            catBox.style.transition = "none";
-            catBox.style.left = "50%"; catBox.style.top = "50%";
-            catBox.style.transform = "translate(-50%, -50%)";
-            catBox.style.width = isShrunk ? "110px" : "280px"; 
-            catBox.style.height = isShrunk ? "110px" : "280px";
-            void catBox.offsetWidth; 
-            catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            catBox.style.transition = "none"; catBox.style.left = "50%"; catBox.style.top = "50%";
+            catBox.style.transform = "translate(-50%, -50%)"; 
+            catBox.style.width = isShrunk ? "110px" : "280px"; catBox.style.height = isShrunk ? "110px" : "280px";
+            void catBox.offsetWidth; catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             catBox.className = isShrunk ? 'breathing shrunk' : 'breathing';
-
             timeLeft = (specialStatus === "devil") ? config.devilFishTime : config.normT;
             hitCount = 0; isCrazy = false; isFlipping = false; crazyTimeElapsed = 0;
-            updateUI();
-            catImg.className = '';
-            staminaDiv.style.display = 'block';
-            if (!isPaused) { 
-                gameLoop = setInterval(tick, 1000); 
-                foodLoop = setInterval(spawnFood, 3000);
-                shrinkLoop = setInterval(tryShrink, 10000);
-            }
+            updateUI(); catImg.className = ''; staminaDiv.style.display = 'block';
+            if (!isPaused) { gameLoop = setInterval(tick, 1000); foodLoop = setInterval(spawnFood, 3000); shrinkLoop = setInterval(tryShrink, 10000); }
         }
 
         function tryShrink() {
             if (isCrazy || isPaused || isShrunk) return;
-            if (Math.random() < 0.2) { 
-                isShrunk = true;
-                catBox.classList.add('shrunk');
-                catBox.style.width = "110px"; catBox.style.height = "110px";
-            }
+            if (Math.random() < 0.2) { isShrunk = true; catBox.classList.add('shrunk'); catBox.style.width = "110px"; catBox.style.height = "110px"; }
         }
 
         function applyBg() {
@@ -283,19 +242,13 @@
 
         function spawnFood() {
             if (isCrazy || isPaused || isShrunk) return;
-            let f = document.createElement('div');
-            f.className = 'food';
-            
+            let f = document.createElement('div'); f.className = 'food';
             if (crazyWins >= 10) { f.innerHTML = '🦈'; crazyWins = 0; }
             else if (lastSecHits >= 5 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
             else { f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; }
             
-            const winW = window.innerWidth;
-            const winH = window.innerHeight;
-            // 行動裝置安全區域優化：避開頂部 15% 同底部 15%
-            const safeTop = winH * 0.15;
-            const safeBottom = winH * 0.85;
-
+            const winW = window.innerWidth; const winH = window.innerHeight;
+            const safeTop = winH * 0.15; const safeBottom = winH * 0.85;
             let x, y, cRect = catBox.getBoundingClientRect();
             let attempts = 0;
             do {
@@ -303,7 +256,6 @@
                 y = Math.random() * (safeBottom - safeTop - 60) + safeTop;
                 attempts++;
             } while (attempts < 10 && (x > cRect.left - 50 && x < cRect.right + 50 && y > cRect.top - 50 && y < cRect.bottom + 50));
-            
             f.style.left = x + "px"; f.style.top = y + "px";
             document.body.appendChild(f);
             f.onpointerdown = function(e) {
@@ -315,36 +267,47 @@
         }
 
         function checkEat(f) {
+            if (isShrunk) return;
             const cRect = catBox.getBoundingClientRect();
             const fRect = f.getBoundingClientRect();
             if (fRect.left < cRect.right-20 && fRect.right > cRect.left+20 && fRect.top < cRect.bottom-20 && fRect.bottom > cRect.top+20) {
                 const type = f.innerHTML; f.remove();
-                if (type === '🐠') { specialStatus = "golden"; specialCounter = 10; score += 10; }
-                else if (type === '🦈') { specialStatus = "devil"; timeLeft = config.devilFishTime; score += 20; }
-                else if (type === '🐡') { score -= 5; startCrazyMode(true); }
-                else {
-                    let gain = (type === '🐟') ? 1 : (type === '🍖' ? 2 : 0);
-                    stamina = Math.min(specialStatus === "devil" ? 50 : 10, stamina + gain);
-                    score += 1;
+                if (specialStatus === "golden") {
+                    score += 5; // 黃金狀態食乜都加 5 分
+                    if (type === '🐡') { stamina = Math.min(30, stamina + 3); } // 黃金食雞泡魚補 3 體力
+                    else {
+                        let gain = (type === '🐟') ? 1 : (type === '🍖' ? 2 : 0);
+                        stamina = Math.min(30, stamina + gain);
+                    }
+                } else if (specialStatus === "devil") {
+                    if (type === '🐠') { stamina = 0; score -= 20; exitSpecial(); }
+                    else {
+                        stamina = Math.min(50, stamina + 5); // 惡魔狀態食魚/肉/雞泡魚都係補 5 體力
+                        score += 10;
+                    }
+                } else {
+                    if (type === '🐠') { specialStatus = "golden"; specialCounter = 10; score += 10; }
+                    else if (type === '🦈') { specialStatus = "devil"; timeLeft = config.devilFishTime; score += 20; }
+                    else if (type === '🐡') { score -= 5; startCrazyMode(true); }
+                    else {
+                        let gain = (type === '🐟') ? 1 : (type === '🍖' ? 2 : 0);
+                        stamina = Math.min(10, stamina + gain); score += 1;
+                    }
                 }
                 updateUI(); applyBg();
             }
         }
 
         function startCrazyMode(isPoisoned) {
-            clearAllIntervals();
-            isCrazy = true; staminaDiv.style.display = 'none';
-            document.body.style.backgroundColor = "#400";
-            updateUI(); 
-            catBox.style.width = "140px"; catBox.style.height = "140px";
-            catBox.className = '';
+            clearAllIntervals(); isCrazy = true; staminaDiv.style.display = 'none';
+            document.body.style.backgroundColor = "#400"; updateUI(); 
+            catBox.style.width = "140px"; catBox.style.height = "140px"; catBox.className = '';
             crazyTimeElapsed = 0; crazyTimeStart = Date.now();
             runCrazyMove(isPoisoned || hitCount >= 1 ? 50 : 80);
         }
 
         function runCrazyMove(speed) {
-            clearInterval(crazyLoop);
-            crazyTimeStart = Date.now(); 
+            clearInterval(crazyLoop); crazyTimeStart = Date.now(); 
             crazyLoop = setInterval(() => {
                 if (isPaused) return;
                 let totalElapsed = crazyTimeElapsed + (Date.now() - crazyTimeStart);
@@ -353,23 +316,19 @@
                     document.getElementById('finalScore').innerHTML = isDebugLocked ? `總分: ${score} <span style="color:red;">(除錯)</span>` : "總分: " + score;
                     document.getElementById('angryOverlay').style.display = 'flex'; clearAllIntervals(); return;
                 }
-                catBox.style.left = (Math.random() * 80 + 10) + "%";
-                catBox.style.top = (Math.random() * 70 + 15) + "%"; // 暴走也避開邊緣
+                catBox.style.left = (Math.random() * 80 + 10) + "%"; catBox.style.top = (Math.random() * 70 + 15) + "%";
             }, speed);
         }
 
         function hitCat(e) {
-            if (isPaused) return;
-            if (e) e.stopPropagation();
+            if (isPaused) return; if (e) e.stopPropagation();
             if (isShrunk) { isShrunk = false; catBox.classList.remove('shrunk'); catBox.style.width = "280px"; catBox.style.height = "280px"; return; }
-
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true; stamina--; score += 1;
                 if (timeLeft <= 1) lastSecHits++; else lastSecHits = 0;
                 if (specialStatus !== "devil") { clearInterval(gameLoop); timeLeft = (specialStatus === "golden") ? config.goldenFishTime : config.normT; gameLoop = setInterval(tick, 1000); }
-                catImg.className = "flipping-anim";
-                setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
+                catImg.className = "flipping-anim"; setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
                 updateUI();
             } else {
                 hitCount++;
