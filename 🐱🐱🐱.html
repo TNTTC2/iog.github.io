@@ -14,7 +14,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
 
-        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
+        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
+        #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; }
         #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
 
         #catBox {
@@ -35,27 +36,39 @@
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); z-index: 10000; display: flex; flex-direction: column; 
+            background-color: rgba(0, 0, 0, 0.75); z-index: 10000; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
         }
         .finger-45 { font-size: 80px; transform: rotate(45deg); display: inline-block; }
+        
+        .debug-input { 
+            position: absolute; bottom: 20px; width: 80%; max-width: 300px;
+            background: rgba(255,255,255,0.1); border: 1px solid #444; color: #888;
+            padding: 8px; font-size: 14px; text-align: center; border-radius: 5px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
 
-    <div id="timer">7s</div>
+    <div id="timer">
+        <span id="timeVal">7s</span>
+        <span id="debugTag" style="display:none;">DEBUG MODE</span>
+    </div>
     <div id="stamina">⚡️ 3</div>
 
-    <div id="startOverlay" class="overlay" onclick="startApp()">
-        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下隻貓</div>
-        <div class="finger-45">👆</div>
+    <div id="startOverlay" class="overlay">
+        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;" onclick="startApp()">篤一下隻貓</div>
+        <div class="finger-45" onclick="startApp()">👆</div>
+        <input type="text" id="debugStart" class="debug-input" value="7,5,7,70,3,0,0" placeholder="除錯代碼">
     </div>
 
-    <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
-        <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
+    <div id="angryOverlay" class="overlay" style="display:none;">
+        <div style="color:white; font-size:28px; font-weight:bold;" onclick="fullRestart()">隻貓嬲咗</div>
         <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
-        <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
-        <div class="finger-45" style="margin-top:20px;">👆</div>
+        <div style="color:#ccc; margin-top:10px; font-size: 20px;" onclick="fullRestart()">再篤補救</div>
+        <div class="finger-45" style="margin-top:20px;" onclick="fullRestart()">👆</div>
+        <input type="text" id="debugEnd" class="debug-input" value="7,5,7,70,3,0,0" placeholder="除錯代碼">
     </div>
 
     <div id="catBox" class="breathing">
@@ -63,10 +76,13 @@
     </div>
 
     <script>
+        // 核心配置
+        let config = { normT: 7, crazyT: 5, goldT: 7, devilT: 70, initS: 3, initMode: 0, spawnMode: 0 };
+        const defaultConfig = "7,5,7,70,3,0,0";
+
         let timeLeft = 7, stamina = 3, hitCount = 0, score = 0;
         let isCrazy = false, isFlipping = false;
         let gameLoop, crazyLoop, foodLoop;
-        
         let lastSecHits = 0, crazyWins = 0;
         let specialStatus = "normal"; 
         let specialCounter = 0; 
@@ -75,30 +91,59 @@
         const catImg = document.getElementById('catImg');
         const staminaDiv = document.getElementById('stamina');
 
+        function parseDebug(val) {
+            const parts = val.split(',').map(Number);
+            if (parts.length !== 7 || parts.some(isNaN)) return parseDebug(defaultConfig);
+            return {
+                normT: parts[0], crazyT: parts[1], goldT: parts[2],
+                devilT: parts[3], initS: parts[4], initMode: parts[5],
+                spawnMode: parts[6]
+            };
+        }
+
         function startApp() {
+            const code = document.getElementById('debugStart').value;
+            applyConfig(code);
             document.getElementById('startOverlay').style.display = 'none';
             fullRestart();
         }
 
-        // 徹底重設遊戲狀態 (分數、體力、狀態)
-        function fullRestart() {
-            score = 0;
-            stamina = 3;
-            specialStatus = "normal";
-            specialCounter = 0;
-            lastSecHits = 0;
-            crazyWins = 0;
-            resetGame();
+        function applyConfig(code) {
+            config = parseDebug(code);
+            document.getElementById('debugTag').style.display = (code === defaultConfig) ? 'none' : 'block';
+            // 同步兩個輸入框
+            document.getElementById('debugStart').value = code;
+            document.getElementById('debugEnd').value = code;
         }
 
-        // 刷新回合畫面 (唔重設分數同體力，用於暴走結束後恢復)
+        function fullRestart() {
+            const code = document.getElementById('debugEnd').value;
+            applyConfig(code);
+            
+            score = 0;
+            stamina = config.initS;
+            lastSecHits = 0;
+            crazyWins = 0;
+            
+            // 處理初始狀態
+            if (config.initMode === 1) { 
+                specialStatus = "normal"; startCrazyMode(false); 
+            } else if (config.initMode === 2) { 
+                specialStatus = "golden"; specialCounter = 10; resetGame();
+            } else if (config.initMode === 3) {
+                specialStatus = "devil"; resetGame();
+            } else {
+                specialStatus = "normal"; specialCounter = 0; resetGame();
+            }
+        }
+
         function resetGame() {
             clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop);
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
             
             applyBg();
-            timeLeft = (specialStatus === "devil") ? 70 : 7;
+            timeLeft = (specialStatus === "devil") ? config.devilT : config.normT;
             hitCount = 0; isCrazy = false; isFlipping = false;
             updateUI();
 
@@ -123,7 +168,7 @@
             if (timeLeft <= 0) {
                 if (specialStatus === "golden" && specialCounter > 0) {
                     specialCounter--;
-                    timeLeft = 7;
+                    timeLeft = config.goldT;
                     if (specialCounter <= 0) exitSpecial();
                 } else if (specialStatus === "devil") {
                     exitSpecial();
@@ -142,7 +187,7 @@
         }
 
         function updateUI() {
-            document.getElementById('timer').innerHTML = timeLeft + "s";
+            document.getElementById('timeVal').innerHTML = timeLeft + "s";
             let icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
             staminaDiv.innerHTML = icon + stamina;
         }
@@ -152,7 +197,10 @@
             let f = document.createElement('div');
             f.className = 'food';
             
-            if (crazyWins >= 3) { f.innerHTML = '🦈'; crazyWins = 0; }
+            // 食物生成邏輯
+            if (config.spawnMode === 1 && specialStatus !== "golden") { f.innerHTML = '🐠'; }
+            else if (config.spawnMode === 2) { f.innerHTML = '🦈'; }
+            else if (crazyWins >= 3) { f.innerHTML = '🦈'; crazyWins = 0; }
             else if (lastSecHits >= 3 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
             else {
                 let possibleFoods = ['🐟', '🍖', '🐡'];
@@ -185,13 +233,10 @@
                 let cap = (specialStatus === "golden") ? 30 : (specialStatus === "devil" ? 50 : 10);
 
                 if (type === '🐠') {
-                    if (specialStatus === "devil") { 
-                        stamina = 0; score -= 20; exitSpecial(); 
-                    } else { 
-                        specialStatus = "golden"; specialCounter = 10; score += 10;
-                    }
+                    if (specialStatus === "devil") { stamina = 0; score -= 20; exitSpecial(); }
+                    else { specialStatus = "golden"; specialCounter = 10; score += 10; }
                 } else if (type === '🦈') {
-                    specialStatus = "devil"; timeLeft = 70; score += 20;
+                    specialStatus = "devil"; timeLeft = config.devilT; score += 20;
                 } else if (specialStatus === "devil") {
                     if (stamina < 50) { stamina = Math.min(50, stamina + 5); score += 10; }
                 } else if (specialStatus === "golden") {
@@ -220,7 +265,7 @@
             clearInterval(gameLoop); clearInterval(foodLoop);
             isCrazy = true; staminaDiv.style.display = 'none';
             document.body.style.backgroundColor = "#400";
-            document.getElementById('timer').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
+            document.getElementById('timeVal').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
             catBox.style.width = "140px";
             if (isPoisoned || hitCount >= 1) { 
                 hitCount = 1; catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
@@ -233,7 +278,7 @@
             clearInterval(crazyLoop);
             let startTime = Date.now();
             crazyLoop = setInterval(() => {
-                if (Date.now() - startTime >= 5000) { 
+                if (Date.now() - startTime >= config.crazyT * 1000) { 
                     score -= 5;
                     document.getElementById('finalScore').innerHTML = "總分: " + score;
                     document.getElementById('angryOverlay').style.display = 'flex'; 
@@ -253,7 +298,7 @@
                 
                 if (specialStatus !== "devil") {
                     clearInterval(gameLoop);
-                    timeLeft = 7;
+                    timeLeft = (specialStatus === "golden") ? config.goldT : config.normT;
                     gameLoop = setInterval(tick, 1000);
                 }
 
