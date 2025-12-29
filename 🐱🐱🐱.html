@@ -1,11 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🐱🐱🐱</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
+    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
+        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
+
+        #timer { position: absolute; top: 20px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; }
+        #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
+
+        #catBox {
+            position: absolute; width: 280px; height: 280px; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; justify-content: center; align-items: center; z-index: 50;
+        }
+        .breathing { animation: bounce 1.2s infinite ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+
+        #catImg { width: 100%; height: auto; display: block; will-change: transform; }
+        .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
+        .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
+        @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
+
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); z-index: 10000; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
+        }
+        .finger-45 { font-size: 80px; transform: rotate(45deg); display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div id="timer">7s</div>
+    <div id="stamina">⚡️ 3</div>
+
+    <div id="startOverlay" class="overlay" onclick="startApp()">
+        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下隻貓</div>
+        <div class="finger-45">👆</div>
+    </div>
+
+    <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()">
+        <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
+        <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
+        <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
+        <div class="finger-45" style="margin-top:20px;">👆</div>
+    </div>
+
+    <div id="catBox" class="breathing">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" alt="cat" onpointerdown="hitCat(event)">
+    </div>
+
+    <script>
+        let timeLeft = 7, stamina = 3, hitCount = 0, score = 0;
+        let isCrazy = false, isFlipping = false;
+        let gameLoop, crazyLoop, foodLoop;
+        
+        let lastSecHits = 0, crazyWins = 0;
+        let specialStatus = "normal"; // normal, golden, devil
+        let specialCounter = 0; 
+
+        const catBox = document.getElementById('catBox');
+        const catImg = document.getElementById('catImg');
+        const staminaDiv = document.getElementById('stamina');
+
+        function startApp() {
+            document.getElementById('startOverlay').style.display = 'none';
+            score = 0;
+            resetGame();
+        }
+
+        function resetGame() {
+            clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop);
+            document.getElementById('angryOverlay').style.display = 'none';
+            document.querySelectorAll('.food').forEach(f => f.remove());
+            
+            applyBg();
+            timeLeft = (specialStatus === "devil") ? 70 : 7;
+            hitCount = 0; isCrazy = false; isFlipping = false;
+            updateUI();
+
+            catBox.className = 'breathing';
+            catBox.style.width = "280px"; catBox.style.height = "280px";
+            catBox.style.top = "50%"; catBox.style.left = "50%";
+            catImg.className = '';
+            staminaDiv.style.display = 'block';
+
+            gameLoop = setInterval(tick, 1000);
+            foodLoop = setInterval(spawnFood, 3000);
+        }
+
+        function applyBg() {
+            if (specialStatus === "golden") document.body.style.backgroundColor = "#4a3c00";
+            else if (specialStatus === "devil") document.body.style.backgroundColor = "#1a0033";
+            else document.body.style.backgroundColor = "#000";
+        }
+
+        function tick() {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                if (specialStatus === "golden" && specialCounter > 0) {
+                    specialCounter--;
+                    timeLeft = 7;
+                    if (specialCounter <= 0) exitSpecial();
+                } else if (specialStatus === "devil") {
+                    exitSpecial();
+                    resetGame();
+                } else {
+                    startCrazyMode(false);
+                }
+            }
+            updateUI();
+        }
+
+        function exitSpecial() {
+            specialStatus = "normal";
+            specialCounter = 0;
+            applyBg();
+        }
+
+        function updateUI() {
+            document.getElementById('timer').innerHTML = timeLeft + "s";
+            let icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
+            staminaDiv.innerHTML = icon + stamina;
+        }
+
+        function spawnFood() {
+            if (isCrazy) return;
+            let f = document.createElement('div');
+            f.className = 'food';
+            
+            if (crazyWins >= 3) { f.innerHTML = '🦈'; crazyWins = 0; }
+            else if (lastSecHits >= 3 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
+            else {
+                let possibleFoods = ['🐟', '🍖', '🐡'];
+                if (specialStatus === "devil") possibleFoods.push('🐠'); 
+                f.innerHTML = possibleFoods[Math.floor(Math.random() * possibleFoods.length)];
+            }
+
+            let x, y, cRect = catBox.getBoundingClientRect();
+            do {
+                x = Math.random() * (window.innerWidth - 60) + 30;
+                y = Math.random() * (window.innerHeight - 60) + 30;
+            } while (x > cRect.left - 50 && x < cRect.right + 50 && y > cRect.top - 50 && y < cRect.bottom + 50);
+
+            f.style.left = x + "px"; f.style.top = y + "px";
+            document.body.appendChild(f);
+
+            f.onpointerdown = function(e) {
+                f.setPointerCapture(e.pointerId);
+                f.onpointermove = (ev) => { f.style.left = ev.clientX-25+'px'; f.style.top = ev.clientY-25+'px'; checkEat(f); };
+            };
+            f.onpointerup = () => f.onpointermove = null;
+            setTimeout(() => f.parentElement && f.remove(), 2000);
+        }
+
+        function checkEat(f) {
+            const cRect = catBox.getBoundingClientRect();
+            const fRect = f.getBoundingClientRect();
+            if (fRect.left < cRect.right-20 && fRect.right > cRect.left+20 && fRect.top < cRect.bottom-20 && fRect.bottom > cRect.top+20) {
+                const type = f.innerHTML; f.remove();
+                let cap = (specialStatus === "golden") ? 30 : (specialStatus === "devil" ? 50 : 10);
+
+                if (type === '🐠') {
+                    if (specialStatus === "devil") { 
+                        stamina = 0; score -= 20; exitSpecial(); 
+                    } else { 
+                        specialStatus = "golden"; specialCounter = 10; score += 10;
+                    }
+                } else if (type === '🦈') {
+                    specialStatus = "devil"; timeLeft = 70; score += 20;
+                } else if (specialStatus === "devil") {
+                    if (stamina < 50) { stamina = Math.min(50, stamina + 5); score += 10; }
+                } else if (specialStatus === "golden") {
+                    if (type === '🐡') {
+                        if (stamina < 30) { stamina = Math.min(30, stamina + 3); score += 5; }
+                        specialCounter--;
+                    } else {
+                        if (stamina < 30) { 
+                            let gain = (type === '🐟') ? 1 : (type === '🍖' ? 2 : 0);
+                            if (gain > 0) { stamina = Math.min(30, stamina + gain); score += 5; }
+                        }
+                    }
+                } else {
+                    if (type === '🐡') { score -= 5; startCrazyMode(true); return; }
+                    else if (type === '🐟' && stamina < cap) { stamina = Math.min(cap, stamina + 1); score += 1; }
+                    else if (type === '🍖' && stamina < cap) { stamina = Math.min(cap, stamina + 2); score += 1; }
+                }
+                
+                if (specialCounter <= 0 && specialStatus === "golden") exitSpecial();
+                updateUI();
+                applyBg();
+            }
+        }
+
+        function startCrazyMode(isPoisoned) {
+            clearInterval(gameLoop); clearInterval(foodLoop);
+            isCrazy = true; staminaDiv.style.display = 'none';
+            document.body.style.backgroundColor = "#400";
+            document.getElementById('timer').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
+            catBox.style.width = "140px";
+            if (isPoisoned || hitCount >= 1) { 
+                hitCount = 1; catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
+            } else { 
+                runCrazyMove(80); 
+            }
+        }
+
+        function runCrazyMove(speed) {
+            clearInterval(crazyLoop);
+            let startTime = Date.now();
+            crazyLoop = setInterval(() => {
+                if (Date.now() - startTime >= 5000) { 
+                    score -= 5;
+                    document.getElementById('finalScore').innerHTML = "總分: " + score;
+                    document.getElementById('angryOverlay').style.display = 'flex'; 
+                    clearInterval(crazyLoop); 
+                }
+                catBox.style.left = (Math.random() * 80 + 10) + "%";
+                catBox.style.top = (Math.random() * 80 + 10) + "%";
+            }, speed);
+        }
+
         function hitCat(e) {
             if (e) e.stopPropagation();
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
-                isFlipping = true; stamina--; score += 1; // 打關斗 +1
+                isFlipping = true; stamina--; score += 1;
                 if (timeLeft <= 1) lastSecHits++; else lastSecHits = 0;
                 
-                // 【核心修正】只有喺唔係惡魔狀態下，先會執行重設計時
+                // 【核心修復】如果唔係惡魔狀態，先會進行時間重設
                 if (specialStatus !== "devil") {
                     clearInterval(gameLoop);
                     timeLeft = 7;
@@ -20,9 +255,12 @@
                 if (hitCount === 1) { 
                     catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
                 } else if (hitCount >= 3) {
-                    if (catImg.className === "spinning-anim") { crazyWins++; score += 5; } // 成功制服 +5
+                    if (catImg.className === "spinning-anim") { crazyWins++; score += 5; }
                     catImg.className = "flipping-anim";
                     setTimeout(resetGame, 200);
                 }
             }
         }
+    </script>
+</body>
+</html>
