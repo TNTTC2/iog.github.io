@@ -53,6 +53,7 @@
 
     <div id="angryOverlay" class="overlay" style="display:none;" onclick="resetGame()">
         <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
+        <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
         <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
         <div class="finger-45" style="margin-top:20px;">👆</div>
     </div>
@@ -62,7 +63,7 @@
     </div>
 
     <script>
-        let timeLeft = 7, stamina = 3, hitCount = 0;
+        let timeLeft = 7, stamina = 3, hitCount = 0, score = 0;
         let isCrazy = false, isFlipping = false;
         let gameLoop, crazyLoop, foodLoop;
         
@@ -76,6 +77,7 @@
 
         function startApp() {
             document.getElementById('startOverlay').style.display = 'none';
+            score = 0; // 第一次開始清零
             resetGame();
         }
 
@@ -139,13 +141,9 @@
             let f = document.createElement('div');
             f.className = 'food';
             
-            if (crazyWins >= 3) {
-                f.innerHTML = '🦈'; 
-                crazyWins = 0;
-            } else if (lastSecHits >= 3 && specialStatus !== "golden") {
-                f.innerHTML = '🐠'; 
-                lastSecHits = 0;
-            } else {
+            if (crazyWins >= 3) { f.innerHTML = '🦈'; crazyWins = 0; }
+            else if (lastSecHits >= 3 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
+            else {
                 let possibleFoods = ['🐟', '🍖', '🐡'];
                 if (specialStatus === "devil") possibleFoods.push('🐠'); 
                 f.innerHTML = possibleFoods[Math.floor(Math.random() * possibleFoods.length)];
@@ -173,31 +171,34 @@
             const fRect = f.getBoundingClientRect();
             if (fRect.left < cRect.right-20 && fRect.right > cRect.left+20 && fRect.top < cRect.bottom-20 && fRect.bottom > cRect.top+20) {
                 const type = f.innerHTML; f.remove();
-                
-                // 定義當前補充上限
-                let cap = 10;
-                if (specialStatus === "golden") cap = 30;
-                if (specialStatus === "devil") cap = 50;
+                let cap = (specialStatus === "golden") ? 30 : (specialStatus === "devil" ? 50 : 10);
+                let didTrigger = false;
 
                 if (type === '🐠') {
-                    if (specialStatus === "devil") {
-                        stamina = 0; exitSpecial(); 
-                    } else {
-                        specialStatus = "golden"; specialCounter = 10;
+                    if (specialStatus === "devil") { 
+                        stamina = 0; score -= 20; exitSpecial(); didTrigger = true; 
+                    } else { 
+                        specialStatus = "golden"; specialCounter = 10; score += 10; didTrigger = true;
                     }
                 } else if (type === '🦈') {
-                    specialStatus = "devil"; timeLeft = 70;
+                    specialStatus = "devil"; timeLeft = 70; score += 20; didTrigger = true;
                 } else if (specialStatus === "devil") {
-                    if (stamina < 50) stamina = Math.min(50, stamina + 5);
-                } else if (type === '🐡' && specialStatus === "golden" && specialCounter > 0) {
-                    if (stamina < 30) stamina = Math.min(30, stamina + 3); 
-                    specialCounter--;
-                } else if (type === '🐡') { 
-                    startCrazyMode(true); return; 
-                } else if (type === '🐟') {
-                    if (stamina < cap) stamina = Math.min(cap, stamina + 1);
-                } else if (type === '🍖') {
-                    if (stamina < cap) stamina = Math.min(cap, stamina + 2);
+                    if (stamina < 50) { stamina = Math.min(50, stamina + 5); score += 10; didTrigger = true; }
+                } else if (specialStatus === "golden") {
+                    if (type === '🐡') {
+                        if (stamina < 30) { stamina = Math.min(30, stamina + 3); score += 5; didTrigger = true; }
+                        specialCounter--;
+                    } else {
+                        if (stamina < 30) { 
+                            let gain = (type === '🐟') ? 1 : (type === '🍖' ? 2 : 0);
+                            if (gain > 0) { stamina = Math.min(30, stamina + gain); score += 5; didTrigger = true; }
+                        }
+                    }
+                } else {
+                    // Normal Status Score Logic
+                    if (type === '🐡') { score -= 5; startCrazyMode(true); return; }
+                    else if (type === '🐟' && stamina < cap) { stamina = Math.min(cap, stamina + 1); score += 1; didTrigger = true; }
+                    else if (type === '🍖' && stamina < cap) { stamina = Math.min(cap, stamina + 2); score += 1; didTrigger = true; }
                 }
                 
                 if (specialCounter <= 0 && specialStatus === "golden") exitSpecial();
@@ -223,7 +224,12 @@
             clearInterval(crazyLoop);
             let startTime = Date.now();
             crazyLoop = setInterval(() => {
-                if (Date.now() - startTime >= 5000) { document.getElementById('angryOverlay').style.display = 'flex'; clearInterval(crazyLoop); }
+                if (Date.now() - startTime >= 5000) { 
+                    score -= 5; // 不成功制服
+                    document.getElementById('finalScore').innerHTML = "總分: " + score;
+                    document.getElementById('angryOverlay').style.display = 'flex'; 
+                    clearInterval(crazyLoop); 
+                }
                 catBox.style.left = (Math.random() * 80 + 10) + "%";
                 catBox.style.top = (Math.random() * 80 + 10) + "%";
             }, speed);
@@ -233,7 +239,7 @@
             if (e) e.stopPropagation();
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
-                isFlipping = true; stamina--;
+                isFlipping = true; stamina--; score += 1; // 打關斗 +1
                 if (timeLeft <= 1) lastSecHits++; else lastSecHits = 0;
                 
                 clearInterval(gameLoop);
@@ -248,7 +254,7 @@
                 if (hitCount === 1) { 
                     catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
                 } else if (hitCount >= 3) {
-                    if (catImg.className === "spinning-anim") crazyWins++;
+                    if (catImg.className === "spinning-anim") { crazyWins++; score += 5; } // 成功制服 +5
                     catImg.className = "flipping-anim";
                     setTimeout(resetGame, 200);
                 }
