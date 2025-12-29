@@ -11,44 +11,26 @@
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
 
     <style>
+        /* 保持原本 CSS 不變 */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
-
         #timer { position: absolute; top: 50px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
         #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; }
         #stamina { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
         #pauseBtn { position: absolute; top: 50px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
-
-        #catBox {
-            position: absolute; width: 280px; height: 280px; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; justify-content: center; align-items: center; z-index: 50;
-        }
+        #catBox { position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50; }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
         .paused-anim { animation-play-state: paused !important; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
-
         #catImg { width: 100%; height: auto; display: block; will-change: transform; }
         .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
-
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.75); z-index: 10000; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; text-align: center;
-        }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .finger-45 { font-size: 80px; transform: rotate(45deg); display: inline-block; }
-        
-        .debug-input { 
-            position: absolute; bottom: 20px; width: 80%; max-width: 300px;
-            background: rgba(255,255,255,0.15); border: 1px solid #666; color: #fff;
-            padding: 8px; font-size: 14px; text-align: center; border-radius: 5px;
-            font-family: monospace; z-index: 10001; -webkit-user-select: text; touch-action: auto;
-        }
+        .debug-input { position: absolute; bottom: 20px; width: 80%; max-width: 300px; background: rgba(255,255,255,0.15); border: 1px solid #666; color: #fff; padding: 8px; font-size: 14px; text-align: center; border-radius: 5px; font-family: monospace; z-index: 10001; -webkit-user-select: text; touch-action: auto; }
     </style>
 </head>
 <body>
@@ -92,13 +74,19 @@
         let isCrazy = false, isFlipping = false, isPaused = false, isDebugLocked = false;
         let gameLoop, crazyLoop, foodLoop;
         let lastSecHits = 0, crazyWins = 0, crazyTimeStart = 0, crazyTimeElapsed = 0;
-        let specialStatus = "normal"; 
-        let specialCounter = 0; 
+        let specialStatus = "normal", specialCounter = 0; 
 
         const catBox = document.getElementById('catBox');
         const catImg = document.getElementById('catImg');
         const staminaDiv = document.getElementById('stamina');
         const pauseBtn = document.getElementById('pauseBtn');
+
+        function clearAllIntervals() {
+            clearInterval(gameLoop);
+            clearInterval(crazyLoop);
+            clearInterval(foodLoop);
+            gameLoop = null; crazyLoop = null; foodLoop = null;
+        }
 
         function getCurrentDebugCode() {
             let m = (isCrazy) ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
@@ -108,19 +96,15 @@
         function parseDebug(val) {
             const parts = val.split(',').map(Number);
             if (parts.length !== 7 || parts.some(isNaN)) return parseDebug(defaultConfig);
-            return {
-                normT: parts[0], crazyT: parts[1], goldT: parts[2],
-                devilT: parts[3], initS: parts[4], initMode: parts[5],
-                spawnMode: parts[6]
-            };
+            return { normT: parts[0], crazyT: parts[1], goldT: parts[2], devilT: parts[3], initS: parts[4], initMode: parts[5], spawnMode: parts[6] };
         }
 
         function togglePause() {
             if (isCrazy && document.getElementById('angryOverlay').style.display === 'flex') return;
             isPaused = !isPaused;
             if (isPaused) {
-                clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(crazyLoop);
                 if (isCrazy) crazyTimeElapsed += (Date.now() - crazyTimeStart);
+                clearAllIntervals();
                 document.getElementById('debugPause').value = getCurrentDebugCode();
                 document.getElementById('pauseOverlay').style.display = 'flex';
                 catBox.classList.add('paused-anim');
@@ -129,12 +113,7 @@
                 applyConfig(code, true);
                 document.getElementById('pauseOverlay').style.display = 'none';
                 catBox.classList.remove('paused-anim');
-                gameLoop = setInterval(tick, 1000);
-                foodLoop = setInterval(spawnFood, 3000);
-                if (isCrazy) {
-                    crazyTimeStart = Date.now();
-                    runCrazyMove(hitCount >= 1 ? 50 : 80);
-                }
+                // 恢復計時會在 applyConfig 裡面處理 resetGame 或 startCrazyMode
             }
         }
 
@@ -148,52 +127,73 @@
 
         function applyConfig(code, isMidGame) {
             let newCfg = parseDebug(code);
-            // 如果輸入唔等於預設，或者之前已經鎖定咗，就維持鎖定
             if (code !== defaultConfig) isDebugLocked = true;
+            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             
             if (isMidGame) {
+                clearAllIntervals();
                 stamina = newCfg.initS;
-                config.spawnMode = newCfg.spawnMode;
-                config.crazyT = newCfg.crazyT;
-                if (newCfg.initMode === 1 && !isCrazy) startCrazyMode(false);
-                else if (newCfg.initMode === 2 && specialStatus !== "golden") { specialStatus = "golden"; specialCounter = 10; resetGame(); }
-                else if (newCfg.initMode === 3 && specialStatus !== "devil") { specialStatus = "devil"; resetGame(); }
-                else if (newCfg.initMode === 0 && (specialStatus !== "normal" || isCrazy)) { specialStatus = "normal"; resetGame(); }
+                config = newCfg;
+                
+                // 強制狀態重置與轉換
+                if (newCfg.initMode === 1) {
+                    if (!isCrazy) { hitCount = 1; startCrazyMode(false); }
+                    else { runCrazyMove(50); } // 已經喺暴走就更新計時器
+                } else if (newCfg.initMode === 2) {
+                    specialStatus = "golden"; specialCounter = 10; resetGame();
+                } else if (newCfg.initMode === 3) {
+                    specialStatus = "devil"; resetGame();
+                } else {
+                    specialStatus = "normal"; isCrazy = false; resetGame();
+                }
+            } else {
+                config = newCfg;
             }
             
-            config = newCfg;
-            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             document.getElementById('debugStart').value = code;
             document.getElementById('debugEnd').value = code;
             updateUI();
         }
 
         function fullRestart() {
+            clearAllIntervals();
             const code = document.getElementById('debugEnd').value;
+            isDebugLocked = (code !== defaultConfig);
             applyConfig(code, false);
             score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; isPaused = false;
+            hitCount = 0; // 重置敲擊數防止卡死
             
-            if (config.initMode === 1) { specialStatus = "normal"; startCrazyMode(false); }
-            else if (config.initMode === 2) { specialStatus = "golden"; specialCounter = 10; resetGame(); }
-            else if (config.initMode === 3) { specialStatus = "devil"; resetGame(); }
-            else { specialStatus = "normal"; specialCounter = 0; resetGame(); }
+            if (config.initMode === 1) { 
+                specialStatus = "normal"; hitCount = 0; startCrazyMode(false); 
+            } else if (config.initMode === 2) { 
+                specialStatus = "golden"; specialCounter = 10; resetGame(); 
+            } else if (config.initMode === 3) { 
+                specialStatus = "devil"; resetGame(); 
+            } else { 
+                specialStatus = "normal"; specialCounter = 0; resetGame(); 
+            }
         }
 
         function resetGame() {
-            clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop);
+            clearAllIntervals();
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
             applyBg();
+            
             timeLeft = (specialStatus === "devil") ? config.devilT : config.normT;
             hitCount = 0; isCrazy = false; isFlipping = false; crazyTimeElapsed = 0;
             updateUI();
+            
             catBox.className = 'breathing';
             catBox.style.width = "280px"; catBox.style.height = "280px";
             catBox.style.top = "50%"; catBox.style.left = "50%";
             catImg.className = '';
             staminaDiv.style.display = 'block';
-            gameLoop = setInterval(tick, 1000);
-            foodLoop = setInterval(spawnFood, 3000);
+            
+            if (!isPaused) {
+                gameLoop = setInterval(tick, 1000);
+                foodLoop = setInterval(spawnFood, 3000);
+            }
         }
 
         function applyBg() {
@@ -203,6 +203,7 @@
         }
 
         function tick() {
+            if (isPaused) return;
             timeLeft--;
             if (timeLeft <= 0) {
                 if (specialStatus === "golden" && specialCounter > 0) {
@@ -277,21 +278,27 @@
         }
 
         function startCrazyMode(isPoisoned) {
-            clearInterval(gameLoop); clearInterval(foodLoop);
+            clearAllIntervals();
             isCrazy = true; staminaDiv.style.display = 'none';
             document.body.style.backgroundColor = "#400";
             document.getElementById('timeVal').innerHTML = isPoisoned ? "POISON!!" : "RUN!!";
             catBox.style.width = "140px";
+            catBox.className = ''; // 停止呼吸動畫以免干擾移動
             crazyTimeElapsed = 0; crazyTimeStart = Date.now();
+            
+            // 如果係點擊中毒或者中途改 code 變暴走，直接進入 spinning 狀態
             if (isPoisoned || hitCount >= 1) { 
                 hitCount = 1; catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
-            } else { runCrazyMove(80); }
+            } else { 
+                runCrazyMove(80); 
+            }
         }
 
         function runCrazyMove(speed) {
             clearInterval(crazyLoop);
+            if (isPaused) return;
+            crazyTimeStart = Date.now(); 
             crazyLoop = setInterval(() => {
-                if (isPaused) return;
                 let totalElapsed = crazyTimeElapsed + (Date.now() - crazyTimeStart);
                 if (totalElapsed >= config.crazyT * 1000) { 
                     score -= 5; 
@@ -304,7 +311,8 @@
                         fs.style.color = "#ffcc00";
                     }
                     document.getElementById('angryOverlay').style.display = 'flex'; 
-                    clearInterval(crazyLoop); 
+                    clearAllIntervals();
+                    return;
                 }
                 catBox.style.left = (Math.random() * 80 + 10) + "%";
                 catBox.style.top = (Math.random() * 80 + 10) + "%";
@@ -327,10 +335,12 @@
                 updateUI();
             } else {
                 hitCount++;
-                if (hitCount === 1) { catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
-                else if (hitCount >= 3) {
+                if (hitCount === 1) { 
+                    catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); 
+                } else if (hitCount >= 3) {
                     if (catImg.className === "spinning-anim") { crazyWins++; score += 5; }
-                    catImg.className = "flipping-anim"; setTimeout(resetGame, 200);
+                    catImg.className = "flipping-anim"; 
+                    setTimeout(resetGame, 200);
                 }
             }
         }
