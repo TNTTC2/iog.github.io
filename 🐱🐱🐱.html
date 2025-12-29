@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <title>🐱🐱🐱</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="🐱🐱🐱">
+    
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
 
     <style>
-        /* 樣式保持不變 */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
         #timer { position: absolute; top: 50px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
@@ -73,27 +77,22 @@
 
         function initCatImage() {
             const cachedData = localStorage.getItem('cat_b64');
-            
-            // 預先嘗試載入網絡版，同時設定跨域許可以便影低張圖
             const tempImg = new Image();
             tempImg.crossOrigin = "anonymous"; 
             
             tempImg.onload = function() {
-                // 如果有網載入成功，就顯示網絡版並存入本地
                 catImg.src = CAT_IMAGE_URL;
                 saveImageToLocal(tempImg);
             };
 
             tempImg.onerror = function() {
-                // 如果載入失敗（斷網），檢查本地有無快取
                 if (cachedData) {
                     catImg.src = cachedData;
                     console.log("Offline mode: loaded from cache.");
                 } else {
-                    alert("第一次玩需要聯網載入貓咪圖片！之後就可以離線玩喇。");
+                    alert("第一次玩需要聯網載入圖片！");
                 }
             };
-
             tempImg.src = CAT_IMAGE_URL;
         }
 
@@ -106,16 +105,12 @@
                 ctx.drawImage(imgEl, 0, 0);
                 const base64 = canvas.toDataURL('image/png');
                 localStorage.setItem('cat_b64', base64);
-                console.log("Cat image cached successfully.");
-            } catch (e) {
-                console.warn("Failed to cache image (likely CORS or storage issue).");
-            }
+            } catch (e) { console.warn("Cache fail."); }
         }
 
-        // 初始化圖片
         initCatImage();
 
-        // --- 以下為原本的遊戲邏輯，保持不變 ---
+        // --- 遊戲邏輯 ---
         let config = { normT: 7, crazyT: 5, goldT: 7, devilT: 70, initS: 3, initMode: 0, spawnMode: 0 };
         const defaultConfig = "7,5,7,70,3,0,0";
         let timeLeft = 7, stamina = 3, score = 0, hitCount = 0;
