@@ -45,9 +45,9 @@
         
         .debug-input { 
             position: absolute; bottom: 20px; width: 80%; max-width: 300px;
-            background: rgba(255,255,255,0.1); border: 1px solid #444; color: #888;
+            background: rgba(255,255,255,0.15); border: 1px solid #666; color: #fff;
             padding: 8px; font-size: 14px; text-align: center; border-radius: 5px;
-            font-family: monospace;
+            font-family: monospace; z-index: 10001; -webkit-user-select: text; touch-action: auto;
         }
     </style>
 </head>
@@ -60,24 +60,24 @@
     </div>
     <div id="stamina">⚡️ 3</div>
 
-    <div id="startOverlay" class="overlay">
-        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;" onclick="startApp()">篤一下隻貓</div>
-        <div class="finger-45" onclick="startApp()">👆</div>
-        <input type="text" id="debugStart" class="debug-input" value="7,5,7,70,3,0,0">
+    <div id="startOverlay" class="overlay" onclick="startApp()">
+        <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下隻貓</div>
+        <div class="finger-45">👆</div>
+        <input type="text" id="debugStart" class="debug-input" value="7,5,7,70,3,0,0" onclick="event.stopPropagation()">
     </div>
 
     <div id="pauseOverlay" class="overlay" style="display:none;" onclick="togglePause()">
         <div style="color:white; font-size:28px; font-weight:bold; margin-bottom: 20px;">篤一下繼續玩貓</div>
         <div class="finger-45">👆</div>
-        <input type="text" id="debugPause" class="debug-input" value="">
+        <input type="text" id="debugPause" class="debug-input" value="" onclick="event.stopPropagation()">
     </div>
 
-    <div id="angryOverlay" class="overlay" style="display:none;">
-        <div style="color:white; font-size:28px; font-weight:bold;" onclick="fullRestart()">隻貓嬲咗</div>
+    <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
+        <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
         <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
-        <div style="color:#ccc; margin-top:10px; font-size: 20px;" onclick="fullRestart()">再篤補救</div>
-        <div class="finger-45" style="margin-top:20px;" onclick="fullRestart()">👆</div>
-        <input type="text" id="debugEnd" class="debug-input" value="7,5,7,70,3,0,0">
+        <div style="color:#ccc; margin-top:10px; font-size: 20px;">再篤補救</div>
+        <div class="finger-45" style="margin-top:20px;">👆</div>
+        <input type="text" id="debugEnd" class="debug-input" value="7,5,7,70,3,0,0" onclick="event.stopPropagation()">
     </div>
 
     <div id="catBox" class="breathing">
@@ -148,14 +148,13 @@
 
         function applyConfig(code, isMidGame) {
             let newCfg = parseDebug(code);
+            // 如果輸入唔等於預設，或者之前已經鎖定咗，就維持鎖定
             if (code !== defaultConfig) isDebugLocked = true;
             
             if (isMidGame) {
-                // 即時修改邏輯
                 stamina = newCfg.initS;
                 config.spawnMode = newCfg.spawnMode;
                 config.crazyT = newCfg.crazyT;
-                // 若修改狀態
                 if (newCfg.initMode === 1 && !isCrazy) startCrazyMode(false);
                 else if (newCfg.initMode === 2 && specialStatus !== "golden") { specialStatus = "golden"; specialCounter = 10; resetGame(); }
                 else if (newCfg.initMode === 3 && specialStatus !== "devil") { specialStatus = "devil"; resetGame(); }
@@ -171,7 +170,6 @@
 
         function fullRestart() {
             const code = document.getElementById('debugEnd').value;
-            isDebugLocked = (code !== defaultConfig);
             applyConfig(code, false);
             score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; isPaused = false;
             
