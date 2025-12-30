@@ -33,16 +33,16 @@
         
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; padding: 10px; }
         
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(2px); }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(2px); }
         .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
         .finger-emoji { font-size: 60px; display: inline-block; animation: fingerBounce 1s infinite ease-in-out; margin-top: 20px; }
         @keyframes fingerBounce { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.2); } }
         
-        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.9); border-top: 1px solid #444; margin-top: auto; }
+        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.7); border-top: 1px solid #444; margin-top: auto; }
         .debug-label { color: #888; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
         .debug-input { width: 90%; max-width: 350px; background: #111; border: 1px solid #333; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; outline: none; }
 
-        #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.98); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 75vh; }
+        #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.9); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 75vh; }
         .btn-start { display: block; background: #fff; color: #000; text-align: center; padding: 12px; border-radius: 10px; margin-top: 15px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
