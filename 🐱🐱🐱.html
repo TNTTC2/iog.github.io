@@ -14,35 +14,39 @@
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
         
         #timer { position: absolute; top: 60px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
-        #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; }
-        #stamina { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; }
+        #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; font-weight: normal; }
         #pauseBtn { position: absolute; top: 60px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
+        
+        /* 體力顯示 - 底部安全位置 */
+        #stamina { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; pointer-events: none; }
         
         #catBox { position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50; }
         #catBox.shrunk { width: 110px !important; height: 110px !important; opacity: 0.7; }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
         #catImg { width: 100%; height: auto; display: block; will-change: transform; }
+        
         .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fingerBounce { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.2); } }
         
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; overflow-y: auto; padding: 20px; }
         
-        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(20, 20, 20, 0.9); border-top: 1px solid #333; }
+        /* 介面遮罩 */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+        .overlay-title { color: white; font-size: 32px; font-weight: bold; margin-bottom: 20px; }
+        .finger-emoji { font-size: 60px; display: inline-block; animation: fingerBounce 1s infinite ease-in-out; }
+        
+        /* 置底除錯欄 */
+        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.9); border-top: 1px solid #444; margin-top: auto; }
         .debug-label { color: #888; font-size: 12px; margin-bottom: 8px; }
-        .debug-input { width: 90%; max-width: 350px; background: #222; border: 1px solid #444; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; -webkit-user-select: text; touch-action: auto; outline: none; }
+        .debug-input { width: 90%; max-width: 350px; background: #111; border: 1px solid #333; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; -webkit-user-select: text; touch-action: auto; outline: none; }
 
-        #guideBox { color: #ccc; text-align: left; max-width: 360px; font-size: 15px; line-height: 1.5; background: rgba(30,30,30,0.95); padding: 25px; border-radius: 20px; border: 1px solid #444; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        #guideBox h2 { text-align: center; color: #fff; margin-bottom: 15px; font-size: 22px; }
-        #guideBox b { color: #fff; }
-        #guideBox .section-title { color: #ffcc00; font-weight: bold; margin-top: 10px; display: block; }
-        #guideBox .btn { display: block; background: #fff; color: #000; text-align: center; padding: 14px; border-radius: 12px; margin-top: 20px; font-weight: bold; cursor: pointer; font-size: 18px; }
-        #guideBox ul { list-style: none; }
-        #guideBox li { margin-bottom: 8px; }
+        #guideBox { color: #ddd; text-align: left; max-width: 320px; font-size: 14px; line-height: 1.6; background: #222; padding: 25px; border-radius: 20px; border: 1px solid #444; }
+        .btn-start { display: block; background: #fff; color: #000; text-align: center; padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -50,21 +54,12 @@
     <div id="guideOverlay" class="overlay">
         <div class="overlay-content">
             <div id="guideBox">
-                <h2>🐱 玩貓教學</h2>
-                <ul>
-                    <li>• <b>理吓隻貓</b>：撳隻貓會打關斗，消耗1個⚡️體力。如果體力耗盡，就打唔到關斗，要餵貓補充返⚡️體力！</li>
-                    <li>• <b>沉悶倒數</b>：記得每一刻每一秒都要理你隻貓，如果唔係佢會發大脾氣！</li>
-                    <li>• <b>基本食物</b>：一般會出現 🐟魚魚 、 🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</li>
-                </ul>
-
-                <span class="section-title">🌟 特別玩法 🌟</span>
-                <p style="margin-bottom: 8px;">• 當你每1秒都唔放過努力去理貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
-                <p>• 隻貓成日發嬲，你多次安撫隻貓，<b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
-
-                <p style="margin-top: 15px; color: #ff3300; font-weight: bold;">!!連撳安撫!!：</p>
-                <p>隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
-
-                <div class="btn" onclick="closeGuide()">開始玩貓</div>
+                <h2 style="text-align:center; color:#fff; margin-bottom:15px;">🐱 貓咪玩耍指南</h2>
+                <p>• <b>同貓玩耍</b>：點擊打關斗，消耗 ⚡️體力。</p>
+                <p>• <b>縮小遠離</b>：貓咪變細時無法餵食，點擊佢復原。</p>
+                <p>• <b>傳說驚喜</b>：死線前玩耍引來 🐠，連續安撫引來 🦈。</p>
+                <p style="font-size:12px; color:#ff3300; margin-top:10px; font-weight:bold;">!!連撳安撫!!：暴走時請瘋狂點擊！</p>
+                <div class="btn-start" onclick="closeGuide()">我知喇！</div>
             </div>
         </div>
     </div>
@@ -78,8 +73,8 @@
 
     <div id="startOverlay" class="overlay" style="display:none;" onclick="startApp()">
         <div class="overlay-content">
-            <div style="color:white; font-size:28px; font-weight:bold;">篤一下隻貓</div>
-            <span style="font-size:60px; transform:rotate(45deg); display:inline-block; margin-top:15px;">👆</span>
+            <div class="overlay-title">篤一下隻貓</div>
+            <div class="finger-emoji">👆</div>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
@@ -89,7 +84,8 @@
 
     <div id="pauseOverlay" class="overlay" style="display:none;" onclick="togglePause()">
         <div class="overlay-content">
-            <div style="color:white; font-size:28px; font-weight:bold;">繼續玩貓</div>
+            <div class="overlay-title">篤一下繼續玩貓</div>
+            <div class="finger-emoji">👆</div>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
@@ -99,8 +95,9 @@
 
     <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
         <div class="overlay-content">
-            <div style="color:white; font-size:28px; font-weight:bold;">隻貓嬲咗</div>
-            <div id="finalScore" style="color:#ffcc00; font-size:24px; margin-top:10px; font-weight:bold;">總分: 0</div>
+            <div class="overlay-title">隻貓嬲咗</div>
+            <div id="finalScore" style="color:#ffcc00; font-size:26px; margin-top:10px; font-weight:bold;">總分: 0</div>
+            <div class="finger-emoji" style="margin-top:20px;">👆</div>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
@@ -159,6 +156,7 @@
             if (isCrazy && document.getElementById('angryOverlay').style.display === 'flex') return;
             isPaused = !isPaused;
             if (isPaused) {
+                isDebugLocked = true; // 暫停即標記除錯
                 if (isCrazy) crazyTimeElapsed += (Date.now() - crazyTimeStart);
                 clearAllIntervals();
                 document.getElementById('debugPause').value = getCurrentDebugCode();
@@ -172,7 +170,9 @@
         }
 
         function startApp() {
-            applyConfig(document.getElementById('debugStart').value, false);
+            let val = document.getElementById('debugStart').value;
+            if (val !== defaultConfig) isDebugLocked = true;
+            applyConfig(val, false);
             document.getElementById('startOverlay').style.display = 'none';
             pauseBtn.style.display = 'block';
             fullRestart();
@@ -180,11 +180,11 @@
 
         function applyConfig(code, isMidGame) {
             const parts = code.split(',').map(s => s.trim()).filter(s => s !== "").map(Number);
-            if (code !== defaultConfig) isDebugLocked = true;
+            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
+            
             let newCfg = (parts.length === 7 && !parts.some(isNaN)) ? 
                 { normT: parts[0], crazyT: parts[1], goldenFishTime: parts[2], devilFishTime: parts[3], initS: parts[4], initMode: parts[5], spawnMode: parts[6] } : config;
             
-            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             if (isMidGame) {
                 clearAllIntervals();
                 stamina = newCfg.initS; config = newCfg;
@@ -287,18 +287,15 @@
             if (fRect.left < cRect.right-20 && fRect.right > cRect.left+20 && fRect.top < cRect.bottom-20 && fRect.bottom > cRect.top+20) {
                 const type = f.innerHTML; f.remove();
                 if (specialStatus === "golden") {
-                    score += 5; 
-                    if (type === '🐡') { stamina = Math.min(30, stamina + 3); } 
+                    score += 5;
+                    if (type === '🐡') { stamina = Math.min(30, stamina + 3); }
                     else {
                         let gain = (type === '🐟') ? 1 : (type === '🍖' ? 2 : 0);
                         stamina = Math.min(30, stamina + gain);
                     }
                 } else if (specialStatus === "devil") {
                     if (type === '🐠') { stamina = 0; score -= 20; exitSpecial(); }
-                    else {
-                        stamina = Math.min(50, stamina + 5); 
-                        score += 10;
-                    }
+                    else { stamina = Math.min(50, stamina + 5); score += 10; }
                 } else {
                     if (type === '🐠') { specialStatus = "golden"; specialCounter = 10; score += 10; }
                     else if (type === '🦈') { specialStatus = "devil"; timeLeft = config.devilFishTime; score += 20; }
@@ -327,7 +324,9 @@
                 let totalElapsed = crazyTimeElapsed + (Date.now() - crazyTimeStart);
                 if (totalElapsed >= config.crazyT * 1000) { 
                     score -= 5; crazyWins = 0;
-                    document.getElementById('finalScore').innerHTML = isDebugLocked ? `總分: ${score} <span style="color:red;">(除錯)</span>` : "總分: " + score;
+                    const fs = document.getElementById('finalScore');
+                    fs.innerHTML = `總分: ${score}`;
+                    fs.style.color = isDebugLocked ? "#ff3300" : "#ffcc00"; // 全紅判定
                     document.getElementById('angryOverlay').style.display = 'flex'; clearAllIntervals(); return;
                 }
                 catBox.style.left = (Math.random() * 80 + 10) + "%"; catBox.style.top = (Math.random() * 70 + 15) + "%";
