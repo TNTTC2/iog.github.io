@@ -23,7 +23,7 @@
         #catBox.shrunk { width: 110px !important; height: 110px !important; opacity: 0.7; }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
-        #catImg { width: 100%; height: auto; display: block; }
+        #catImg { width: 100%; height: auto; display: block; pointer-events: none; }
         
         .flipping-anim { animation: rotateFull 0.8s ease-in-out; }
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
@@ -67,26 +67,17 @@
     </div>
 
     <div id="pauseBtn" onclick="togglePause()">⏸️</div>
-    <div id="timer">
-        <span id="timeVal">7s</span>
-        <div id="debugTag">DEBUG MODE</div>
-    </div>
+    <div id="timer"><span id="timeVal">7s</span><div id="debugTag">DEBUG MODE</div></div>
     <div id="stamina">⚡️ 3</div>
 
     <div id="startOverlay" class="overlay" style="display:none;" onclick="startApp()">
         <div class="overlay-content"><div class="overlay-title">篤一下隻貓</div><div class="finger-emoji">👆</div></div>
-        <div class="debug-section" onclick="event.stopPropagation()">
-            <div class="debug-label">—— 除錯功能 ——</div>
-            <input type="text" id="debugStart" class="debug-input" value="7,5,7,100,3,0,0">
-        </div>
+        <div class="debug-section" onclick="event.stopPropagation()"><div class="debug-label">—— 除錯功能 ——</div><input type="text" id="debugStart" class="debug-input" value="7,5,7,100,3,0,0"></div>
     </div>
 
     <div id="pauseOverlay" class="overlay" style="display:none;" onclick="resumeGame()">
         <div class="overlay-content"><div class="overlay-title">篤一下繼續玩貓</div><div class="finger-emoji">👆</div></div>
-        <div class="debug-section" onclick="event.stopPropagation()">
-            <div class="debug-label">—— 除錯功能 ——</div>
-            <input type="text" id="debugPause" class="debug-input" value="">
-        </div>
+        <div class="debug-section" onclick="event.stopPropagation()"><div class="debug-label">—— 除錯功能 ——</div><input type="text" id="debugPause" class="debug-input" value=""></div>
     </div>
 
     <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
@@ -95,14 +86,11 @@
             <div id="finalScore" style="font-size:26px; margin-top:10px; font-weight:bold;">總分: 0</div>
             <div class="finger-emoji" style="margin-top:20px;">👆</div>
         </div>
-        <div class="debug-section" onclick="event.stopPropagation()">
-            <div class="debug-label">—— 除錯功能 ——</div>
-            <input type="text" id="debugEnd" class="debug-input" value="7,5,7,100,3,0,0">
-        </div>
+        <div class="debug-section" onclick="event.stopPropagation()"><div class="debug-label">—— 除錯功能 ——</div><input type="text" id="debugEnd" class="debug-input" value="7,5,7,100,3,0,0"></div>
     </div>
 
-    <div id="catBox" class="breathing">
-        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" onpointerdown="hitCat(event)">
+    <div id="catBox" class="breathing" onpointerdown="hitCat(event)">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
     </div>
 
     <script>
@@ -110,7 +98,7 @@
         let config = { normT: 7, crazyT: 5, goldenT: 7, devilT: 100, initS: 3, mode: 0, spawn: 0 };
         let timeLeft, stamina, score = 0, hitCount = 0, isCrazy = false, isFlipping = false, isPaused = false;
         let isDebugLocked = false, isShrunk = false, lastSecHits = 0, crazyWins = 0, specialStatus = "normal";
-        let gameLoop, foodLoop, shrinkLoop, crazyLoop, prePauseCode = "";
+        let gameLoop, foodLoop, shrinkLoop, crazyLoop, prePauseCode = "", savedTime = null;
 
         function closeGuide() { document.getElementById('guideOverlay').style.display = 'none'; document.getElementById('startOverlay').style.display = 'flex'; }
 
@@ -122,6 +110,7 @@
         function togglePause() {
             if (isCrazy && document.getElementById('angryOverlay').style.display === 'flex') return;
             isPaused = true;
+            savedTime = timeLeft; // 暫停時保存當前時間
             stopAllIntervals();
             prePauseCode = getCurrentCode();
             document.getElementById('debugPause').value = prePauseCode;
@@ -132,46 +121,48 @@
             let currentVal = document.getElementById('debugPause').value.trim();
             if (currentVal !== prePauseCode && currentVal !== "") isDebugLocked = true;
             isPaused = false;
-            applyAndContinue(currentVal);
+            applyAndContinue(currentVal, true); // true 表示係暫停返回
             document.getElementById('pauseOverlay').style.display = 'none';
         }
 
         function startApp() {
             let val = document.getElementById('debugStart').value.trim();
             if (val !== defaultConfig) isDebugLocked = true;
-            applyAndContinue(val);
+            applyAndContinue(val, false);
             document.getElementById('startOverlay').style.display = 'none';
             document.getElementById('pauseBtn').style.display = 'block';
             fullRestart();
         }
 
-        function applyAndContinue(code) {
+        function applyAndContinue(code, fromPause) {
             const p = code.split(',').map(Number);
             if (p.length === 7 && !p.some(isNaN)) {
                 config = { normT: p[0], crazyT: p[1], goldenT: p[2], devilT: p[3], initS: p[4], mode: p[5], spawn: p[6] };
                 stamina = config.initS;
                 if (p[5] === 1) startCrazy(false);
-                else if (p[5] === 2) { specialStatus = "golden"; resetGame(); }
-                else if (p[5] === 3) { specialStatus = "devil"; resetGame(); }
-                else { specialStatus = "normal"; isCrazy = false; resetGame(); }
+                else if (p[5] === 2) { specialStatus = "golden"; resetGame(fromPause); }
+                else if (p[5] === 3) { specialStatus = "devil"; resetGame(fromPause); }
+                else { specialStatus = "normal"; isCrazy = false; resetGame(fromPause); }
             }
             updateUI();
         }
 
         function fullRestart() {
             score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; hitCount = 0; isShrunk = false;
-            resetGame();
+            document.getElementById('catImg').className = ""; // 強制重設動畫類名
+            resetGame(false);
         }
 
         function stopAllIntervals() {
             clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); clearInterval(crazyLoop);
         }
 
-        function resetGame() {
+        function resetGame(keepTime) {
             stopAllIntervals();
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
             isCrazy = false; hitCount = 0;
+            document.getElementById('catImg').className = ""; 
             
             const cb = document.getElementById('catBox');
             cb.style.transition = "none"; cb.style.left = "50%"; cb.style.top = "50%";
@@ -179,18 +170,20 @@
             void cb.offsetWidth; cb.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             cb.className = isShrunk ? 'breathing shrunk' : 'breathing';
             
-            timeLeft = (specialStatus === "devil") ? config.devilT : (specialStatus === "golden" ? config.goldenT : config.normT);
+            // 邏輯修復：如果 keepTime 為 true (由暫停返回)，就用返 savedTime
+            if (keepTime && savedTime !== null) {
+                timeLeft = savedTime;
+            } else {
+                timeLeft = (specialStatus === "devil") ? config.devilT : (specialStatus === "golden" ? config.goldenT : config.normT);
+            }
+            
             applyBg(); updateUI();
             document.getElementById('stamina').style.display = 'block';
             
             if (!isPaused) {
                 gameLoop = setInterval(tick, 1000);
                 foodLoop = setInterval(spawnFood, 3000);
-                shrinkLoop = setInterval(() => { 
-                    if(!isCrazy && !isShrunk && Math.random()<0.2) { 
-                        isShrunk=true; cb.classList.add('shrunk'); 
-                    }
-                }, 10000);
+                shrinkLoop = setInterval(() => { if(!isCrazy && !isShrunk && Math.random()<0.2) { isShrunk=true; cb.classList.add('shrunk'); }}, 10000);
             }
         }
 
@@ -198,12 +191,8 @@
             if (isPaused) return;
             timeLeft--;
             if (timeLeft <= 0) {
-                if (specialStatus === "golden" || specialStatus === "devil") { 
-                    specialStatus = "normal"; 
-                    resetGame(); 
-                } else { 
-                    startCrazy(false); 
-                }
+                if (specialStatus === "golden" || specialStatus === "devil") { specialStatus = "normal"; resetGame(false); }
+                else { startCrazy(false); }
             }
             updateUI();
         }
@@ -219,9 +208,16 @@
             if (isCrazy || isPaused) return;
             let f = document.createElement('div'); f.className = 'food';
             
-            if (crazyWins >= 10) { f.innerHTML = '🦈'; crazyWins = 0; }
-            else if (lastSecHits >= 5 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
-            else { f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; }
+            // 生成機制優先權修復
+            if (lastSecHits >= 5 && specialStatus === "normal") { 
+                f.innerHTML = '🐠'; 
+                lastSecHits = 0; 
+            } else if (crazyWins >= 10) { 
+                f.innerHTML = '🦈'; 
+                crazyWins = 0; 
+            } else { 
+                f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; 
+            }
             
             f.style.left = (Math.random() * 80 + 10) + "%";
             f.style.top = (Math.random() * 60 + 20) + "%";
@@ -242,7 +238,7 @@
                 if (specialStatus === "golden") {
                     score += 5; stamina = Math.min(30, stamina + (type==='🐡'?3:(type==='🐟'?1:2)));
                 } else if (specialStatus === "devil") {
-                    if (type === '🐠') { stamina = 0; score -= 20; specialStatus="normal"; resetGame(); }
+                    if (type === '🐠') { stamina = 0; score -= 20; specialStatus="normal"; resetGame(false); }
                     else { stamina = Math.min(50, stamina + 5); score += 10; }
                 } else {
                     if (type === '🐠') { specialStatus = "golden"; timeLeft = config.goldenT; score += 10; }
@@ -260,6 +256,7 @@
             document.body.style.backgroundColor = "#400";
             const cb = document.getElementById('catBox');
             cb.className = ''; cb.style.width = "140px"; cb.style.height = "140px";
+            document.getElementById('catImg').className = "spinning-anim"; // 啟動旋轉
             let start = Date.now();
             crazyLoop = setInterval(() => {
                 if ((Date.now() - start) > config.crazyT * 1000) {
@@ -275,12 +272,11 @@
 
         function hitCat(e) {
             if (isPaused) return;
-            if (isShrunk) { isShrunk = false; resetGame(); return; }
+            if (isShrunk) { isShrunk = false; resetGame(false); return; }
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true; stamina--; score++;
                 
-                // 【核心修復】時間重設邏輯
                 if (timeLeft <= 1.5) lastSecHits++;
                 clearInterval(gameLoop);
                 timeLeft = (specialStatus === "golden") ? config.goldenT : (specialStatus === "devil" ? config.devilT : config.normT);
@@ -291,8 +287,7 @@
                 updateUI();
             } else {
                 hitCount++;
-                if (hitCount === 1) document.getElementById('catImg').className = "spinning-anim";
-                if (hitCount >= 3) { crazyWins++; score += 5; setTimeout(resetGame, 200); }
+                if (hitCount >= 3) { crazyWins++; score += 5; setTimeout(() => resetGame(false), 200); }
             }
         }
 
