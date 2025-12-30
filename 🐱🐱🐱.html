@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🐱🐱🐱</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="玩貓貓">
+    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
         
-        /* 頂部資訊 */
         #timer { position: absolute; top: 60px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
         #debugTag { font-size: 12px; color: #ff3300; display: none; margin-top: 5px; font-weight: normal; }
         #pauseBtn { position: absolute; top: 60px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
-        
-        /* 體力顯示 - 移至低位 */
         #stamina { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; pointer-events: none; }
         
-        /* 貓咪實體 */
         #catBox { position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50; }
         #catBox.shrunk { width: 110px !important; height: 110px !important; opacity: 0.7; }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
@@ -31,18 +33,15 @@
         
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; padding: 10px; }
         
-        /* 介面黑幕 - 高透明度 0.75 */
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(2px); }
         .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 20px; }
         .overlay-title { color: white; font-size: 32px; font-weight: bold; margin-bottom: 20px; }
         .finger-emoji { font-size: 60px; display: inline-block; animation: fingerBounce 1s infinite ease-in-out; }
         
-        /* 置底除錯欄 */
         .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.85); border-top: 1px solid #444; margin-top: auto; }
         .debug-label { color: #888; font-size: 12px; margin-bottom: 8px; }
         .debug-input { width: 90%; max-width: 350px; background: #111; border: 1px solid #333; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; outline: none; }
 
-        /* 教學框 */
         #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.95); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 75vh; }
         .btn-start { display: block; background: #fff; color: #000; text-align: center; padding: 12px; border-radius: 10px; margin-top: 15px; font-weight: bold; cursor: pointer; }
     </style>
@@ -59,7 +58,7 @@
                 <br>
                 <p>🌟<b>特別玩法</b>🌟：</p>
                 <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
-                <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
+                <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>鯊魚惡魔魚 (🦈)</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
                 <br>
                 <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
                 <div class="btn-start" onclick="closeGuide()">我知喇！</div>
@@ -102,7 +101,9 @@
         </div>
     </div>
 
-    <div id="catBox" class="breathing"><img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" onpointerdown="hitCat(event)"></div>
+    <div id="catBox" class="breathing">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" onpointerdown="hitCat(event)">
+    </div>
 
     <script>
         const defaultConfig = "7,5,7,100,3,0,0";
@@ -129,8 +130,8 @@
 
         function resumeGame() {
             let currentVal = document.getElementById('debugPause').value.trim();
-            // 核心修復：只有在代碼真正改變時才鎖定 DEBUG
-            if (currentVal !== prePauseCode) isDebugLocked = true;
+            // 只有內容被修改才鎖定 DEBUG
+            if (currentVal !== prePauseCode && currentVal !== "") isDebugLocked = true;
             isPaused = false;
             applyAndContinue(currentVal);
             document.getElementById('pauseOverlay').style.display = 'none';
@@ -180,15 +181,18 @@
             document.getElementById('stamina').style.display = 'block';
             gameLoop = setInterval(tick, 1000);
             foodLoop = setInterval(spawnFood, 3000);
-            shrinkLoop = setInterval(() => { if(!isCrazy && !isShrunk && Math.random()<0.2) { isShrunk=true; cb.classList.add('shrunk'); }}, 10000);
+            shrinkLoop = setInterval(() => { 
+                if(!isCrazy && !isShrunk && Math.random()<0.2) { 
+                    isShrunk=true; cb.classList.add('shrunk'); 
+                }
+            }, 10000);
         }
 
         function tick() {
             if (isPaused) return;
             timeLeft--;
             if (timeLeft <= 0) {
-                if (specialStatus === "golden") { specialStatus = "normal"; resetGame(); }
-                else if (specialStatus === "devil") { specialStatus = "normal"; resetGame(); }
+                if (specialStatus === "golden" || specialStatus === "devil") { specialStatus = "normal"; resetGame(); }
                 else { startCrazy(false); }
             }
             updateUI();
@@ -204,7 +208,8 @@
         function spawnFood() {
             if (isCrazy || isPaused) return;
             let f = document.createElement('div'); f.className = 'food';
-            // 生成邏輯修復
+            
+            // 精確生成機制
             if (crazyWins >= 10) { f.innerHTML = '🦈'; crazyWins = 0; }
             else if (lastSecHits >= 5 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
             else { f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; }
@@ -216,7 +221,7 @@
                 f.setPointerCapture(e.pointerId);
                 f.onpointermove = (ev) => { f.style.left = ev.clientX-30+'px'; f.style.top = ev.clientY-30+'px'; checkEat(f); };
             };
-            setTimeout(() => f.remove(), 2500);
+            setTimeout(() => { if(f.parentNode) f.remove(); }, 2500);
         }
 
         function checkEat(f) {
@@ -265,6 +270,7 @@
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true; stamina--; score++;
+                // 判斷是否為黃金魚計數 (1.5秒內算死線)
                 if (timeLeft <= 1.5) lastSecHits++;
                 document.getElementById('catImg').className = "flipping-anim";
                 setTimeout(() => { document.getElementById('catImg').className = ""; isFlipping = false; }, 800);
