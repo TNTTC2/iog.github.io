@@ -29,7 +29,6 @@
         .spinning-anim { animation: rotateInfinite 0.3s infinite linear; }
         @keyframes rotateFull { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes fingerBounce { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.2); } }
         
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; padding: 10px; }
         
@@ -37,6 +36,7 @@
         .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 20px; }
         .overlay-title { color: white; font-size: 32px; font-weight: bold; margin-bottom: 20px; }
         .finger-emoji { font-size: 60px; display: inline-block; animation: fingerBounce 1s infinite ease-in-out; }
+        @keyframes fingerBounce { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.2); } }
         
         .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.85); border-top: 1px solid #444; margin-top: auto; }
         .debug-label { color: #888; font-size: 12px; margin-bottom: 8px; }
@@ -122,7 +122,7 @@
         function togglePause() {
             if (isCrazy && document.getElementById('angryOverlay').style.display === 'flex') return;
             isPaused = true;
-            clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); clearInterval(crazyLoop);
+            stopAllIntervals();
             prePauseCode = getCurrentCode();
             document.getElementById('debugPause').value = prePauseCode;
             document.getElementById('pauseOverlay').style.display = 'flex';
@@ -130,7 +130,6 @@
 
         function resumeGame() {
             let currentVal = document.getElementById('debugPause').value.trim();
-            // 只有當手動改過代碼，先會開啟除錯標記
             if (currentVal !== prePauseCode && currentVal !== "") isDebugLocked = true;
             isPaused = false;
             applyAndContinue(currentVal);
@@ -164,8 +163,12 @@
             resetGame();
         }
 
-        function resetGame() {
+        function stopAllIntervals() {
             clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); clearInterval(crazyLoop);
+        }
+
+        function resetGame() {
+            stopAllIntervals();
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
             isCrazy = false; hitCount = 0;
@@ -176,24 +179,31 @@
             void cb.offsetWidth; cb.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             cb.className = isShrunk ? 'breathing shrunk' : 'breathing';
             
-            timeLeft = (specialStatus === "devil") ? config.devilT : config.normT;
+            timeLeft = (specialStatus === "devil") ? config.devilT : (specialStatus === "golden" ? config.goldenT : config.normT);
             applyBg(); updateUI();
             document.getElementById('stamina').style.display = 'block';
-            gameLoop = setInterval(tick, 1000);
-            foodLoop = setInterval(spawnFood, 3000);
-            shrinkLoop = setInterval(() => { 
-                if(!isCrazy && !isShrunk && Math.random()<0.2) { 
-                    isShrunk=true; cb.classList.add('shrunk'); 
-                }
-            }, 10000);
+            
+            if (!isPaused) {
+                gameLoop = setInterval(tick, 1000);
+                foodLoop = setInterval(spawnFood, 3000);
+                shrinkLoop = setInterval(() => { 
+                    if(!isCrazy && !isShrunk && Math.random()<0.2) { 
+                        isShrunk=true; cb.classList.add('shrunk'); 
+                    }
+                }, 10000);
+            }
         }
 
         function tick() {
             if (isPaused) return;
             timeLeft--;
             if (timeLeft <= 0) {
-                if (specialStatus === "golden" || specialStatus === "devil") { specialStatus = "normal"; resetGame(); }
-                else { startCrazy(false); }
+                if (specialStatus === "golden" || specialStatus === "devil") { 
+                    specialStatus = "normal"; 
+                    resetGame(); 
+                } else { 
+                    startCrazy(false); 
+                }
             }
             updateUI();
         }
@@ -209,7 +219,6 @@
             if (isCrazy || isPaused) return;
             let f = document.createElement('div'); f.className = 'food';
             
-            // 生成機制精確控制
             if (crazyWins >= 10) { f.innerHTML = '🦈'; crazyWins = 0; }
             else if (lastSecHits >= 5 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
             else { f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; }
@@ -246,7 +255,7 @@
         }
 
         function startCrazy(poison) {
-            clearInterval(gameLoop); clearInterval(foodLoop); isCrazy = true;
+            stopAllIntervals(); isCrazy = true;
             document.getElementById('stamina').style.display = 'none';
             document.body.style.backgroundColor = "#400";
             const cb = document.getElementById('catBox');
@@ -270,8 +279,13 @@
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true; stamina--; score++;
-                // 1.5秒內算死線
+                
+                // 【核心修復】時間重設邏輯
                 if (timeLeft <= 1.5) lastSecHits++;
+                clearInterval(gameLoop);
+                timeLeft = (specialStatus === "golden") ? config.goldenT : (specialStatus === "devil" ? config.devilT : config.normT);
+                gameLoop = setInterval(tick, 1000);
+                
                 document.getElementById('catImg').className = "flipping-anim";
                 setTimeout(() => { document.getElementById('catImg').className = ""; isFlipping = false; }, 800);
                 updateUI();
