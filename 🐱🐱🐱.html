@@ -4,20 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🐱🐱🐱</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; transition: background-color 0.8s; }
         
+        /* 頂部資訊 */
         #timer { position: absolute; top: 60px; right: 20px; color: #666; font-size: 24px; font-weight: bold; z-index: 100; text-align: right; }
-        #debugTag { font-size: 12px; color: #ff3300; display: block; margin-top: 5px; font-weight: normal; }
+        #debugTag { font-size: 12px; color: #ff3300; display: none; margin-top: 5px; font-weight: normal; }
         #pauseBtn { position: absolute; top: 60px; left: 20px; font-size: 30px; z-index: 500; cursor: pointer; display: none; }
+        
+        /* 體力顯示 - 移至低位 */
         #stamina { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 32px; font-weight: bold; z-index: 100; text-shadow: 0 0 10px #000; pointer-events: none; }
         
+        /* 貓咪實體 */
         #catBox { position: absolute; width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; z-index: 50; }
         #catBox.shrunk { width: 110px !important; height: 110px !important; opacity: 0.7; }
         .breathing { animation: bounce 1.2s infinite ease-in-out; }
@@ -30,19 +29,21 @@
         @keyframes rotateInfinite { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes fingerBounce { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.2); } }
         
-        .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; }
+        .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; padding: 10px; }
         
+        /* 介面黑幕 - 高透明度 0.75 */
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(2px); }
         .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 20px; }
         .overlay-title { color: white; font-size: 32px; font-weight: bold; margin-bottom: 20px; }
         .finger-emoji { font-size: 60px; display: inline-block; animation: fingerBounce 1s infinite ease-in-out; }
         
+        /* 置底除錯欄 */
         .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.85); border-top: 1px solid #444; margin-top: auto; }
         .debug-label { color: #888; font-size: 12px; margin-bottom: 8px; }
         .debug-input { width: 90%; max-width: 350px; background: #111; border: 1px solid #333; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; outline: none; }
 
-        #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.95); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 80vh; }
-        #guideBox h2 { text-align: center; margin-bottom: 12px; color: #fff; }
+        /* 教學框 */
+        #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.95); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 75vh; }
         .btn-start { display: block; background: #fff; color: #000; text-align: center; padding: 12px; border-radius: 10px; margin-top: 15px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -69,26 +70,20 @@
     <div id="pauseBtn" onclick="togglePause()">⏸️</div>
     <div id="timer">
         <span id="timeVal">7s</span>
-        <span id="debugTag" style="display:none;">DEBUG MODE</span>
+        <div id="debugTag">DEBUG MODE</div>
     </div>
     <div id="stamina">⚡️ 3</div>
 
     <div id="startOverlay" class="overlay" style="display:none;" onclick="startApp()">
-        <div class="overlay-content">
-            <div class="overlay-title">篤一下隻貓</div>
-            <div class="finger-emoji">👆</div>
-        </div>
+        <div class="overlay-content"><div class="overlay-title">篤一下隻貓</div><div class="finger-emoji">👆</div></div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
             <input type="text" id="debugStart" class="debug-input" value="7,5,7,100,3,0,0">
         </div>
     </div>
 
-    <div id="pauseOverlay" class="overlay" style="display:none;" onclick="togglePause()">
-        <div class="overlay-content">
-            <div class="overlay-title">篤一下繼續玩貓</div>
-            <div class="finger-emoji">👆</div>
-        </div>
+    <div id="pauseOverlay" class="overlay" style="display:none;" onclick="resumeGame()">
+        <div class="overlay-content"><div class="overlay-title">篤一下繼續玩貓</div><div class="finger-emoji">👆</div></div>
         <div class="debug-section" onclick="event.stopPropagation()">
             <div class="debug-label">—— 除錯功能 ——</div>
             <input type="text" id="debugPause" class="debug-input" value="">
@@ -98,7 +93,7 @@
     <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
         <div class="overlay-content">
             <div class="overlay-title">隻貓嬲咗</div>
-            <div id="finalScore" style="color:#ffcc00; font-size:26px; margin-top:10px; font-weight:bold;">總分: 0</div>
+            <div id="finalScore" style="font-size:26px; margin-top:10px; font-weight:bold;">總分: 0</div>
             <div class="finger-emoji" style="margin-top:20px;">👆</div>
         </div>
         <div class="debug-section" onclick="event.stopPropagation()">
@@ -107,243 +102,182 @@
         </div>
     </div>
 
-    <div id="catBox" class="breathing">
-        <img id="catImg" alt="cat" onpointerdown="hitCat(event)">
-    </div>
+    <div id="catBox" class="breathing"><img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" onpointerdown="hitCat(event)"></div>
 
     <script>
-        const CAT_IMAGE_URL = "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG";
-        const catImg = document.getElementById('catImg');
-        
-        function initCatImage() {
-            const cachedData = localStorage.getItem('cat_b64');
-            const tempImg = new Image();
-            tempImg.crossOrigin = "anonymous"; 
-            tempImg.onload = function() { catImg.src = CAT_IMAGE_URL; saveImageToLocal(tempImg); };
-            tempImg.onerror = function() { if (cachedData) catImg.src = cachedData; };
-            tempImg.src = CAT_IMAGE_URL;
-        }
-        function saveImageToLocal(imgEl) {
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = imgEl.width; canvas.height = imgEl.height;
-                const ctx = canvas.getContext('2d'); ctx.drawImage(imgEl, 0, 0);
-                localStorage.setItem('cat_b64', canvas.toDataURL('image/png'));
-            } catch (e) {}
-        }
-        initCatImage();
-
-        let config = { normT: 7, crazyT: 5, goldenFishTime: 7, devilFishTime: 100, initS: 3, initMode: 0, spawnMode: 0 };
         const defaultConfig = "7,5,7,100,3,0,0";
-
-        let timeLeft = 7, stamina = 3, score = 0, hitCount = 0;
-        let isCrazy = false, isFlipping = false, isPaused = false, isDebugLocked = false, isShrunk = false;
-        let gameLoop, crazyLoop, foodLoop, shrinkLoop;
-        let lastSecHits = 0, crazyWins = 0, crazyTimeStart = 0, crazyTimeElapsed = 0;
-        let specialStatus = "normal", specialCounter = 0; 
-
-        const catBox = document.getElementById('catBox');
-        const staminaDiv = document.getElementById('stamina');
-        const pauseBtn = document.getElementById('pauseBtn');
+        let config = { normT: 7, crazyT: 5, goldenT: 7, devilT: 100, initS: 3, mode: 0, spawn: 0 };
+        let timeLeft, stamina, score = 0, hitCount = 0, isCrazy = false, isFlipping = false, isPaused = false;
+        let isDebugLocked = false, isShrunk = false, lastSecHits = 0, crazyWins = 0, specialStatus = "normal";
+        let gameLoop, foodLoop, shrinkLoop, crazyLoop, prePauseCode = "";
 
         function closeGuide() { document.getElementById('guideOverlay').style.display = 'none'; document.getElementById('startOverlay').style.display = 'flex'; }
-        function clearAllIntervals() { clearInterval(gameLoop); clearInterval(crazyLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); }
 
-        function getCurrentDebugCode() {
-            let m = (isCrazy) ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
-            return `${config.normT},${config.crazyT},${config.goldenFishTime},${config.devilFishTime},${stamina},${m},${config.spawnMode}`;
+        function getCurrentCode() {
+            let m = isCrazy ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
+            return `${config.normT},${config.crazyT},${config.goldenT},${config.devilT},${stamina},${m},${config.spawn}`;
         }
 
         function togglePause() {
             if (isCrazy && document.getElementById('angryOverlay').style.display === 'flex') return;
-            isPaused = !isPaused;
-            if (isPaused) {
-                isDebugLocked = true;
-                if (isCrazy) crazyTimeElapsed += (Date.now() - crazyTimeStart);
-                clearAllIntervals();
-                document.getElementById('debugPause').value = getCurrentDebugCode();
-                document.getElementById('pauseOverlay').style.display = 'flex';
-            } else {
-                applyConfig(document.getElementById('debugPause').value, true);
-                document.getElementById('pauseOverlay').style.display = 'none';
-            }
+            isPaused = true;
+            clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); clearInterval(crazyLoop);
+            prePauseCode = getCurrentCode();
+            document.getElementById('debugPause').value = prePauseCode;
+            document.getElementById('pauseOverlay').style.display = 'flex';
+        }
+
+        function resumeGame() {
+            let currentVal = document.getElementById('debugPause').value.trim();
+            // 核心修復：只有在代碼真正改變時才鎖定 DEBUG
+            if (currentVal !== prePauseCode) isDebugLocked = true;
+            isPaused = false;
+            applyAndContinue(currentVal);
+            document.getElementById('pauseOverlay').style.display = 'none';
         }
 
         function startApp() {
-            let val = document.getElementById('debugStart').value;
+            let val = document.getElementById('debugStart').value.trim();
             if (val !== defaultConfig) isDebugLocked = true;
-            applyConfig(val, false);
+            applyAndContinue(val);
             document.getElementById('startOverlay').style.display = 'none';
-            pauseBtn.style.display = 'block';
+            document.getElementById('pauseBtn').style.display = 'block';
             fullRestart();
         }
 
-        function applyConfig(code, isMidGame) {
-            const parts = code.split(',').map(s => s.trim()).filter(s => s !== "").map(Number);
-            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
-            let newCfg = (parts.length === 7 && !parts.some(isNaN)) ? 
-                { normT: parts[0], crazyT: parts[1], goldenFishTime: parts[2], devilFishTime: parts[3], initS: parts[4], initMode: parts[5], spawnMode: parts[6] } : config;
-            if (isMidGame) {
-                clearAllIntervals();
-                stamina = newCfg.initS; config = newCfg;
-                if (newCfg.initMode === 1) { hitCount = 1; startCrazyMode(false); }
-                else if (newCfg.initMode === 2) { specialStatus = "golden"; specialCounter = 10; resetGame(); }
-                else if (newCfg.initMode === 3) { specialStatus = "devil"; resetGame(); }
+        function applyAndContinue(code) {
+            const p = code.split(',').map(Number);
+            if (p.length === 7 && !p.some(isNaN)) {
+                config = { normT: p[0], crazyT: p[1], goldenT: p[2], devilT: p[3], initS: p[4], mode: p[5], spawn: p[6] };
+                stamina = config.initS;
+                if (p[5] === 1) startCrazy(false);
+                else if (p[5] === 2) { specialStatus = "golden"; resetGame(); }
+                else if (p[5] === 3) { specialStatus = "devil"; resetGame(); }
                 else { specialStatus = "normal"; isCrazy = false; resetGame(); }
-            } else { config = newCfg; }
+            }
             updateUI();
         }
 
         function fullRestart() {
-            clearAllIntervals();
-            applyConfig(document.getElementById('debugEnd').value, false);
-            score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; isPaused = false; hitCount = 0; isShrunk = false;
-            if (config.initMode === 1) startCrazyMode(false);
-            else if (config.initMode === 2) { specialStatus = "golden"; specialCounter = 10; resetGame(); }
-            else if (config.initMode === 3) { specialStatus = "devil"; resetGame(); }
-            else { specialStatus = "normal"; specialCounter = 0; resetGame(); }
+            score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; hitCount = 0; isShrunk = false;
+            resetGame();
         }
 
         function resetGame() {
-            clearAllIntervals();
+            clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); clearInterval(crazyLoop);
             document.getElementById('angryOverlay').style.display = 'none';
             document.querySelectorAll('.food').forEach(f => f.remove());
-            applyBg();
-            catBox.style.transition = "none"; catBox.style.left = "50%"; catBox.style.top = "50%";
-            catBox.style.width = isShrunk ? "110px" : "280px"; catBox.style.height = isShrunk ? "110px" : "280px";
-            void catBox.offsetWidth; catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-            catBox.className = isShrunk ? 'breathing shrunk' : 'breathing';
-            timeLeft = (specialStatus === "devil") ? config.devilFishTime : config.normT;
-            hitCount = 0; isCrazy = false; isFlipping = false; crazyTimeElapsed = 0;
-            updateUI(); catImg.className = ''; staminaDiv.style.display = 'block';
-            if (!isPaused) { gameLoop = setInterval(tick, 1000); foodLoop = setInterval(spawnFood, 3000); shrinkLoop = setInterval(tryShrink, 10000); }
-        }
-
-        function tryShrink() {
-            if (isCrazy || isPaused || isShrunk) return;
-            if (Math.random() < 0.2) { isShrunk = true; catBox.classList.add('shrunk'); catBox.style.width = "110px"; catBox.style.height = "110px"; }
-        }
-
-        function applyBg() {
-            if (specialStatus === "golden") document.body.style.backgroundColor = "#4a3c00";
-            else if (specialStatus === "devil") document.body.style.backgroundColor = "#1a0033";
-            else document.body.style.backgroundColor = "#000";
+            isCrazy = false; hitCount = 0;
+            
+            const cb = document.getElementById('catBox');
+            cb.style.transition = "none"; cb.style.left = "50%"; cb.style.top = "50%";
+            cb.style.width = isShrunk ? "110px" : "280px"; cb.style.height = isShrunk ? "110px" : "280px";
+            void cb.offsetWidth; cb.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            cb.className = isShrunk ? 'breathing shrunk' : 'breathing';
+            
+            timeLeft = (specialStatus === "devil") ? config.devilT : config.normT;
+            applyBg(); updateUI();
+            document.getElementById('stamina').style.display = 'block';
+            gameLoop = setInterval(tick, 1000);
+            foodLoop = setInterval(spawnFood, 3000);
+            shrinkLoop = setInterval(() => { if(!isCrazy && !isShrunk && Math.random()<0.2) { isShrunk=true; cb.classList.add('shrunk'); }}, 10000);
         }
 
         function tick() {
             if (isPaused) return;
             timeLeft--;
             if (timeLeft <= 0) {
-                if (specialStatus === "golden" && specialCounter > 0) {
-                    specialCounter--; timeLeft = config.goldenFishTime;
-                    if (specialCounter <= 0) exitSpecial();
-                } else if (specialStatus === "devil") { exitSpecial(); resetGame(); }
-                else { lastSecHits = 0; startCrazyMode(false); }
+                if (specialStatus === "golden") { specialStatus = "normal"; resetGame(); }
+                else if (specialStatus === "devil") { specialStatus = "normal"; resetGame(); }
+                else { startCrazy(false); }
             }
             updateUI();
         }
 
-        function exitSpecial() { specialStatus = "normal"; specialCounter = 0; applyBg(); }
-
         function updateUI() {
             document.getElementById('timeVal').innerHTML = isCrazy ? "!!連撳安撫!!" : timeLeft + "s";
+            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             let icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
-            staminaDiv.innerHTML = icon + stamina;
+            document.getElementById('stamina').innerHTML = icon + stamina;
         }
 
         function spawnFood() {
-            if (isCrazy || isPaused || isShrunk) return;
+            if (isCrazy || isPaused) return;
             let f = document.createElement('div'); f.className = 'food';
-            
-            // 修正：根據 spawnMode 判定生成
-            let canSpawnDevil = (config.spawnMode === 0);
-            let canSpawnGolden = (config.spawnMode === 0 || config.spawnMode === 2);
-
-            if (crazyWins >= 10 && canSpawnDevil) { f.innerHTML = '🦈'; crazyWins = 0; }
-            else if (lastSecHits >= 5 && canSpawnGolden && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
+            // 生成邏輯修復
+            if (crazyWins >= 10) { f.innerHTML = '🦈'; crazyWins = 0; }
+            else if (lastSecHits >= 5 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
             else { f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; }
             
-            const winW = window.innerWidth; const winH = window.innerHeight;
-            const safeTop = winH * 0.15; const safeBottom = winH * 0.85;
-            let x, y, cRect = catBox.getBoundingClientRect();
-            let attempts = 0;
-            do {
-                x = Math.random() * (winW - 60) + 30;
-                y = Math.random() * (safeBottom - safeTop - 60) + safeTop;
-                attempts++;
-            } while (attempts < 10 && (x > cRect.left - 50 && x < cRect.right + 50 && y > cRect.top - 50 && y < cRect.bottom + 50));
-            f.style.left = x + "px"; f.style.top = y + "px";
+            f.style.left = (Math.random() * 80 + 10) + "%";
+            f.style.top = (Math.random() * 60 + 20) + "%";
             document.body.appendChild(f);
-            f.onpointerdown = function(e) {
-                if (isPaused || isShrunk) return;
+            f.onpointerdown = (e) => {
                 f.setPointerCapture(e.pointerId);
-                f.onpointermove = (ev) => { if(!isPaused){f.style.left = ev.clientX-25+'px'; f.style.top = ev.clientY-25+'px'; checkEat(f);} };
+                f.onpointermove = (ev) => { f.style.left = ev.clientX-30+'px'; f.style.top = ev.clientY-30+'px'; checkEat(f); };
             };
-            setTimeout(() => { if (f.parentNode) f.remove(); }, 2000);
+            setTimeout(() => f.remove(), 2500);
         }
 
         function checkEat(f) {
             if (isShrunk) return;
-            const cRect = catBox.getBoundingClientRect();
-            const fRect = f.getBoundingClientRect();
-            if (fRect.left < cRect.right-20 && fRect.right > cRect.left+20 && fRect.top < cRect.bottom-20 && fRect.bottom > cRect.top+20) {
+            const c = document.getElementById('catBox').getBoundingClientRect();
+            const r = f.getBoundingClientRect();
+            if (r.left < c.right && r.right > c.left && r.top < c.bottom && r.bottom > c.top) {
                 const type = f.innerHTML; f.remove();
                 if (specialStatus === "golden") {
-                    score += 5;
-                    if (type === '🐡') stamina = Math.min(30, stamina + 3);
-                    else stamina = Math.min(30, stamina + (type === '🐟' ? 1 : 2));
+                    score += 5; stamina = Math.min(30, stamina + (type==='🐡'?3:(type==='🐟'?1:2)));
                 } else if (specialStatus === "devil") {
-                    if (type === '🐠') { stamina = 0; score -= 20; exitSpecial(); }
+                    if (type === '🐠') { stamina = 0; score -= 20; specialStatus="normal"; resetGame(); }
                     else { stamina = Math.min(50, stamina + 5); score += 10; }
                 } else {
-                    if (type === '🐠') { specialStatus = "golden"; specialCounter = 10; score += 10; }
-                    else if (type === '🦈') { specialStatus = "devil"; timeLeft = config.devilFishTime; score += 20; }
-                    else if (type === '🐡') { score -= 5; startCrazyMode(true); }
+                    if (type === '🐠') { specialStatus = "golden"; timeLeft = config.goldenT; score += 10; }
+                    else if (type === '🦈') { specialStatus = "devil"; timeLeft = config.devilT; score += 20; }
+                    else if (type === '🐡') { startCrazy(true); score -= 5; }
                     else { stamina = Math.min(10, stamina + (type === '🐟' ? 1 : 2)); score += 1; }
                 }
-                updateUI(); applyBg();
+                applyBg(); updateUI();
             }
         }
 
-        function startCrazyMode(isPoisoned) {
-            clearAllIntervals(); isCrazy = true; staminaDiv.style.display = 'none';
-            document.body.style.backgroundColor = "#400"; updateUI(); 
-            catBox.style.width = "140px"; catBox.style.height = "140px"; catBox.className = '';
-            crazyTimeElapsed = 0; crazyTimeStart = Date.now();
-            runCrazyMove(isPoisoned || hitCount >= 1 ? 50 : 80);
-        }
-
-        function runCrazyMove(speed) {
-            clearInterval(crazyLoop); crazyTimeStart = Date.now(); 
+        function startCrazy(poison) {
+            clearInterval(gameLoop); clearInterval(foodLoop); isCrazy = true;
+            document.getElementById('stamina').style.display = 'none';
+            document.body.style.backgroundColor = "#400";
+            const cb = document.getElementById('catBox');
+            cb.className = ''; cb.style.width = "140px"; cb.style.height = "140px";
+            let start = Date.now();
             crazyLoop = setInterval(() => {
-                if (isPaused) return;
-                let totalElapsed = crazyTimeElapsed + (Date.now() - crazyTimeStart);
-                if (totalElapsed >= config.crazyT * 1000) { 
-                    score -= 5; crazyWins = 0;
+                if ((Date.now() - start) > config.crazyT * 1000) {
+                    clearInterval(crazyLoop);
                     const fs = document.getElementById('finalScore');
                     fs.innerHTML = `總分: ${score}`;
                     fs.style.color = isDebugLocked ? "#ff3300" : "#ffcc00";
-                    document.getElementById('angryOverlay').style.display = 'flex'; clearAllIntervals(); return;
+                    document.getElementById('angryOverlay').style.display = 'flex';
                 }
-                catBox.style.left = (Math.random() * 80 + 10) + "%"; catBox.style.top = (Math.random() * 70 + 15) + "%";
-            }, speed);
+                cb.style.left = (Math.random() * 80 + 10) + "%"; cb.style.top = (Math.random() * 70 + 15) + "%";
+            }, poison || hitCount > 0 ? 50 : 100);
         }
 
         function hitCat(e) {
-            if (isPaused) return; if (e) e.stopPropagation();
-            if (isShrunk) { isShrunk = false; catBox.classList.remove('shrunk'); catBox.style.width = "280px"; catBox.style.height = "280px"; return; }
+            if (isPaused) return;
+            if (isShrunk) { isShrunk = false; resetGame(); return; }
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
-                isFlipping = true; stamina--; score += 1;
-                if (timeLeft <= 1) lastSecHits++; else lastSecHits = 0;
-                if (specialStatus !== "devil") { clearInterval(gameLoop); timeLeft = (specialStatus === "golden") ? config.goldenFishTime : config.normT; gameLoop = setInterval(tick, 1000); }
-                catImg.className = "flipping-anim"; setTimeout(() => { catImg.className = ""; isFlipping = false; }, 800);
+                isFlipping = true; stamina--; score++;
+                if (timeLeft <= 1.5) lastSecHits++;
+                document.getElementById('catImg').className = "flipping-anim";
+                setTimeout(() => { document.getElementById('catImg').className = ""; isFlipping = false; }, 800);
                 updateUI();
             } else {
                 hitCount++;
-                if (hitCount === 1) { catImg.className = "spinning-anim"; catBox.style.transition = "all 0.05s linear"; runCrazyMove(50); }
-                else if (hitCount >= 3) { crazyWins++; score += 5; stamina--; setTimeout(resetGame, 200); }
+                if (hitCount === 1) document.getElementById('catImg').className = "spinning-anim";
+                if (hitCount >= 3) { crazyWins++; score += 5; setTimeout(resetGame, 200); }
             }
+        }
+
+        function applyBg() {
+            document.body.style.backgroundColor = specialStatus==="golden"?"#4a3c00":(specialStatus==="devil"?"#1a0033":"#000");
         }
     </script>
 </body>
