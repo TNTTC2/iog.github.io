@@ -7,7 +7,7 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="玩貓貓">
+    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
 
     <style>
@@ -58,7 +58,7 @@
                 <br>
                 <p>🌟<b>特別玩法</b>🌟：</p>
                 <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
-                <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>鯊魚惡魔魚 (🦈)</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
+                <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
                 <br>
                 <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
                 <div class="btn-start" onclick="closeGuide()">我知喇！</div>
@@ -130,7 +130,7 @@
 
         function resumeGame() {
             let currentVal = document.getElementById('debugPause').value.trim();
-            // 只有內容被修改才鎖定 DEBUG
+            // 只有當手動改過代碼，先會開啟除錯標記
             if (currentVal !== prePauseCode && currentVal !== "") isDebugLocked = true;
             isPaused = false;
             applyAndContinue(currentVal);
@@ -209,7 +209,7 @@
             if (isCrazy || isPaused) return;
             let f = document.createElement('div'); f.className = 'food';
             
-            // 精確生成機制
+            // 生成機制精確控制
             if (crazyWins >= 10) { f.innerHTML = '🦈'; crazyWins = 0; }
             else if (lastSecHits >= 5 && specialStatus !== "golden") { f.innerHTML = '🐠'; lastSecHits = 0; }
             else { f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)]; }
@@ -270,7 +270,7 @@
             if (!isCrazy) {
                 if (isFlipping || stamina <= 0) return;
                 isFlipping = true; stamina--; score++;
-                // 判斷是否為黃金魚計數 (1.5秒內算死線)
+                // 1.5秒內算死線
                 if (timeLeft <= 1.5) lastSecHits++;
                 document.getElementById('catImg').className = "flipping-anim";
                 setTimeout(() => { document.getElementById('catImg').className = ""; isFlipping = false; }, 800);
