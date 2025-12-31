@@ -6995,7 +6995,7 @@ window.addEventListener('load', function() {
     const hideIcons = () => {
         const removeList = [
             'terminal', 
-            'aiosswitcher', 
+            'aos-switcher', 
             'ai-chat', 
             'ai-image', 
             'maths-ai', 
