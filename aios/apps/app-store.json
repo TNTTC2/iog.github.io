@@ -1,0 +1,1007 @@
+{
+  "apps": [
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "description": "Watch, upload and share videos",
+      "icon": "https://www.youtube.com/apple-touch-icon.png",
+      "iconColor": "#ff0000",
+      "url": "https://www.youtube.com",
+      "category": "Entertainment",
+      "type": "website",
+      "fallbackIcon": "play"
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "description": "Connect with friends and the world",
+      "icon": "https://www.facebook.com/apple-touch-icon.png",
+      "iconColor": "#1877f2",
+      "url": "https://www.facebook.com",
+      "category": "Social",
+      "type": "website",
+      "fallbackIcon": "users"
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "description": "Photo and video sharing",
+      "icon": "https://www.instagram.com/apple-touch-icon.png",
+      "iconColor": "#e4405f",
+      "url": "https://www.instagram.com",
+      "category": "Social",
+      "type": "website",
+      "fallbackIcon": "camera"
+    },
+    {
+      "id": "twitter",
+      "name": "Twitter",
+      "description": "Stay updated on what's happening",
+      "icon": "https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc7275.png",
+      "iconColor": "#1da1f2",
+      "url": "https://twitter.com",
+      "category": "Social",
+      "type": "website",
+      "fallbackIcon": "message-circle"
+    },
+    {
+      "id": "whatsapp",
+      "name": "WhatsApp",
+      "description": "Simple, reliable messaging",
+      "icon": "message-square",
+      "iconColor": "#25d366",
+      "url": "https://web.whatsapp.com",
+      "category": "Social",
+      "type": "website"
+    },
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "description": "Movies, TV shows and more",
+      "icon": "play",
+      "iconColor": "#e50914",
+      "url": "https://www.netflix.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "description": "Music and podcast streaming",
+      "icon": "headphones",
+      "iconColor": "#1db954",
+      "url": "https://open.spotify.com",
+      "category": "Music",
+      "type": "website"
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "description": "Email by Google",
+      "icon": "mail",
+      "iconColor": "#ea4335",
+      "url": "https://mail.google.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "maps",
+      "name": "Google Maps",
+      "description": "Navigation and local search",
+      "icon": "map-pin",
+      "iconColor": "#4285f4",
+      "url": "https://maps.google.com",
+      "category": "Navigation",
+      "type": "website"
+    },
+    {
+      "id": "amazon",
+      "name": "Amazon",
+      "description": "Shopping made easy",
+      "icon": "shopping-cart",
+      "iconColor": "#ff9900",
+      "url": "https://www.amazon.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "uber",
+      "name": "Uber",
+      "description": "Request a ride",
+      "icon": "car",
+      "iconColor": "#000000",
+      "url": "https://m.uber.com",
+      "category": "Travel",
+      "type": "website"
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "description": "Professional networking",
+      "icon": "briefcase",
+      "iconColor": "#0077b5",
+      "url": "https://www.linkedin.com",
+      "category": "Business",
+      "type": "website"
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "description": "Chat for communities and friends",
+      "icon": "gamepad-2",
+      "iconColor": "#5865f2",
+      "url": "https://discord.com/app",
+      "category": "Social",
+      "type": "website"
+    },
+    {
+      "id": "reddit",
+      "name": "Reddit",
+      "description": "The front page of the internet",
+      "icon": "circle",
+      "iconColor": "#ff4500",
+      "url": "https://www.reddit.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "pinterest",
+      "name": "Pinterest",
+      "description": "Discover ideas for your interests",
+      "icon": "bookmark",
+      "iconColor": "#bd081c",
+      "url": "https://www.pinterest.com",
+      "category": "Lifestyle",
+      "type": "website"
+    },
+    {
+      "id": "twitch",
+      "name": "Twitch",
+      "description": "Live gaming and entertainment",
+      "icon": "tv",
+      "iconColor": "#9146ff",
+      "url": "https://www.twitch.tv",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "paypal",
+      "name": "PayPal",
+      "description": "Send and request money securely",
+      "icon": "credit-card",
+      "iconColor": "#003087",
+      "url": "https://www.paypal.com",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "description": "Code collaboration platform",
+      "icon": "code",
+      "iconColor": "#333333",
+      "url": "https://github.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "description": "Team communication",
+      "icon": "hash",
+      "iconColor": "#4a154b",
+      "url": "https://slack.com",
+      "category": "Business",
+      "type": "website"
+    },
+    {
+      "id": "zoom",
+      "name": "Zoom",
+      "description": "Video conferencing",
+      "icon": "video",
+      "iconColor": "#2d8cff",
+      "url": "https://zoom.us",
+      "category": "Business",
+      "type": "website"
+    },
+    {
+      "id": "snapchat",
+      "name": "Snapchat",
+      "description": "Camera and messaging app",
+      "icon": "camera",
+      "iconColor": "#fffc00",
+      "url": "https://web.snapchat.com",
+      "category": "Social",
+      "type": "website"
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "description": "Fast and secure messaging",
+      "icon": "message-circle",
+      "iconColor": "#0088cc",
+      "url": "https://web.telegram.org",
+      "category": "Social",
+      "type": "website"
+    },
+    {
+      "id": "signal",
+      "name": "Signal",
+      "description": "Private messaging",
+      "icon": "shield",
+      "iconColor": "#3a76f0",
+      "url": "https://signal.org",
+      "category": "Social",
+      "type": "website"
+    },
+    {
+      "id": "apple-music",
+      "name": "Apple Music",
+      "description": "Music streaming service",
+      "icon": "music",
+      "iconColor": "#fa243c",
+      "url": "https://music.apple.com",
+      "category": "Music",
+      "type": "website"
+    },
+    {
+      "id": "soundcloud",
+      "name": "SoundCloud",
+      "description": "Audio platform",
+      "icon": "headphones",
+      "iconColor": "#ff5500",
+      "url": "https://soundcloud.com",
+      "category": "Music",
+      "type": "website"
+    },
+    {
+      "id": "deezer",
+      "name": "Deezer",
+      "description": "Music streaming",
+      "icon": "music",
+      "iconColor": "#feaa2d",
+      "url": "https://www.deezer.com",
+      "category": "Music",
+      "type": "website"
+    },
+    {
+      "id": "pandora",
+      "name": "Pandora",
+      "description": "Personalized music",
+      "icon": "radio",
+      "iconColor": "#005483",
+      "url": "https://www.pandora.com",
+      "category": "Music",
+      "type": "website"
+    },
+    {
+      "id": "hulu",
+      "name": "Hulu",
+      "description": "TV shows and movies",
+      "icon": "tv",
+      "iconColor": "#1ce783",
+      "url": "https://www.hulu.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "disney-plus",
+      "name": "Disney+",
+      "description": "Disney streaming service",
+      "icon": "star",
+      "iconColor": "#113ccf",
+      "url": "https://www.disneyplus.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "hbo-max",
+      "name": "HBO Max",
+      "description": "Premium entertainment",
+      "icon": "play",
+      "iconColor": "#673ab7",
+      "url": "https://www.hbomax.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "prime-video",
+      "name": "Prime Video",
+      "description": "Amazon's streaming service",
+      "icon": "play",
+      "iconColor": "#00a8e1",
+      "url": "https://www.primevideo.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "paramount",
+      "name": "Paramount+",
+      "description": "Movies and TV",
+      "icon": "mountain",
+      "iconColor": "#0064ff",
+      "url": "https://www.paramountplus.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "peacock",
+      "name": "Peacock",
+      "description": "NBCUniversal streaming",
+      "icon": "feather",
+      "iconColor": "#0054a5",
+      "url": "https://www.peacocktv.com",
+      "category": "Entertainment",
+      "type": "website"
+    },
+    {
+      "id": "cnn",
+      "name": "CNN",
+      "description": "Breaking news and analysis",
+      "icon": "globe",
+      "iconColor": "#cc0000",
+      "url": "https://www.cnn.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "bbc",
+      "name": "BBC News",
+      "description": "World news and analysis",
+      "icon": "globe",
+      "iconColor": "#bb1919",
+      "url": "https://www.bbc.com/news",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "reuters",
+      "name": "Reuters",
+      "description": "Breaking international news",
+      "icon": "newspaper",
+      "iconColor": "#ff8000",
+      "url": "https://www.reuters.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "nytimes",
+      "name": "The New York Times",
+      "description": "Independent journalism",
+      "icon": "newspaper",
+      "iconColor": "#000000",
+      "url": "https://www.nytimes.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "washpost",
+      "name": "The Washington Post",
+      "description": "Politics and world news",
+      "icon": "newspaper",
+      "iconColor": "#326891",
+      "url": "https://www.washingtonpost.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "guardian",
+      "name": "The Guardian",
+      "description": "Independent news",
+      "icon": "newspaper",
+      "iconColor": "#052962",
+      "url": "https://www.theguardian.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "medium",
+      "name": "Medium",
+      "description": "Social publishing platform",
+      "icon": "edit",
+      "iconColor": "#00ab6c",
+      "url": "https://medium.com",
+      "category": "News",
+      "type": "website"
+    },
+    {
+      "id": "ebay",
+      "name": "eBay",
+      "description": "Online auctions and shopping",
+      "icon": "shopping-bag",
+      "iconColor": "#e53238",
+      "url": "https://www.ebay.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "aliexpress",
+      "name": "AliExpress",
+      "description": "Global online marketplace",
+      "icon": "shopping-cart",
+      "iconColor": "#ff6a00",
+      "url": "https://www.aliexpress.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "etsy",
+      "name": "Etsy",
+      "description": "Handmade and vintage items",
+      "icon": "heart",
+      "iconColor": "#f1641e",
+      "url": "https://www.etsy.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "target",
+      "name": "Target",
+      "description": "Department store",
+      "icon": "target",
+      "iconColor": "#cc0000",
+      "url": "https://www.target.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "walmart",
+      "name": "Walmart",
+      "description": "Save money. Live better.",
+      "icon": "shopping-bag",
+      "iconColor": "#0071ce",
+      "url": "https://www.walmart.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "bestbuy",
+      "name": "Best Buy",
+      "description": "Electronics and tech",
+      "icon": "smartphone",
+      "iconColor": "#0046be",
+      "url": "https://www.bestbuy.com",
+      "category": "Shopping",
+      "type": "website"
+    },
+    {
+      "id": "google-drive",
+      "name": "Google Drive",
+      "description": "Cloud storage and sync",
+      "icon": "cloud",
+      "iconColor": "#4285f4",
+      "url": "https://drive.google.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "dropbox",
+      "name": "Dropbox",
+      "description": "Cloud storage",
+      "icon": "cloud",
+      "iconColor": "#0061ff",
+      "url": "https://www.dropbox.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "onedrive",
+      "name": "OneDrive",
+      "description": "Microsoft cloud storage",
+      "icon": "cloud",
+      "iconColor": "#0078d4",
+      "url": "https://onedrive.live.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "icloud",
+      "name": "iCloud",
+      "description": "Apple cloud services",
+      "icon": "cloud",
+      "iconColor": "#007aff",
+      "url": "https://www.icloud.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "description": "All-in-one workspace",
+      "icon": "notebook",
+      "iconColor": "#000000",
+      "url": "https://www.notion.so",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "trello",
+      "name": "Trello",
+      "description": "Project management",
+      "icon": "grid",
+      "iconColor": "#0079bf",
+      "url": "https://trello.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "asana",
+      "name": "Asana",
+      "description": "Team collaboration",
+      "icon": "check-circle",
+      "iconColor": "#f06a6a",
+      "url": "https://app.asana.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "monday",
+      "name": "Monday.com",
+      "description": "Work management platform",
+      "icon": "calendar",
+      "iconColor": "#ff3d71",
+      "url": "https://monday.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "airtable",
+      "name": "Airtable",
+      "description": "Database and spreadsheet hybrid",
+      "icon": "database",
+      "iconColor": "#18bfff",
+      "url": "https://airtable.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "google-docs",
+      "name": "Google Docs",
+      "description": "Online document editor",
+      "icon": "file-text",
+      "iconColor": "#4285f4",
+      "url": "https://docs.google.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "google-sheets",
+      "name": "Google Sheets",
+      "description": "Online spreadsheet editor",
+      "icon": "grid",
+      "iconColor": "#34a853",
+      "url": "https://sheets.google.com",
+      "category": "Productivity",
+      "type": "website"
+    },
+    {
+      "id": "canva",
+      "name": "Canva",
+      "description": "Graphic design platform",
+      "icon": "palette",
+      "iconColor": "#00c4cc",
+      "url": "https://www.canva.com",
+      "category": "Design",
+      "type": "website"
+    },
+    {
+      "id": "figma",
+      "name": "Figma",
+      "description": "Collaborative design tool",
+      "icon": "layers",
+      "iconColor": "#f24e1e",
+      "url": "https://www.figma.com",
+      "category": "Design",
+      "type": "website"
+    },
+    {
+      "id": "adobe-photoshop",
+      "name": "Adobe Photoshop",
+      "description": "Image editing software",
+      "icon": "image",
+      "iconColor": "#31a8ff",
+      "url": "https://www.adobe.com/products/photoshop.html",
+      "category": "Design",
+      "type": "website"
+    },
+    {
+      "id": "unsplash",
+      "name": "Unsplash",
+      "description": "Free high-quality photos",
+      "icon": "camera",
+      "iconColor": "#000000",
+      "url": "https://unsplash.com",
+      "category": "Design",
+      "type": "website"
+    },
+    {
+      "id": "coursera",
+      "name": "Coursera",
+      "description": "Online courses and degrees",
+      "icon": "book",
+      "iconColor": "#0056d3",
+      "url": "https://www.coursera.org",
+      "category": "Education",
+      "type": "website"
+    },
+    {
+      "id": "udemy",
+      "name": "Udemy",
+      "description": "Online learning platform",
+      "icon": "book-open",
+      "iconColor": "#ec5252",
+      "url": "https://www.udemy.com",
+      "category": "Education",
+      "type": "website"
+    },
+    {
+      "id": "khan-academy",
+      "name": "Khan Academy",
+      "description": "Free online education",
+      "icon": "graduation-cap",
+      "iconColor": "#14bf96",
+      "url": "https://www.khanacademy.org",
+      "category": "Education",
+      "type": "website"
+    },
+    {
+      "id": "duolingo",
+      "name": "Duolingo",
+      "description": "Language learning app",
+      "icon": "globe",
+      "iconColor": "#58cc02",
+      "url": "https://www.duolingo.com",
+      "category": "Education",
+      "type": "website"
+    },
+    {
+      "id": "codecademy",
+      "name": "Codecademy",
+      "description": "Learn to code",
+      "icon": "code",
+      "iconColor": "#1f4056",
+      "url": "https://www.codecademy.com",
+      "category": "Education",
+      "type": "website"
+    },
+    {
+      "id": "stackoverflow",
+      "name": "Stack Overflow",
+      "description": "Programming Q&A",
+      "icon": "help-circle",
+      "iconColor": "#f48024",
+      "url": "https://stackoverflow.com",
+      "category": "Developer",
+      "type": "website"
+    },
+    {
+      "id": "codepen",
+      "name": "CodePen",
+      "description": "Code playground",
+      "icon": "code",
+      "iconColor": "#000000",
+      "url": "https://codepen.io",
+      "category": "Developer",
+      "type": "website"
+    },
+    {
+      "id": "gitlab",
+      "name": "GitLab",
+      "description": "DevOps platform",
+      "icon": "git-branch",
+      "iconColor": "#fc6d26",
+      "url": "https://gitlab.com",
+      "category": "Developer",
+      "type": "website"
+    },
+    {
+      "id": "bitbucket",
+      "name": "Bitbucket",
+      "description": "Git repository hosting",
+      "icon": "git-branch",
+      "iconColor": "#0052cc",
+      "url": "https://bitbucket.org",
+      "category": "Developer",
+      "type": "website"
+    },
+    {
+      "id": "waze",
+      "name": "Waze",
+      "description": "Community-based navigation",
+      "icon": "navigation",
+      "iconColor": "#33ccff",
+      "url": "https://www.waze.com",
+      "category": "Navigation",
+      "type": "website"
+    },
+    {
+      "id": "airbnb",
+      "name": "Airbnb",
+      "description": "Vacation rentals",
+      "icon": "home",
+      "iconColor": "#ff5a5f",
+      "url": "https://www.airbnb.com",
+      "category": "Travel",
+      "type": "website"
+    },
+    {
+      "id": "booking",
+      "name": "Booking.com",
+      "description": "Hotel reservations",
+      "icon": "bed",
+      "iconColor": "#003580",
+      "url": "https://www.booking.com",
+      "category": "Travel",
+      "type": "website"
+    },
+    {
+      "id": "expedia",
+      "name": "Expedia",
+      "description": "Travel bookings",
+      "icon": "plane",
+      "iconColor": "#ffc72c",
+      "url": "https://www.expedia.com",
+      "category": "Travel",
+      "type": "website"
+    },
+    {
+      "id": "tripadvisor",
+      "name": "TripAdvisor",
+      "description": "Travel reviews and bookings",
+      "icon": "map",
+      "iconColor": "#00af87",
+      "url": "https://www.tripadvisor.com",
+      "category": "Travel",
+      "type": "website"
+    },
+    {
+      "id": "lyft",
+      "name": "Lyft",
+      "description": "Rideshare service",
+      "icon": "car",
+      "iconColor": "#ff00bf",
+      "url": "https://www.lyft.com",
+      "category": "Travel",
+      "type": "website"
+    },
+    {
+      "id": "doordash",
+      "name": "DoorDash",
+      "description": "Food delivery service",
+      "icon": "truck",
+      "iconColor": "#ff3008",
+      "url": "https://www.doordash.com",
+      "category": "Food",
+      "type": "website"
+    },
+    {
+      "id": "ubereats",
+      "name": "Uber Eats",
+      "description": "Food delivery",
+      "icon": "utensils",
+      "iconColor": "#000000",
+      "url": "https://www.ubereats.com",
+      "category": "Food",
+      "type": "website"
+    },
+    {
+      "id": "grubhub",
+      "name": "Grubhub",
+      "description": "Online food ordering",
+      "icon": "utensils",
+      "iconColor": "#ff8000",
+      "url": "https://www.grubhub.com",
+      "category": "Food",
+      "type": "website"
+    },
+    {
+      "id": "postmates",
+      "name": "Postmates",
+      "description": "On-demand delivery",
+      "icon": "package",
+      "iconColor": "#000000",
+      "url": "https://postmates.com",
+      "category": "Food",
+      "type": "website"
+    },
+    {
+      "id": "yelp",
+      "name": "Yelp",
+      "description": "Local business reviews",
+      "icon": "star",
+      "iconColor": "#d32323",
+      "url": "https://www.yelp.com",
+      "category": "Food",
+      "type": "website"
+    },
+    {
+      "id": "zomato",
+      "name": "Zomato",
+      "description": "Restaurant discovery",
+      "icon": "utensils",
+      "iconColor": "#e23744",
+      "url": "https://www.zomato.com",
+      "category": "Food",
+      "type": "website"
+    },
+    {
+      "id": "robinhood",
+      "name": "Robinhood",
+      "description": "Commission-free investing",
+      "icon": "trending-up",
+      "iconColor": "#00c805",
+      "url": "https://robinhood.com",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "coinbase",
+      "name": "Coinbase",
+      "description": "Cryptocurrency exchange",
+      "icon": "dollar-sign",
+      "iconColor": "#0052ff",
+      "url": "https://www.coinbase.com",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "venmo",
+      "name": "Venmo",
+      "description": "Digital wallet",
+      "icon": "credit-card",
+      "iconColor": "#3d95ce",
+      "url": "https://venmo.com",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "cashapp",
+      "name": "Cash App",
+      "description": "Mobile payment service",
+      "icon": "dollar-sign",
+      "iconColor": "#00d632",
+      "url": "https://cash.app",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "mint",
+      "name": "Mint",
+      "description": "Personal finance management",
+      "icon": "pie-chart",
+      "iconColor": "#00ab44",
+      "url": "https://www.mint.com",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "webull",
+      "name": "Webull",
+      "description": "Stock trading platform",
+      "icon": "bar-chart",
+      "iconColor": "#24b77c",
+      "url": "https://www.webull.com",
+      "category": "Finance",
+      "type": "website"
+    },
+    {
+      "id": "weather-channel",
+      "name": "Weather Channel",
+      "description": "Weather forecasts",
+      "icon": "cloud",
+      "iconColor": "#0f4c96",
+      "url": "https://weather.com",
+      "category": "Weather",
+      "type": "website"
+    },
+    {
+      "id": "accuweather",
+      "name": "AccuWeather",
+      "description": "Weather predictions",
+      "icon": "sun",
+      "iconColor": "#ff8c00",
+      "url": "https://www.accuweather.com",
+      "category": "Weather",
+      "type": "website"
+    },
+    {
+      "id": "weather-underground",
+      "name": "Weather Underground",
+      "description": "Local weather conditions",
+      "icon": "thermometer",
+      "iconColor": "#0099cc",
+      "url": "https://www.wunderground.com",
+      "category": "Weather",
+      "type": "website"
+    },
+    {
+      "id": "myfitnesspal",
+      "name": "MyFitnessPal",
+      "description": "Calorie counter",
+      "icon": "activity",
+      "iconColor": "#0072ce",
+      "url": "https://www.myfitnesspal.com",
+      "category": "Health",
+      "type": "website"
+    },
+    {
+      "id": "strava",
+      "name": "Strava",
+      "description": "Fitness tracking",
+      "icon": "zap",
+      "iconColor": "#fc4c02",
+      "url": "https://www.strava.com",
+      "category": "Health",
+      "type": "website"
+    },
+    {
+      "id": "fitbit",
+      "name": "Fitbit",
+      "description": "Health and fitness tracking",
+      "icon": "heart",
+      "iconColor": "#00b0b9",
+      "url": "https://www.fitbit.com",
+      "category": "Health",
+      "type": "website"
+    },
+    {
+      "id": "headspace",
+      "name": "Headspace",
+      "description": "Meditation and mindfulness",
+      "icon": "circle",
+      "iconColor": "#f77737",
+      "url": "https://www.headspace.com",
+      "category": "Health",
+      "type": "website"
+    },
+    {
+      "id": "calm",
+      "name": "Calm",
+      "description": "Sleep and meditation",
+      "icon": "moon",
+      "iconColor": "#239cf4",
+      "url": "https://www.calm.com",
+      "category": "Health",
+      "type": "website"
+    },
+    {
+      "id": "webmd",
+      "name": "WebMD",
+      "description": "Health information",
+      "icon": "plus-circle",
+      "iconColor": "#377bb5",
+      "url": "https://www.webmd.com",
+      "category": "Health",
+      "type": "website"
+    },
+    {
+      "id": "debugger",
+      "name": "AiOS Debugger",
+      "description": "Package manager for AIOS",
+      "icon": "https://theapplewiki.com/images/applewiki/archive/d/d2/20110715013252%21Cydia_icon.png",
+      "iconColor": "#f39c12",
+      "url": "https://tnhdev123.github.io/site/aios/debugger.html",
+      "category": "System",
+      "type": "website",
+      "fallbackIcon": "package"
+    },
+    {
+      "id": "catfafa",
+      "name": "🐱🐱🐱",
+      "description": "🐱Cat Game.🐱",
+      "icon": "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG",
+      "url" :"https://tnttc2.github.io/iog.github.io/🐱🐱🐱.html",
+      "category": "Game",
+      "type": "website"
+    },
+    {
+      "id": "tnte",
+      "name": "TNTExplorer",
+      "description": "A Web Explorer.",
+      "icon": "https://tnttc2.github.io/iog.github.io/TNTExplorer/icon.jpeg",
+      "url" :"https://tnttc2.github.io/iog.github.io/TNTExplorer/latest.html",
+      "category": "Web",
+      "type": "website"
+    }
+  ]
+}
