@@ -6990,3 +6990,27 @@ window.addEventListener('load', function() {
     }, 1000);
 });
 // ... existing code ...
+// 強制隱藏指定的 App 圖標邏輯
+(function() {
+    const hideIcons = () => {
+        const removeList = [
+            'terminal', 
+            'aios-switcher', 
+            'ai-chat', 
+            'ai-image', 
+            'maths-ai', 
+            'ai-messages', 
+            'ai-assistant'
+        ];
+        removeList.forEach(id => {
+            // 同時搜尋主畫面同 Dock 欄位
+            const elements = document.querySelectorAll(`[data-app="${id}"]`);
+            elements.forEach(el => el.remove());
+        });
+    };
+
+    // 立即執行一次
+    hideIcons();
+    // 網頁完全載入後再執行一次，防止有啲 Icon 係由其他 script 延遲生成嘅
+    window.addEventListener('load', hideIcons);
+})();
