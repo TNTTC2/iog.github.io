@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html><html lang="zh-Hant"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8,7 +8,6 @@
     
     <title>TinOS</title>
     
-    <!-- PWA Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/icon-180.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/icon-32.png">
     <link rel="manifest" href="manifest.json">
@@ -18,106 +17,100 @@
 </head>
 <body>
     <div id="mobile-os">
-        <!-- Clock and Date -->
         <div class="clock-display">
             <div class="clock-time" id="current-time"></div>
             <div class="clock-date" id="current-date"></div>
         </div>
 
-        <!-- Home Screen -->
         <div class="home-screen" id="homeScreen">
             <div class="apps-grid" id="appsGrid">
-                <!-- Default Apps -->
                 <div class="app-icon" data-app="camera">
                     <div class="app-icon-bg">
                         <div class="icon camera" style="background-color: #34495e;"></div>
                     </div>
-                    <span class="app-name">Camera</span>
+                    <span class="app-name">相機</span>
                 </div>
                 <div class="app-icon" data-app="calculator">
                     <div class="app-icon-bg">
                         <div class="icon calculator" style="background-color: #e67e22;"></div>
                     </div>
-                    <span class="app-name">Calculator</span>
+                    <span class="app-name">計算機</span>
                 </div>
                 <div class="app-icon" data-app="ai-to-ui">
                     <div class="app-icon-bg">
                         <div class="icon code" style="background-color: #9b59b6;"></div>
                     </div>
-                    <span class="app-name">AI to UI</span>
+                    <span class="app-name">AI 介面定制</span>
                 </div>
                 <div class="app-icon" data-app="terminal">
                     <div class="app-icon-bg">
                         <div class="icon terminal"></div>
                     </div>
-                    <span class="app-name">Terminal</span>
+                    <span class="app-name">終端機</span>
                 </div>
                 <div class="app-icon" data-app="settings">
                     <div class="app-icon-bg">
                         <div class="icon gear" style="background-color: #7f8c8d;"></div>
                     </div>
-                    <span class="app-name">Settings</span>
+                    <span class="app-name">設定</span>
                 </div>
                 <div class="app-icon" data-app="app-store">
                     <div class="app-icon-bg">
                         <div class="icon shopping-bag" style="background-color: #3498db;"></div>
                     </div>
-                    <span class="app-name">App Store</span>
+                    <span class="app-name">應用商店</span>
                 </div>
                 <div class="app-icon" data-app="phone">
                     <div class="app-icon-bg">
                         <div class="icon phone" style="background-color: #27ae60;"></div>
                     </div>
-                    <span class="app-name">Phone</span>
+                    <span class="app-name">電話</span>
                 </div>
-                <!-- AI Apps -->
                 <div class="app-icon" data-app="maths-ai">
                     <div class="app-icon-bg">
                         <div class="icon brain" style="background-color: #e74c3c;"></div>
                     </div>
-                    <span class="app-name">Maths AI</span>
+                    <span class="app-name">數學 AI</span>
                 </div>
                 <div class="app-icon" data-app="ai-messages">
                     <div class="app-icon-bg">
                         <div class="icon message-circle" style="background-color: #3498db;"></div>
                     </div>
-                    <span class="app-name">AI Messages</span>
+                    <span class="app-name">AI 訊息</span>
                 </div>
                 <div class="app-icon" data-app="ai-assistant">
                     <div class="app-icon-bg">
                         <div class="icon robot" style="background-color: #9b59b6;"></div>
                     </div>
-                    <span class="app-name">AI Assistant</span>
+                    <span class="app-name">AI 助手</span>
                 </div>
                 <div class="app-icon" data-app="aos-switcher">
                     <div class="app-icon-bg">
                         <div class="icon swap" style="background-color: #f39c12;"></div>
                     </div>
-                    <span class="app-name">AIOS Switcher</span>
+                    <span class="app-name">AIOS 切換器</span>
                 </div>
 
             </div>
         </div>
                 
-        <!-- Terminal App Window -->
         <div class="app-window" id="terminalApp">
             <div class="terminal-app">
                 <div class="terminal-header" style="position: relative; text-align: center;">
-                    <button class="back-btn" onclick="closeApp('terminalApp')" style="position:absolute; left:10px; top:70%; transform: translateY(-50%);">← Back</button>
-                    AIOS Terminal
+                    <button class="back-btn" onclick="closeApp('terminalApp')" style="position:absolute; left:10px; top:70%; transform: translateY(-50%);">← 返回</button>
+                    AIOS 終端機
                 </div>
                 <div class="terminal-body" id="terminalBody"></div>
                 <div class="terminal-input-row">
                     <span class="terminal-prompt">></span>
-                    <input class="terminal-input" id="terminalInput" type="text" autocomplete="off" placeholder="Type a command...">
+                    <input class="terminal-input" id="terminalInput" type="text" autocomplete="off" placeholder="輸入指令...">
                 </div>
             </div>
         </div>
 
-        <!-- Cydia2 App Window (hidden by default) -->
         <div class="app-window" id="cydia2App">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('cydia2App')">← Back</button>
+                <button class="back-btn" onclick="closeApp('cydia2App')">← 返回</button>
                 <h3>Cydia2</h3>
             </div>
             <div class="app-content cydia2-app">
@@ -127,7 +120,6 @@
             </div>
         
 
-        <!-- Floating Dock -->
         <div class="floating-dock">
             <div class="dock-app" data-app="settings">
                 <div class="dock-icon creative-gear">
@@ -160,17 +152,16 @@
             </div>
         </div>
 
-        <!-- App Windows -->
         <div class="app-window" id="cameraApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('cameraApp')">← Back</button>
-                <h3>Camera</h3>
+                <button class="back-btn" onclick="closeApp('cameraApp')">← 返回</button>
+                <h3>相機</h3>
             </div>
             <div class="app-content">
                 <div class="camera-view">
-                    <div class="camera-placeholder">◉ Camera View</div>
+                    <div class="camera-placeholder">◉ 鏡頭畫面</div>
                     <div class="camera-controls">
-                        <button class="camera-btn">◉ Capture</button>
+                        <button class="camera-btn">◉ 拍攝</button>
                     </div>
                 </div>
             </div>
@@ -178,8 +169,8 @@
 
         <div class="app-window" id="calculatorApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('calculatorApp')">← Back</button>
-                <h3>Calculator</h3>
+                <button class="back-btn" onclick="closeApp('calculatorApp')">← 返回</button>
+                <h3>計算機</h3>
             </div>
             <div class="app-content">
                 <div class="calculator">
@@ -213,36 +204,36 @@
 
         <div class="app-window" id="aiToUiApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('aiToUiApp')">← Back</button>
-                <h3>AI to UI</h3>
+                <button class="back-btn" onclick="closeApp('aiToUiApp')">← 返回</button>
+                <h3>AI 介面定制</h3>
             </div>
             <div class="app-content">
                 <div class="ai-ui-container">
                     <div class="ai-section">
-                        <h3>AI UI Customizer</h3>
-                        <p>Describe what you want to change about the Mobile OS interface and click "Apply" to see instant changes:</p>
-                        <textarea id="aiPrompt" placeholder="Examples:
-• Make app icons star-shaped and golden
-• Change background to ocean blue gradient  
-• Make clock huge and purple
-• Create floating hearts animation
-• Change icon sizes to large
-• Make dock transparent with glow effect"></textarea>
+                        <h3>AI 介面定制器</h3>
+                        <p>描述你想如何改變系統介面，然後點擊「套用」即可看到即時變化：</p>
+                        <textarea id="aiPrompt" placeholder="例如：
+• 將圖示變成星形且帶有金色
+• 將背景改為海洋藍漸層
+• 讓時鐘變大且變成紫色
+• 建立飄浮愛心動畫
+• 將圖示尺寸調大
+• 讓底欄透明並帶有發光效果"></textarea>
                         <div class="ai-controls">
-                            <button id="applyAIChanges" class="ai-btn">✨ Apply Changes</button>
-                            <button id="resetUI" class="ai-btn tertiary">🔄 Reset UI</button>
+                            <button id="applyAIChanges" class="ai-btn">✨ 套用更改</button>
+                            <button id="resetUI" class="ai-btn tertiary">🔄 重設介面</button>
                         </div>
                         <div id="aiStatus" class="ai-status"></div>
                     </div>
                     <div class="ai-examples">
-                        <h4>Quick Examples:</h4>
+                        <h4>快速範例：</h4>
                         <div class="example-buttons">
-                            <button class="example-btn" onclick="setAIPrompt('Make app icons star-shaped and golden')">⭐ Star Icons</button>
-                            <button class="example-btn" onclick="setAIPrompt('Change background to ocean blue gradient')">🌊 Ocean Theme</button>
-                            <button class="example-btn" onclick="setAIPrompt('Make clock huge and purple')">🕐 Big Clock</button>
-                            <button class="example-btn" onclick="setAIPrompt('Add floating hearts animation')">💖 Hearts</button>
-                            <button class="example-btn" onclick="setAIPrompt('Make icons large and circular')">🔵 Large Icons</button>
-                            <button class="example-btn" onclick="setAIPrompt('Dark purple gradient background')">🌟 Purple Theme</button>
+                            <button class="example-btn" onclick="setAIPrompt('Make app icons star-shaped and golden')">⭐ 星形圖示</button>
+                            <button class="example-btn" onclick="setAIPrompt('Change background to ocean blue gradient')">🌊 海洋主題</button>
+                            <button class="example-btn" onclick="setAIPrompt('Make clock huge and purple')">🕐 大時鐘</button>
+                            <button class="example-btn" onclick="setAIPrompt('Add floating hearts animation')">💖 飄浮愛心</button>
+                            <button class="example-btn" onclick="setAIPrompt('Make icons large and circular')">🔵 大圓圖示</button>
+                            <button class="example-btn" onclick="setAIPrompt('Dark purple gradient background')">🌟 紫色主題</button>
                         </div>
                     </div>
                 </div>
@@ -251,16 +242,15 @@
 
         <div class="app-window" id="appStoreApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('appStoreApp')">← Back</button>
-                <h3>App Store</h3>
+                <button class="back-btn" onclick="closeApp('appStoreApp')">← 返回</button>
+                <h3>應用商店</h3>
             </div>
             <div class="app-content">
                 <div class="app-store">
-                    <!-- Search Section at Top -->
                     <div class="store-search-header" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px;">
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div class="store-search" style="flex: 1;">
-                                <input type="text" id="appSearchInput" placeholder="🔍 Search All Apps" style="
+                                <input type="text" id="appSearchInput" placeholder="🔍 搜尋所有應用程式" style="
                                     width: 100%;
                                     padding: 12px 20px;
                                     border: 2px solid rgba(255, 255, 255, 0.5);
@@ -282,29 +272,25 @@
                                 font-size: 14px;
                                 font-weight: 600;
                                 box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                            ">↻ Refresh</button>
+                            ">↻ 重新整理</button>
                         </div>
                     </div>
 
-                    <!-- Installed Apps Section -->
                     <div class="store-section">
                         <div class="section-header">
-                            <h2>Installed Apps</h2>
-                            <span class="app-count" id="installedCount">0 apps</span>
+                            <h2>已安裝應用</h2>
+                            <span class="app-count" id="installedCount">0 個程式</span>
                         </div>
                         <div class="installed-apps-list" id="installedAppsList">
-                            <!-- Dynamically installed apps will appear here -->
-                        </div>
+                            </div>
                     </div>
 
-                    <!-- Available Apps Section -->
                     <div class="store-section">
                         <div class="section-header">
-                            <h2>Available Apps</h2>
+                            <h2>推薦應用</h2>
                         </div>
                         <div class="apps-list" id="appsList">
-                            <!-- Apps will be loaded dynamically from app-store.json -->
-                        </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -312,241 +298,229 @@
 
         <div class="app-window" id="settingsApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('settingsApp')">← Back</button>
-                <h3>Settings</h3>
+                <button class="back-btn" onclick="closeApp('settingsApp')">← 返回</button>
+                <h3>設定</h3>
             </div>
             <div class="app-content">
                 <div class="settings">
-                    <!-- Security Section -->
                     <div class="settings-section">
-                        <h4>🔒 Security & Privacy</h4>
+                        <h4>🔒 安全與隱私</h4>
                         <div class="setting-item">
-                            <label>Device Passcode</label>
-                            <button class="settings-btn" onclick="openPasscodeSettings()">Manage Passcode</button>
+                            <label>裝置密碼</label>
+                            <button class="settings-btn" onclick="openPasscodeSettings()">管理密碼</button>
                         </div>
                         <div class="setting-item">
                             <label for="biometrics">Face ID / Touch ID</label>
                             <input type="checkbox" id="biometrics" onchange="toggleBiometrics()">
                         </div>
                         <div class="setting-item">
-                            <label for="autoLock">Auto-Lock</label>
+                            <label for="autoLock">自動鎖定</label>
                             <select id="autoLock" onchange="setAutoLock()">
-                                <option value="30">30 seconds</option>
-                                <option value="60" selected="">1 minute</option>
-                                <option value="300">5 minutes</option>
-                                <option value="never">Never</option>
+                                <option value="30">30 秒</option>
+                                <option value="60" selected="">1 分鐘</option>
+                                <option value="300">5 分鐘</option>
+                                <option value="never">永不</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Display & Appearance -->
                     <div class="settings-section">
-                        <h4>🎨 Display & Appearance</h4>
+                        <h4>🎨 螢幕與外觀</h4>
                         <div class="setting-item">
-                            <label>Themes</label>
-                            <button class="settings-btn" onclick="openThemeSettings()">Choose Theme</button>
+                            <label>主題</label>
+                            <button class="settings-btn" onclick="openThemeSettings()">選擇主題</button>
                         </div>
                         <div class="setting-item">
-                            <label for="darkMode">Dark Mode</label>
+                            <label for="darkMode">深色模式</label>
                             <input type="checkbox" id="darkMode" onchange="toggleDarkMode()">
                         </div>
 
                         <div class="setting-item">
-                            <label for="textSize">Text Size</label>
+                            <label for="textSize">文字大小</label>
                             <input type="range" id="textSize" min="12" max="24" value="16" onchange="setTextSize()">
                         </div>
                         <div class="setting-item">
-                            <label for="iconStyle">Icon Style</label>
+                            <label for="iconStyle">圖示樣式</label>
                             <select id="iconStyle" onchange="setIconStyle()">
-                                <option value="normal">Normal</option>
-                                <option value="rounded">Rounded</option>
-                                <option value="square">Square</option>
-                                <option value="star">Star Shaped</option>
+                                <option value="normal">預設</option>
+                                <option value="rounded">圓角</option>
+                                <option value="square">正方形</option>
+                                <option value="star">星形</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- AI Wallpapers & Screen Savers -->
                     <div class="settings-section">
-                        <h4>🎨 AI Wallpapers & Screen Savers</h4>
+                        <h4>🎨 AI 桌布與螢幕保護</h4>
                         <div class="setting-item">
-                            <label>Generate AI Wallpaper</label>
-                            <button class="settings-btn" onclick="openAIWallpaperModal()">Create Wallpaper</button>
+                            <label>生成 AI 桌布</label>
+                            <button class="settings-btn" onclick="openAIWallpaperModal()">立即製作</button>
                         </div>
                         <div class="setting-item">
-                            <label>AI Screen Savers</label>
-                            <button class="settings-btn" onclick="openAIScreenSaverModal()">Create Screen Saver</button>
+                            <label>AI 螢幕保護</label>
+                            <button class="settings-btn" onclick="openAIScreenSaverModal()">立即製作</button>
                         </div>
                     </div>
 
-                    <!-- Accessibility -->
                     <div class="settings-section">
-                        <h4>♿ Accessibility</h4>
+                        <h4>♿ 輔助使用</h4>
                         <div class="setting-item">
-                            <label for="highContrast">High Contrast</label>
+                            <label for="highContrast">高對比文字</label>
                             <input type="checkbox" id="highContrast" onchange="toggleHighContrast()">
                         </div>
                         <div class="setting-item">
-                            <label for="reduceMotion">Reduce Motion</label>
+                            <label for="reduceMotion">減少動態效果</label>
                             <input type="checkbox" id="reduceMotion" onchange="toggleReduceMotion()">
                         </div>
                         <div class="setting-item">
-                            <label for="voiceOver">Voice Over</label>
+                            <label for="voiceOver">旁白 (Voice Over)</label>
                             <input type="checkbox" id="voiceOver" onchange="toggleVoiceOver()">
                         </div>
                     </div>
 
-                    <!-- Lock Apps -->
                     <div class="settings-section">
-                        <h4>🔐 Lock Apps</h4>
+                        <h4>🔐 鎖定應用程式</h4>
                         <div class="setting-item">
-                            <label for="lockCalculator">Calculator</label>
+                            <label for="lockCalculator">計算機</label>
                             <input type="checkbox" id="lockCalculator" onchange="toggleLockCalculator()">
                         </div>
                         <div class="setting-item">
-                            <label for="lockCamera">Camera</label>
+                            <label for="lockCamera">相機</label>
                             <input type="checkbox" id="lockCamera" onchange="toggleLockCamera()">
                         </div>
                         <div class="setting-item">
-                            <label for="lockAiToUi">AI to UI</label>
+                            <label for="lockAiToUi">AI 介面定制</label>
                             <input type="checkbox" id="lockAiToUi" onchange="toggleLockAiToUi()">
                         </div>
                         <div class="setting-item">
-                            <label for="lockPhone">Phone</label>
+                            <label for="lockPhone">電話</label>
                             <input type="checkbox" id="lockPhone" onchange="toggleLockPhone()">
                         </div>
                         <div class="setting-item">
-                            <label for="lockAppStore">App Store</label>
+                            <label for="lockAppStore">應用商店</label>
                             <input type="checkbox" id="lockAppStore" onchange="toggleLockAppStore()">
                         </div>
                     </div>
 
-                    <!-- Wallpapers & Screensavers -->
                     <div class="settings-section">
-                        <h4>🖼️ Wallpapers & Screensavers</h4>
+                        <h4>🖼️ 桌布與螢幕保護</h4>
                         <div class="setting-item">
-                            <label>Wallpapers</label>
-                            <button class="settings-btn" onclick="openPhotoWallpaperSettings()">Set Wallpaper</button>
+                            <label>桌布</label>
+                            <button class="settings-btn" onclick="openPhotoWallpaperSettings()">設定桌布</button>
                         </div>
                         <div class="setting-item">
-                            <label>Screen Saver</label>
-                            <button class="settings-btn" onclick="openScreenSaverSettings()">Configure Screensaver</button>
+                            <label>螢幕保護程式</label>
+                            <button class="settings-btn" onclick="openScreenSaverSettings()">配置保護程式</button>
                         </div>
                         <div class="setting-item">
-                            <label for="screensaverTimeout">Screen Saver Timeout</label>
+                            <label for="screensaverTimeout">保護程式啟動時間</label>
                             <select id="screensaverTimeout" onchange="setScreenSaverTimeout()">
-                                <option value="10">10 seconds</option>
-                                <option value="30">30 seconds</option>
-                                <option value="60">1 minute</option>
-                                <option value="300">5 minutes</option>
-                                <option value="never">Never</option>
+                                <option value="10">10 秒</option>
+                                <option value="30">30 秒</option>
+                                <option value="60">1 分鐘</option>
+                                <option value="300">5 分鐘</option>
+                                <option value="never">永不</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Performance -->
                     <div class="settings-section">
-                        <h4>⚡ Performance</h4>
+                        <h4>⚡ 效能</h4>
                         <div class="setting-item">
-                            <label for="lowPowerMode">Low Power Mode</label>
+                            <label for="lowPowerMode">低耗電模式</label>
                             <input type="checkbox" id="lowPowerMode" onchange="toggleLowPowerMode()">
                         </div>
                         <div class="setting-item">
-                            <label for="backgroundRefresh">Background App Refresh</label>
+                            <label for="backgroundRefresh">背景應用程式整理</label>
                             <input type="checkbox" id="backgroundRefresh" checked="" onchange="toggleBackgroundRefresh()">
                         </div>
                         <div class="setting-item">
-                            <label for="animationSpeed">Animation Speed</label>
+                            <label for="animationSpeed">動畫速度</label>
                             <select id="animationSpeed" onchange="setAnimationSpeed()">
-                                <option value="0.5">Fast</option>
-                                <option value="1" selected="">Normal</option>
-                                <option value="1.5">Slow</option>
+                                <option value="0.5">快速</option>
+                                <option value="1" selected="">標準</option>
+                                <option value="1.5">較慢</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Storage -->
                     <div class="settings-section">
-                        <h4>💾 Storage</h4>
+                        <h4>💾 儲存空間</h4>
                         <div class="setting-item">
-                            <label>Used Storage</label>
+                            <label>已使用空間</label>
                             <div class="storage-info">
                                 <div class="storage-bar">
                                     <div class="storage-used" style="width: 45%"></div>
                                 </div>
-                                <span id="storageText">2.1 GB of 5 GB used</span>
+                                <span id="storageText">2.1 GB / 總共 5 GB</span>
                             </div>
                         </div>
                         <div class="setting-item">
-                            <label>Clear Cache</label>
-                            <button class="settings-btn" onclick="clearCache()">Clear Cache</button>
+                            <label>清除快取</label>
+                            <button class="settings-btn" onclick="clearCache()">清除</button>
                         </div>
                         <div class="setting-item">
-                            <label>Backup Data</label>
-                            <button class="settings-btn" onclick="backupData()">Backup Now</button>
-                    <button class="settings-btn" onclick="restoreData()">Restore from Backup</button>
+                            <label>備份資料</label>
+                            <button class="settings-btn" onclick="backupData()">立即備份</button>
+                    <button class="settings-btn" onclick="restoreData()">從備份還原</button>
                         </div>
                     </div>
 
-                    <!-- AI Settings -->
                     <div class="settings-section">
-                        <h4>🤖 AI Settings</h4>
+                        <h4>🤖 AI 設定</h4>
                         <div class="setting-item">
-                            <label>API Status</label>
-                            <span class="status-indicator" id="apiStatus">🟢 Connected</span>
+                            <label>API 狀態</label>
+                            <span class="status-indicator" id="apiStatus">🟢 已連線</span>
                         </div>
                         <div class="setting-item">
-                            <label for="aiSuggestions">AI Suggestions</label>
+                            <label for="aiSuggestions">AI 建議</label>
                             <input type="checkbox" id="aiSuggestions" checked="" onchange="toggleAISuggestions()">
                         </div>
                         <div class="setting-item">
-                            <label for="smartFeatures">Smart Features</label>
+                            <label for="smartFeatures">智慧功能</label>
                             <input type="checkbox" id="smartFeatures" checked="" onchange="toggleSmartFeatures()">
                         </div>
                     </div>
 
-                    <!-- About -->
                     <div class="settings-section">
-                        <h4>ℹ️ About</h4>
+                        <h4>ℹ️ 關於</h4>
                         <div class="setting-item">
-                            <label>Version</label>
+                            <label>版本</label>
                             <span>Mobile OS 3.0</span>
                         </div>
                         <div class="setting-item">
-                            <label>Build</label>
+                            <label>編譯版本</label>
                             <span>2025.06.08</span>
                         </div>
                         <div class="setting-item">
-                            <label>Device Info</label>
-                            <button class="settings-btn" onclick="showDeviceInfo()">View Details</button>
+                            <label>裝置資訊</label>
+                            <button class="settings-btn" onclick="showDeviceInfo()">查看詳情</button>
                         </div>
                     </div>
 
-                    <!-- Reset -->
                     <div class="settings-section">
-                        <h4>🔄 Reset</h4>
+                        <h4>🔄 重設</h4>
                         <div class="setting-item">
-                            <label>Reset All Settings</label>
-                            <button class="settings-btn danger" onclick="resetAllSettings()">Reset Settings</button>
+                            <label>重設所有設定</label>
+                            <button class="settings-btn danger" onclick="resetAllSettings()">重設設定</button>
                         </div>
                         <div class="setting-item">
-                            <label>Factory Reset</label>
-                            <button class="settings-btn danger" onclick="factoryReset()">Erase All Data</button>
+                            <label>恢復原廠設定</label>
+                            <button class="settings-btn danger" onclick="factoryReset()">清除所有資料</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Other dock apps -->
         <div class="app-window" id="phoneApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('phoneApp')">← Back</button>
-                <h3>📞 Phone</h3>
+                <button class="back-btn" onclick="closeApp('phoneApp')">← 返回</button>
+                <h3>📞 電話</h3>
             </div>
             <div class="app-content">
                 <div class="phone-keypad">
-                    <div class="phone-display" id="phoneDisplay">Enter phone number</div>
+                    <div class="phone-display" id="phoneDisplay">請輸入電話號碼</div>
                     <div class="keypad">
                         <button class="key key-3d" onclick="dialNumber('1')">1</button>
                         <button class="key key-3d" onclick="dialNumber('2')">2</button>
@@ -562,31 +536,30 @@
                         <button class="key key-3d" onclick="dialNumber('#')">#</button>
                     </div>
                     <div class="phone-actions">
-                        <button class="phone-action-btn" onclick="deletePhoneDigit()">⌫ Delete</button>
-                        <button class="call-btn">📞 Enter Number</button>
-                        <button class="phone-action-btn" onclick="clearPhoneNumber()">🗑️ Clear</button>
+                        <button class="phone-action-btn" onclick="deletePhoneDigit()">⌫ 刪除</button>
+                        <button class="call-btn">📞 撥號</button>
+                        <button class="phone-action-btn" onclick="clearPhoneNumber()">🗑️ 清除</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- New AI Apps Windows -->
         <div class="app-window" id="mathsAiApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('mathsAiApp')">← Back</button>
-                <h3>Maths AI Calculator</h3>
+                <button class="back-btn" onclick="closeApp('mathsAiApp')">← 返回</button>
+                <h3>數學 AI 計算機</h3>
             </div>
             <div class="app-content">
                 <div class="ai-math-container">
                     <div class="math-history" id="mathHistory"></div>
                     <div class="math-input-section">
-                        <textarea id="mathQuestion" placeholder="Ask any math question... 
-Examples:
-• What is 25% of 80?
-• Solve: 2x + 5 = 15
-• Calculate the area of a circle with radius 7
-• Convert 50°F to Celsius"></textarea>
-                        <button id="solveMath" class="ai-btn">🧮 Solve with AI</button>
+                        <textarea id="mathQuestion" placeholder="詢問任何數學問題... 
+範例：
+• 80 的 25% 是多少？
+• 求解：2x + 5 = 15
+• 計算半徑為 7 的圓面積
+• 將 50°F 轉換為攝氏度"></textarea>
+                        <button id="solveMath" class="ai-btn">🧮 AI 求解</button>
                         <div id="mathStatus" class="ai-status"></div>
                     </div>
                 </div>
@@ -595,29 +568,29 @@ Examples:
 
         <div class="app-window" id="aiMessagesApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('aiMessagesApp')">← Back</button>
-                <h3>AI Messages</h3>
+                <button class="back-btn" onclick="closeApp('aiMessagesApp')">← 返回</button>
+                <h3>AI 訊息</h3>
             </div>
             <div class="app-content">
                 <div class="messages-container">
                     <div class="contacts-list" id="contactsList">
-                        <div class="contact" data-character="girlfriend">💕 Girlfriend</div>
+                        <div class="contact" data-character="girlfriend">💕 女朋友</div>
                         <div class="contact" data-character="emily">👩 Emily</div>
-                        <div class="contact" data-character="angelina">⭐ Angelina Jolie</div>
-                        <div class="contact" data-character="trump">🇺🇸 Donald Trump</div>
-                        <div class="contact" data-character="einstein">🧠 Albert Einstein</div>
-                        <div class="contact" data-character="shakespeare">📚 Shakespeare</div>
-                        <div class="contact" data-character="oprah">📺 Oprah Winfrey</div>
+                        <div class="contact" data-character="angelina">⭐ 安潔莉娜裘莉</div>
+                        <div class="contact" data-character="trump">🇺🇸 唐納川普</div>
+                        <div class="contact" data-character="einstein">🧠 愛因斯坦</div>
+                        <div class="contact" data-character="shakespeare">📚 莎士比亞</div>
+                        <div class="contact" data-character="oprah">📺 歐普拉</div>
                     </div>
                     <div class="chat-area" id="chatArea" style="display: none;">
                         <div class="chat-header">
-                            <button class="back-to-contacts" onclick="showContactsList()">← Contacts</button>
+                            <button class="back-to-contacts" onclick="showContactsList()">← 聯絡人</button>
                             <span id="currentContact"></span>
                         </div>
                         <div class="messages" id="messages"></div>
                         <div class="message-input">
-                            <input type="text" id="messageInput" placeholder="Type a message...">
-                            <button onclick="sendMessage()">Send</button>
+                            <input type="text" id="messageInput" placeholder="輸入訊息...">
+                            <button onclick="sendMessage()">傳送</button>
                         </div>
                     </div>
                 </div>
@@ -626,76 +599,73 @@ Examples:
 
         <div class="app-window" id="aiAssistantApp">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('aiAssistantApp')">← Back</button>
-                <h3>AI Assistant</h3>
+                <button class="back-btn" onclick="closeApp('aiAssistantApp')">← 返回</button>
+                <h3>AI 助手</h3>
             </div>
             <div class="app-content">
                 <div class="assistant-container">
                     <div class="assistant-chat" id="assistantChat"></div>
                     <div class="assistant-input-section">
-                        <textarea id="assistantInput" placeholder="Ask me anything... I can help with:
-• General questions and advice
-• Creative writing and ideas  
-• Problem solving
-• Learning and explanations
-• Planning and organization"></textarea>
-                        <button id="askAssistant" class="ai-btn">💬 Ask Assistant</button>
+                        <textarea id="assistantInput" placeholder="隨便問我... 我可以幫你：
+• 答疑與建議
+• 創意寫作與靈感
+• 解決問題
+• 知識學習與解釋
+• 規劃與組織"></textarea>
+                        <button id="askAssistant" class="ai-btn">💬 詢問助手</button>
                         <div id="assistantStatus" class="ai-status"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- AIOS Switcher App Window -->
         <div class="app-window" id="aosSwitcherApp">
             <div class="app-content aos-switcher-app">
                 <iframe id="aosSwitcherIframe" src="aios-switcher.html" style="width: 100%; height: 100%; border: none; border-radius: 0; pointer-events: auto;"></iframe>
             </div>
-            <!-- Shield div to block iframe clicks in button area -->
             <div class="button-shield"></div>
             <button class="aos-close-icon aios-close-btn" onclick="closeApp('aosSwitcherApp')">✕</button>
         </div>
 
-        <!-- AI Wallpaper Modal -->
         <div class="ai-wallpaper-modal" id="aiWallpaperModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🎨 AI Wallpaper Generator</h3>
+                    <h3>🎨 AI 桌布產生器</h3>
                     <button class="modal-close-btn" onclick="closeAIWallpaperModal()">✕</button>
                 </div>
                 <div class="modal-body">
                     <div class="ai-wallpaper-section">
-                        <h4>Describe your dream wallpaper</h4>
-                        <textarea id="wallpaperPrompt" placeholder="Enter a detailed description of the wallpaper you want to generate...
+                        <h4>描述你的夢幻桌布</h4>
+                        <textarea id="wallpaperPrompt" placeholder="輸入你想要生成的桌布詳細描述...
 
-Examples:
-• A serene mountain landscape at sunset with purple and orange skies
-• Abstract geometric patterns in blue and gold
-• A minimalist cityscape with neon lights
-• A peaceful forest with sunlight filtering through trees
-• A cosmic galaxy with swirling stars and nebula"></textarea>
+範例：
+• 日落時分寧靜的山景，紫色與橙色的天空
+• 藍色與金色的抽象幾何圖案
+• 帶有霓虹燈的極簡城市街景
+• 陽光穿透樹林的寧靜森林
+• 帶有旋轉星雲的宇宙銀河"></textarea>
                         <div class="ai-wallpaper-controls">
                             <button id="generateWallpaperBtn" class="ai-wallpaper-btn primary" onclick="generateAIWallpaper()">
-                                🎨 Generate Wallpaper
+                                🎨 生成桌布
                             </button>
                             <button id="clearPromptBtn" class="ai-wallpaper-btn secondary" onclick="clearWallpaperPrompt()">
-                                🗑️ Clear
+                                🗑️ 清除
                             </button>
                         </div>
                         <div id="wallpaperStatus" class="ai-wallpaper-status"></div>
                     </div>
                     
                     <div class="generated-wallpaper-section" id="generatedWallpaperSection" style="display: none;">
-                        <h4>Generated Wallpaper</h4>
+                        <h4>生成的桌布</h4>
                         <div class="wallpaper-preview">
-                            <img id="generatedWallpaperImg" src="" alt="Generated Wallpaper">
+                            <img id="generatedWallpaperImg" src="" alt="生成的桌布">
                         </div>
                         <div class="wallpaper-actions">
                             <button id="applyWallpaperBtn" class="ai-wallpaper-btn primary" onclick="applyGeneratedWallpaper()">
-                                📱 Apply to Home Screen
+                                📱 套用到主畫面
                             </button>
                             <button id="regenerateBtn" class="ai-wallpaper-btn secondary" onclick="regenerateWallpaper()">
-                                🔄 Generate New
+                                🔄 重新生成
                             </button>
                         </div>
                     </div>
@@ -703,78 +673,77 @@ Examples:
             </div>
         </div>
 
-        <!-- AI Screen Saver Modal -->
         <div class="ai-screen-saver-modal" id="aiScreenSaverModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🎨 AI Screen Saver Generator</h3>
+                    <h3>🎨 AI 螢幕保護產生器</h3>
                     <button class="modal-close-btn" onclick="closeAIScreenSaverModal()">✕</button>
                 </div>
                 <div class="modal-body">
                     <div class="ai-screen-saver-section">
-                        <h4>Describe your animated screen saver</h4>
-                        <textarea id="screenSaverPrompt" placeholder="Enter a detailed description of the animated screen saver you want to generate...
+                        <h4>描述你的動畫保護程式</h4>
+                        <textarea id="screenSaverPrompt" placeholder="輸入你想要生成的動畫螢幕保護詳細描述...
 
-Examples:
-• A peaceful forest with floating leaves and gentle wind
-• A cosmic galaxy with swirling stars and nebula clouds
-• A serene ocean with waves and flying seagulls
-• A magical garden with blooming flowers and butterflies
-• A mountain landscape with flowing clouds and birds
-• A cityscape with twinkling lights and moving cars"></textarea>
+範例：
+• 落葉飄飄、微風吹拂的寧靜森林
+• 旋轉星辰與星雲雲團的宇宙銀河
+• 海浪波動與海鷗飛翔的寧靜海洋
+• 花朵綻放、蝴蝶飛舞的魔法花園
+• 雲霧流動、鳥兒翱翔的山景
+• 燈光閃爍、車流移動的城市夜景"></textarea>
                         <div class="ai-screen-saver-controls">
                             <button id="generateScreenSaverBtn" class="ai-screen-saver-btn primary" onclick="generateAIScreenSaver()">
-                                🎨 Generate Screen Saver
+                                🎨 生成保護程式
                             </button>
                             <button id="clearScreenSaverPromptBtn" class="ai-screen-saver-btn secondary" onclick="clearScreenSaverPrompt()">
-                                🗑️ Clear
+                                🗑️ 清除
                             </button>
                         </div>
                         <div id="screenSaverStatus" class="ai-screen-saver-status"></div>
                     </div>
                     
                     <div class="generated-screen-saver-section" id="generatedScreenSaverSection" style="display: none;">
-                        <h4>Generated Screen Saver</h4>
+                        <h4>生成的畫面</h4>
                         <div class="screen-saver-preview">
-                            <img id="generatedScreenSaverImg" src="" alt="Generated Screen Saver">
+                            <img id="generatedScreenSaverImg" src="" alt="生成的螢幕保護">
                         </div>
                         
                         <div class="animation-options">
-                            <h4>Choose Animation Effect</h4>
+                            <h4>選擇動畫效果</h4>
                             <div class="animation-grid">
                                 <div class="animation-option" data-animation="floating" onclick="selectAnimation('floating')">
                                     <div class="animation-preview floating-preview">✨</div>
-                                    <span>Floating</span>
+                                    <span>飄浮</span>
                                 </div>
                                 <div class="animation-option" data-animation="rotating" onclick="selectAnimation('rotating')">
                                     <div class="animation-preview rotating-preview">🌀</div>
-                                    <span>Rotating</span>
+                                    <span>旋轉</span>
                                 </div>
                                 <div class="animation-option" data-animation="pulsing" onclick="selectAnimation('pulsing')">
                                     <div class="animation-preview pulsing-preview">💫</div>
-                                    <span>Pulsing</span>
+                                    <span>脈動</span>
                                 </div>
                                 <div class="animation-option" data-animation="dancing" onclick="selectAnimation('dancing')">
                                     <div class="animation-preview dancing-preview">🎭</div>
-                                    <span>Dancing</span>
+                                    <span>跳動</span>
                                 </div>
                                 <div class="animation-option" data-animation="swirling" onclick="selectAnimation('swirling')">
                                     <div class="animation-preview swirling-preview">🌪️</div>
-                                    <span>Swirling</span>
+                                    <span>漩渦</span>
                                 </div>
                                 <div class="animation-option" data-animation="glowing" onclick="selectAnimation('glowing')">
                                     <div class="animation-preview glowing-preview">🌟</div>
-                                    <span>Glowing</span>
+                                    <span>發光</span>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="screen-saver-actions">
                             <button id="applyScreenSaverBtn" class="ai-screen-saver-btn primary" onclick="applyGeneratedScreenSaver()">
-                                📱 Apply to Screen Saver
+                                📱 套用保護程式
                             </button>
                             <button id="regenerateScreenSaverBtn" class="ai-screen-saver-btn secondary" onclick="regenerateScreenSaver()">
-                                🔄 Generate New
+                                🔄 重新生成
                             </button>
                         </div>
                     </div>
@@ -782,11 +751,10 @@ Examples:
             </div>
         </div>
 
-        <!-- Loading Screen -->
         <div class="loading-screen" id="loadingScreen">
             <div class="loading-content">
                 <div class="loading-spinner"></div>
-                <p id="loadingText">Installing App...</p>
+                <p id="loadingText">正在安裝應用程式...</p>
             </div>
         </div>
     
