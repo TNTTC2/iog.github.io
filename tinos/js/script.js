@@ -233,7 +233,7 @@ function openApp(appName) {
         'ai-messages': 'aiMessagesApp',
         'ai-assistant': 'aiAssistantApp',
         'terminal': 'terminalApp',
-        'tnte': 'tnteApp',
+        'cydia2': 'cydia2App',
         'aos-switcher': 'aosSwitcherApp'
     };
 
@@ -1118,9 +1118,9 @@ function installApp(appId, appType = 'app', appUrl = '', onComplete) {
 function openInstalledApp(appId) {
     if (appId === 'ai-calculator') {
         openAICalculator();
-    } else if (appId === 'tnte') {
+    } else if (appId === 'cydia2') {
         // Open Cydia2 in the app window instead of new tab
-        openApp('tnte');
+        openApp('cydia2');
     } else {
         // Find the app in installed apps
         const app = installedApps.find(installed => installed.id === appId);
@@ -1172,10 +1172,10 @@ async function addAppToHomeScreen(appInfo) {
         
         // Create icon with consistent sizing
         let iconElement;
-        if (appData.id === 'tnte') {
+        if (appData.id === 'cydia2') {
             // Special handling for Cydia2 with image icon
-            iconElement = `<div class="icon thte" style="background-color: ${appData.iconColor || '#f39c12'}; width: 65px; height: 65px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/1024px-Safari_browser_logo.svg.png" alt="tnte icon" style="width: 100%; height: 100%; object-fit: contain;">
+            iconElement = `<div class="icon cydia2" style="background-color: ${appData.iconColor || '#f39c12'}; width: 65px; height: 65px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <img src="icons/cydia2.png" alt="cydia2 icon" style="width: 100%; height: 100%; object-fit: contain;">
             </div>`;
         } else if (appData.icon.startsWith('http')) {
             iconElement = `<img src="${appData.icon}" alt="${appData.name}" style="width: 65px; height: 65px; object-fit: cover; border-radius: 15px;" onerror="createFallbackIcon(this, '${appData.fallbackIcon || 'smartphone'}', '${appData.iconColor || '#667eea'}')">
@@ -1198,9 +1198,9 @@ async function addAppToHomeScreen(appInfo) {
         `;
         
         appIcon.addEventListener('click', function() {
-            if (appData.id === 'tnte') {
+            if (appData.id === 'cydia2') {
                 // Open Cydia2 in app window
-                openApp('tnte');
+                openApp('cydia2');
             } else if (appData.type === 'website' && appData.url) {
                 // Open website in new tab/window
                 window.open(appData.url, '_blank');
@@ -3571,7 +3571,7 @@ function analyzeThemePrompt(prompt) {
     const lowerPrompt = prompt.toLowerCase();
     
     // Enhanced Color Analysis with 50+ color combinations
-        let colors = { primary: '#667eea', secondary: '#764ba2', accent: '#ff6b9d', text: '#ffffff' };
+    let colors = { primary: '#667eea', secondary: '#764ba2', accent: '#ff6b9d', text: '#ffffff' };
     
     if (lowerPrompt.includes('purple') || lowerPrompt.includes('neon') || lowerPrompt.includes('cyberpunk')) {
         colors = { primary: '#8b5cf6', secondary: '#a855f7', accent: '#06ffa5', text: '#00ffff' };
@@ -6989,6 +6989,7 @@ window.addEventListener('load', function() {
         loadSavedWallpapers();
     }, 1000);
 });
+// ... existing code ...
 // ... existing code ...
 // 強制隱藏指定的 App 圖標邏輯
 (function() {
