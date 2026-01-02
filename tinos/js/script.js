@@ -3571,29 +3571,53 @@ function analyzeThemePrompt(prompt) {
     const lowerPrompt = prompt.toLowerCase();
     
     // Enhanced Color Analysis with 50+ color combinations
-    let colors = { primary: '#667eea', secondary: '#764ba2', accent: '#ff6b9d', text: '#ffffff' };
+        let colors = { primary: '#667eea', secondary: '#764ba2', accent: '#ff6b9d', text: '#ffffff' };
     
-    if (lowerPrompt.includes('purple') || lowerPrompt.includes('neon') || lowerPrompt.includes('cyberpunk')) {
+    // 紫色系 - 氛圍：科幻、神祕、浪漫、迷幻
+    if (['purple', 'neon', 'cyberpunk', '紫色', '紫紫地', '霓虹', '幻彩', '未來感', '科幻', '茄子色', '𩚨紫', '神祕感', '迷幻', '浪漫風'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#8b5cf6', secondary: '#a855f7', accent: '#06ffa5', text: '#00ffff' };
-    } else if (lowerPrompt.includes('green') || lowerPrompt.includes('nature') || lowerPrompt.includes('forest')) {
+    } 
+    // 綠色系 - 心情：平靜、舒服、Hea、佛系、生機
+    else if (['green', 'nature', 'forest', '綠色', '綠油油', '綠袖子', '翠綠', '草地色', '森系', '放鬆', '平靜', 'hea', '悠閒', '舒服', '舒坦', '佛系', '清靜', '生機'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#10b981', secondary: '#059669', accent: '#34d399', text: '#ffffff' };
-    } else if (lowerPrompt.includes('blue') || lowerPrompt.includes('ocean') || lowerPrompt.includes('water')) {
+    } 
+    // 藍色系 - 心情：憂鬱、灰咗、Emo、寂寞、頹廢
+    else if (['blue', 'ocean', 'water', '藍色', '海洋色', '大海色', '藍藍地', '天藍', '青花瓷', '蔚藍', '深海', '憂鬱', '灰咗', 'emo', '寂寞', '想喊', '頹廢', '心淡', 'sad', '抑鬱'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#3b82f6', secondary: '#1d4ed8', accent: '#60a5fa', text: '#ffffff' };
-    } else if (lowerPrompt.includes('red') || lowerPrompt.includes('fire') || lowerPrompt.includes('sunset')) {
+    } 
+    // 紅色系 - 心情：好嬲、火滾、熱血、衝勁、狂熱、火大
+    else if (['red', 'sunset', '紅色', '烈火', '夕陽色', '辣', '熱烈', '紅吱吱', '大紅', '紅卜卜', '火紅', '好嬲', '發火', '火滾', '熱血', '衝勁', '嬲爆爆', '氣炸', '心火盛', '抓狂', '火大', '袂爽', '激進'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#ef4444', secondary: '#dc2626', accent: '#fbbf24', text: '#ffffff' };
-    } else if (lowerPrompt.includes('pink') || lowerPrompt.includes('love') || lowerPrompt.includes('heart')) {
+    } 
+    // 粉色系 - 心情：冧、甜蜜、放閃、初戀、幸福
+    else if (['pink', 'romantic', '粉紅', '粉紅色', '少女心', '粉粉地', '粉油抄手', '冧滋滋', '甜蜜', '放閃', '甜到漏', '糖黐豆', '初戀感', '幸福感', '怕醜', '面紅'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#ec4899', secondary: '#be185d', accent: '#f472b6', text: '#ffffff' };
-    } else if (lowerPrompt.includes('gold') || lowerPrompt.includes('golden') || lowerPrompt.includes('luxury')) {
+    } 
+    // 金色系 - 心情：發財、富貴、高貴、招財、揪格（帥氣）
+    else if (['gold', 'golden', 'luxury', '金色', '金閃閃', '金爍爍', '奢華感', '高貴', '滿城盡帶黃金甲', '發財色', '富貴', '登樣', '貴氣', '招財', '揪格', '高級感'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#fbbf24', secondary: '#f59e0b', accent: '#fffbeb', text: '#92400e' };
-    } else if (lowerPrompt.includes('silver') || lowerPrompt.includes('chrome') || lowerPrompt.includes('metallic')) {
+    } 
+    // 銀色系 - 氛圍：金屬、冷酷、皮皮剉、孤傲
+    else if (['silver', 'chrome', 'metallic', '銀色', '金屬感', '鋼鐵色', '銀閃閃', '亮銀', '鈦鋼色', '冷酷', '皮皮剉', '畏寒', '孤傲', '科幻風', '冷感'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#94a3b8', secondary: '#64748b', accent: '#f1f5f9', text: '#1e293b' };
-    } else if (lowerPrompt.includes('rainbow') || lowerPrompt.includes('colorful') || lowerPrompt.includes('vibrant')) {
+    } 
+    // 彩虹系 - 心情：開心、興奮、爽、雀躍、盞鬼
+    else if (['rainbow', 'colorful', 'vibrant', '彩色', '多色', '鮮艷', '七彩', '繽紛', '五彩', '花哩碌', '花喇喇', '開心', '興奮', '爽歪歪', '歡樂', '雀躍', '盞鬼', '好型', '正點'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#ec4899', secondary: '#8b5cf6', accent: '#06ffa5', text: '#ffffff' };
-    } else if (lowerPrompt.includes('orange') || lowerPrompt.includes('autumn') || lowerPrompt.includes('warm')) {
+    } 
+    // 橙色系 - 心情：溫暖、舒服、有朝氣、活力
+    else if (['orange', 'autumn', 'warm', '橙色', '秋天感', '暖色系', '夕陽紅', '鹹蛋黃色', '暖洋洋', '溫馨', '朝氣', '陽光', '活力', '親切'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#f97316', secondary: '#ea580c', accent: '#fed7aa', text: '#ffffff' };
-    } else if (lowerPrompt.includes('black') || lowerPrompt.includes('dark') || lowerPrompt.includes('minimal')) {
+    } 
+    // 黑色系 - 心情：沈重、黑人問號、黑鼆鼆、懞查查、衰小（倒霉）
+    else if (['black', 'dark', 'minimal', '黑色', '黑暗風', '暗黑系', '極簡風', '型格', '黑鼆鼆', '墨色', '冷淡風', '沈重', '黑人問號', '懞查查', '霧煞煞', '衰小', '倒霉', '陰暗'].some(k => lowerPrompt.includes(k))) {
         colors = { primary: '#000000', secondary: '#1f1f1f', accent: '#ffffff', text: '#ffffff' };
     }
+    // 白色系 - 心情：純淨、佛系、空白、素雅、簡約
+    else if (['white', 'pure', 'clean', '白色', '白雪雪', '純淨感', '簡潔', '雪白色', '白帥帥', '佛系', '空白', '安穩', '素雅', '清爽'].some(k => lowerPrompt.includes(k))) {
+        colors = { primary: '#ffffff', secondary: '#f3f4f6', accent: '#6366f1', text: '#1f2937' };
+    }
+
     
     // Comprehensive Shape Analysis - 30+ shapes
     let iconShape = 'circle';
