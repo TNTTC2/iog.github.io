@@ -310,10 +310,6 @@
                             <button class="settings-btn" onclick="openPasscodeSettings()">管理密碼</button>
                         </div>
                         <div class="setting-item">
-                            <label for="biometrics">Face ID / Touch ID</label>
-                            <input type="checkbox" id="biometrics" onchange="toggleBiometrics()">
-                        </div>
-                        <div class="setting-item">
                             <label for="autoLock">自動鎖定</label>
                             <select id="autoLock" onchange="setAutoLock()">
                                 <option value="30">30 秒</option>
@@ -353,35 +349,19 @@
                     <div class="settings-section">
                         <h4>🎨 自製桌布與螢幕保護</h4>
                         <div class="setting-item">
-                            <label>生成 AI 桌布</label>
+                            <label>自製桌布</label>
                             <button class="settings-btn" onclick="openAIWallpaperModal()">立即製作</button>
                         </div>
                         <div class="setting-item">
-                            <label>AI 螢幕保護</label>
+                            <label>自製螢幕保護</label>
                             <button class="settings-btn" onclick="openAIScreenSaverModal()">立即製作</button>
-                        </div>
-                    </div>
-
-                    <div class="settings-section">
-                        <h4>♿ 輔助使用</h4>
-                        <div class="setting-item">
-                            <label for="highContrast">高對比文字</label>
-                            <input type="checkbox" id="highContrast" onchange="toggleHighContrast()">
-                        </div>
-                        <div class="setting-item">
-                            <label for="reduceMotion">減少動態效果</label>
-                            <input type="checkbox" id="reduceMotion" onchange="toggleReduceMotion()">
-                        </div>
-                        <div class="setting-item">
-                            <label for="voiceOver">旁白 (Voice Over)</label>
-                            <input type="checkbox" id="voiceOver" onchange="toggleVoiceOver()">
                         </div>
                     </div>
 
                     <div class="settings-section">
                         <h4>🔐 鎖定應用程式</h4>
                         <div class="setting-item">
-                            <label for="lockCalculator">計算機</label>
+                            <label for="lockCalculator">計算</label>
                             <input type="checkbox" id="lockCalculator" onchange="toggleLockCalculator()">
                         </div>
                         <div class="setting-item">
@@ -389,7 +369,7 @@
                             <input type="checkbox" id="lockCamera" onchange="toggleLockCamera()">
                         </div>
                         <div class="setting-item">
-                            <label for="lockAiToUi">AI 介面定制</label>
+                            <label for="lockAiToUi">定制</label>
                             <input type="checkbox" id="lockAiToUi" onchange="toggleLockAiToUi()">
                         </div>
                         <div class="setting-item">
@@ -397,7 +377,7 @@
                             <input type="checkbox" id="lockPhone" onchange="toggleLockPhone()">
                         </div>
                         <div class="setting-item">
-                            <label for="lockAppStore">應用商店</label>
+                            <label for="lockAppStore">商店</label>
                             <input type="checkbox" id="lockAppStore" onchange="toggleLockAppStore()">
                         </div>
                     </div>
@@ -425,26 +405,6 @@
                     </div>
 
                     <div class="settings-section">
-                        <h4>⚡ 效能</h4>
-                        <div class="setting-item">
-                            <label for="lowPowerMode">低耗電模式</label>
-                            <input type="checkbox" id="lowPowerMode" onchange="toggleLowPowerMode()">
-                        </div>
-                        <div class="setting-item">
-                            <label for="backgroundRefresh">背景應用程式整理</label>
-                            <input type="checkbox" id="backgroundRefresh" checked="" onchange="toggleBackgroundRefresh()">
-                        </div>
-                        <div class="setting-item">
-                            <label for="animationSpeed">動畫速度</label>
-                            <select id="animationSpeed" onchange="setAnimationSpeed()">
-                                <option value="0.5">快速</option>
-                                <option value="1" selected="">標準</option>
-                                <option value="1.5">較慢</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="settings-section">
                         <h4>💾 儲存空間</h4>
                         <div class="setting-item">
                             <label>已使用空間</label>
@@ -463,22 +423,6 @@
                             <label>備份資料</label>
                             <button class="settings-btn" onclick="backupData()">立即備份</button>
                     <button class="settings-btn" onclick="restoreData()">從備份還原</button>
-                        </div>
-                    </div>
-
-                    <div class="settings-section">
-                        <h4>[___]</h4>
-                        <div class="setting-item">
-                            <label>[___]</label>
-                            <span class="status-indicator" id="apiStatus">🟢 [___]</span>
-                        </div>
-                        <div class="setting-item">
-                            <label for="aiSuggestions">[___]</label>
-                            <input type="checkbox" id="aiSuggestions" checked="" onchange="toggleAISuggestions()">
-                        </div>
-                        <div class="setting-item">
-                            <label for="smartFeatures">[___]</label>
-                            <input type="checkbox" id="smartFeatures" checked="" onchange="toggleSmartFeatures()">
                         </div>
                     </div>
 
@@ -676,7 +620,7 @@
         <div class="ai-screen-saver-modal" id="aiScreenSaverModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🎨 自製螢幕保護產生器</h3>
+                    <h3>🎨 自製螢幕保護器</h3>
                     <button class="modal-close-btn" onclick="closeAIScreenSaverModal()">✕</button>
                 </div>
                 <div class="modal-body">
