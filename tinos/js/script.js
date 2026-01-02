@@ -3573,111 +3573,94 @@ function analyzeThemePrompt(prompt) {
     // Enhanced Color Analysis with 50+ color combinations
         let colors = { primary: '#667eea', secondary: '#764ba2', accent: '#ff6b9d', text: '#ffffff' };
     
-    // 紫色系 - 氛圍：科幻、神祕、浪漫、迷幻
-    if (['purple', 'neon', 'cyberpunk', '紫色', '紫紫地', '霓虹', '幻彩', '未來感', '科幻', '茄子色', '𩚨紫', '神祕感', '迷幻', '浪漫風'].some(k => lowerPrompt.includes(k))) {
+    if (lowerPrompt.includes('purple') || lowerPrompt.includes('neon') || lowerPrompt.includes('cyberpunk')) {
         colors = { primary: '#8b5cf6', secondary: '#a855f7', accent: '#06ffa5', text: '#00ffff' };
-    } 
-    // 綠色系 - 心情：平靜、舒服、Hea、佛系、生機
-    else if (['green', 'nature', 'forest', '綠色', '綠油油', '綠袖子', '翠綠', '草地色', '森系', '放鬆', '平靜', 'hea', '悠閒', '舒服', '舒坦', '佛系', '清靜', '生機'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('green') || lowerPrompt.includes('nature') || lowerPrompt.includes('forest')) {
         colors = { primary: '#10b981', secondary: '#059669', accent: '#34d399', text: '#ffffff' };
-    } 
-    // 藍色系 - 心情：憂鬱、灰咗、Emo、寂寞、頹廢
-    else if (['blue', 'ocean', 'water', '藍色', '海洋色', '大海色', '藍藍地', '天藍', '青花瓷', '蔚藍', '深海', '憂鬱', '灰咗', 'emo', '寂寞', '想喊', '頹廢', '心淡', 'sad', '抑鬱'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('blue') || lowerPrompt.includes('ocean') || lowerPrompt.includes('water')) {
         colors = { primary: '#3b82f6', secondary: '#1d4ed8', accent: '#60a5fa', text: '#ffffff' };
-    } 
-    // 紅色系 - 心情：好嬲、火滾、熱血、衝勁、狂熱、火大
-    else if (['red', 'sunset', '紅色', '烈火', '夕陽色', '辣', '熱烈', '紅吱吱', '大紅', '紅卜卜', '火紅', '好嬲', '發火', '火滾', '熱血', '衝勁', '嬲爆爆', '氣炸', '心火盛', '抓狂', '火大', '袂爽', '激進'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('red') || lowerPrompt.includes('fire') || lowerPrompt.includes('sunset')) {
         colors = { primary: '#ef4444', secondary: '#dc2626', accent: '#fbbf24', text: '#ffffff' };
-    } 
-    // 粉色系 - 心情：冧、甜蜜、放閃、初戀、幸福
-    else if (['pink', 'romantic', '粉紅', '粉紅色', '少女心', '粉粉地', '粉油抄手', '冧滋滋', '甜蜜', '放閃', '甜到漏', '糖黐豆', '初戀感', '幸福感', '怕醜', '面紅'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('pink') || lowerPrompt.includes('love') || lowerPrompt.includes('heart')) {
         colors = { primary: '#ec4899', secondary: '#be185d', accent: '#f472b6', text: '#ffffff' };
-    } 
-    // 金色系 - 心情：發財、富貴、高貴、招財、揪格（帥氣）
-    else if (['gold', 'golden', 'luxury', '金色', '金閃閃', '金爍爍', '奢華感', '高貴', '滿城盡帶黃金甲', '發財色', '富貴', '登樣', '貴氣', '招財', '揪格', '高級感'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('gold') || lowerPrompt.includes('golden') || lowerPrompt.includes('luxury')) {
         colors = { primary: '#fbbf24', secondary: '#f59e0b', accent: '#fffbeb', text: '#92400e' };
-    } 
-    // 銀色系 - 氛圍：金屬、冷酷、皮皮剉、孤傲
-    else if (['silver', 'chrome', 'metallic', '銀色', '金屬感', '鋼鐵色', '銀閃閃', '亮銀', '鈦鋼色', '冷酷', '皮皮剉', '畏寒', '孤傲', '科幻風', '冷感'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('silver') || lowerPrompt.includes('chrome') || lowerPrompt.includes('metallic')) {
         colors = { primary: '#94a3b8', secondary: '#64748b', accent: '#f1f5f9', text: '#1e293b' };
-    } 
-    // 彩虹系 - 心情：開心、興奮、爽、雀躍、盞鬼
-    else if (['rainbow', 'colorful', 'vibrant', '彩色', '多色', '鮮艷', '七彩', '繽紛', '五彩', '花哩碌', '花喇喇', '開心', '興奮', '爽歪歪', '歡樂', '雀躍', '盞鬼', '好型', '正點'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('rainbow') || lowerPrompt.includes('colorful') || lowerPrompt.includes('vibrant')) {
         colors = { primary: '#ec4899', secondary: '#8b5cf6', accent: '#06ffa5', text: '#ffffff' };
-    } 
-    // 橙色系 - 心情：溫暖、舒服、有朝氣、活力
-    else if (['orange', 'autumn', 'warm', '橙色', '秋天感', '暖色系', '夕陽紅', '鹹蛋黃色', '暖洋洋', '溫馨', '朝氣', '陽光', '活力', '親切'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('orange') || lowerPrompt.includes('autumn') || lowerPrompt.includes('warm')) {
         colors = { primary: '#f97316', secondary: '#ea580c', accent: '#fed7aa', text: '#ffffff' };
-    } 
-    // 黑色系 - 心情：沈重、黑人問號、黑鼆鼆、懞查查、衰小（倒霉）
-    else if (['black', 'dark', 'minimal', '黑色', '黑暗風', '暗黑系', '極簡風', '型格', '黑鼆鼆', '墨色', '冷淡風', '沈重', '黑人問號', '懞查查', '霧煞煞', '衰小', '倒霉', '陰暗'].some(k => lowerPrompt.includes(k))) {
+    } else if (lowerPrompt.includes('black') || lowerPrompt.includes('dark') || lowerPrompt.includes('minimal')) {
         colors = { primary: '#000000', secondary: '#1f1f1f', accent: '#ffffff', text: '#ffffff' };
     }
-    // 白色系 - 心情：純淨、佛系、空白、素雅、簡約
-    else if (['white', 'pure', 'clean', '白色', '白雪雪', '純淨感', '簡潔', '雪白色', '白帥帥', '佛系', '空白', '安穩', '素雅', '清爽'].some(k => lowerPrompt.includes(k))) {
-        colors = { primary: '#ffffff', secondary: '#f3f4f6', accent: '#6366f1', text: '#1f2937' };
-    }
-
     
     // Comprehensive Shape Analysis - 30+ shapes
     let iconShape = 'circle';
     const shapeMap = {
-            const shapeMap = {
-        'square': ['square', 'geometric', 'box', '方', '方塊', '方格', '方形', '正方形', '四方', '四方形', '方方', '磚頭', '豆腐'],
-        'rectangle': ['rectangle', 'rectangular', 'horizontal', '矩形', '長方形', '長方', '扁方', '磚仔'],
-        'circle': ['circle', 'round', 'circular', '圓', '圓形', '圓圈', '圓咕碌', '圓圈圈', '圓督督', '波波'],
-        'triangle': ['triangle', 'triangular', 'arrow', '三角', '三角形', '箭頭', '衫角', '三角尖', '山形'],
-        'pentagon': ['pentagon', 'five', '五角', '五邊', '五邊形', '五角形'],
-        'hexagon': ['hexagon', 'six', 'honeycomb', '六角', '六邊', '六邊形', '六角形', '讚不絕口'],
-        'heptagon': ['heptagon', 'seven', '七角', '七邊', '七邊形'],
-        'octagon': ['octagon', 'eight', 'stop', '八角', '八邊', '八邊形'],
-        'nonagon': ['nonagon', 'nine', '九角', '九邊', '九邊形'],
-        'decagon': ['decagon', 'ten', '十角', '十邊', '十邊形'],
-        'star': ['star', 'cosmic', 'space', 'stellar', '星', '星星', '五角星', '星形', '聲星', '閃閃'],
-        'oval': ['oval', 'ellipse', 'egg', '橢圓', '卵形', '蛋形', '蛋蛋', '鵝蛋形', '蛋形仔'],
-        'trapezoid': ['trapezoid', 'trapezium', '梯形', '梯仔'],
-        'parallelogram': ['parallelogram', 'slanted', '平行四邊形', '斜形', '斜邊', '歪斜'],
-        'rhombus': ['rhombus', 'diamond', '菱形', '菱', '菱角'],
-        'kite': ['kite', 'flying', '鳶形', '風箏形', '風箏'],
-        'heart': ['heart', 'love', 'romantic', '愛心', '心形', '心心', '心', '心跳'],
-        'crescent': ['crescent', 'moon', 'lunar', '新月', '月亮', '月牙', '月亮仔', '彎月', '香蕉形'],
-        'arrow': ['arrow', 'pointer', 'direction', '箭頭', '指針', '方向', '箭', '箭咀'],
-        'cross': ['cross', 'plus', 'medical', '十字', '加號', '交叉', '十字架', '加仔', '十仔'],
-        'spiral': ['spiral', 'swirl', 'vortex', '螺旋', '漩渦', '螺絲', '圈圈', '圈下圈下', '蚊香'],
-        'diamond': ['diamond', 'crystal', 'gem', '鑽石', '晶體', '鑽', '閃石'],
-        'semicircle': ['semicircle', 'half', 'arch', '半圓', '拱形', '半圓形', '半月', '切開一半'],
-        'lshape': ['l-shape', 'lshape', 'corner', 'L型', '轉角', 'L形', '直角'],
-        'tshape': ['t-shape', 'tshape', 'junction', 'T型', '交叉口', 'T形', '丁字'],
-        'teardrop': ['teardrop', 'drop', 'water', '淚滴', '水滴', '水珠', '滴下'],
-        'shield': ['shield', 'protection', 'security', '盾牌', '防護', '盾', '板'],
-        'cloud': ['cloud', 'fluffy', 'weather', '雲', '雲朵', '雲片', '雲雲'],
-        'blob': ['blob', 'organic', 'amorphous', 'irregular', '水漬', '不規則', '團塊', '一pat', '一舊', '軟淋淋']
+        'square': ['square', 'geometric', 'box'],
+        'rectangle': ['rectangle', 'rectangular', 'horizontal'],
+        'circle': ['circle', 'round', 'circular'],
+        'triangle': ['triangle', 'triangular', 'arrow'],
+        'pentagon': ['pentagon', 'five'],
+        'hexagon': ['hexagon', 'six', 'honeycomb'],
+        'heptagon': ['heptagon', 'seven'],
+        'octagon': ['octagon', 'eight', 'stop'],
+        'nonagon': ['nonagon', 'nine'],
+        'decagon': ['decagon', 'ten'],
+        'star': ['star', 'cosmic', 'space', 'stellar'],
+        'oval': ['oval', 'ellipse', 'egg'],
+        'trapezoid': ['trapezoid', 'trapezium'],
+        'parallelogram': ['parallelogram', 'slanted'],
+        'rhombus': ['rhombus', 'diamond'],
+        'kite': ['kite', 'flying'],
+        'heart': ['heart', 'love', 'romantic'],
+        'crescent': ['crescent', 'moon', 'lunar'],
+        'arrow': ['arrow', 'pointer', 'direction'],
+        'cross': ['cross', 'plus', 'medical'],
+        'spiral': ['spiral', 'swirl', 'vortex'],
+        'diamond': ['diamond', 'crystal', 'gem'],
+        'semicircle': ['semicircle', 'half', 'arch'],
+        'lshape': ['l-shape', 'lshape', 'corner'],
+        'tshape': ['t-shape', 'tshape', 'junction'],
+        'teardrop': ['teardrop', 'drop', 'water'],
+        'shield': ['shield', 'protection', 'security'],
+        'cloud': ['cloud', 'fluffy', 'weather'],
+        'blob': ['blob', 'organic', 'amorphous', 'irregular']
     };
-
+    
+    for (const [shape, keywords] of Object.entries(shapeMap)) {
+        if (keywords.some(keyword => lowerPrompt.includes(keyword))) {
+            iconShape = shape;
+            break;
+        }
+    }
+    
+    // Comprehensive Animation Analysis - 20+ animations
+    let animation = 'none';
     const animationMap = {
-        'jumping': ['jump', 'jumping', 'hop', '跳', '彈跳', '跳跳', '跳下跳下', '跳起', '彈下彈下', '跳起嚟'],
-        'rotating': ['rotate', 'rotating', 'spin', '旋轉', '轉動', '轉圈', '轉圈圈', '轉下轉下', '公轉'],
-        'dancing': ['dance', 'dancing', 'groove', '跳舞', '舞動', '跳舞仔', '扭下扭下', '起舞'],
-        'spinning': ['spinning', 'whirl', 'orbital', '自轉', '打轉', '係咁轉', '暈下暈下', '狂轉'],
-        'bouncing': ['bounce', 'bouncing', 'elastic', '反彈', '彈起', '彈下彈下', '蹦蹦跳', '唔停咁彈'],
-        'sliding': ['slide', 'sliding', 'glide', '滑動', '滑行', '滑下', '𨃩下𨃩下', '𨃩去', '跣住去'],
-        'twisting': ['twist', 'twisting', 'spiral', '扭動', '扭轉', '扭下扭下', '擰', '擰下擰下', '扭計'],
-        'swinging': ['swing', 'swinging', 'pendulum', '擺動', '搖擺', '揈', '揈下揈下', '吊吊揈', '盪'],
-        'gliding': ['gliding', 'smooth', 'flowing', '滑翔', '流暢', '滑', '流下流下', '順滑'],
-        'flipping': ['flip', 'flipping', 'turn', '翻轉', '翻面', '翻', '翻騰', '轉身', '反轉', '反嚟反去', '覆'],
-        'waving': ['wave', 'waving', 'wavy', '波動', '揮動', '揮手', '浪', '浪下浪下', '海浪', '波浪'],
-        'hopping': ['hopping', 'skip', '單腳跳', '蹦跳', '跳下', '跳下跳下'],
-        'swaying': ['sway', 'swaying', 'gentle', '搖曳', '輕搖', '晃', '晃下晃下', '擺下擺下', '左搖右擺'],
-        'crawling': ['crawl', 'crawling', '爬行', '蠕動', '爬下爬下', '慢爬', '爬下'],
-        'running': ['run', 'running', 'fast', '跑', '跑步', '快速', '跑下跑下', '跑得快', '衝'],
-        'walking': ['walk', 'walking', 'step', '走路', '步行', '行路', '行下行下', '慢行', '散步'],
-        'rolling': ['roll', 'rolling', 'tumble', '滾動', '翻滾', '碌', '碌下碌下', '打滾', '翻側'],
-        'shaking': ['shake', 'shaking', 'vibrate', '抖動', '震動', '搖晃', '震下震下', '擸下擸下', '發抖', '震震震'],
-        'floating': ['float', 'floating', 'hover', '漂浮', '懸浮', '飄', '飄下飄下', '浮下浮下', '浮'],
-        'zooming': ['zoom', 'zooming', 'scale', '縮放', '放大', '變大變細', '大下細下', '縮下縮下'],
-        'pulsing': ['pulse', 'pulsing', 'heartbeat', 'glow', '脈動', '跳動', '發光', '閃下閃下', '拍動', '閃爍']
+        'jumping': ['jump', 'jumping', 'hop'],
+        'rotating': ['rotate', 'rotating', 'spin'],
+        'dancing': ['dance', 'dancing', 'groove'],
+        'spinning': ['spinning', 'whirl', 'orbital'],
+        'bouncing': ['bounce', 'bouncing', 'elastic'],
+        'sliding': ['slide', 'sliding', 'glide'],
+        'twisting': ['twist', 'twisting', 'spiral'],
+        'swinging': ['swing', 'swinging', 'pendulum'],
+        'gliding': ['gliding', 'smooth', 'flowing'],
+        'flipping': ['flip', 'flipping', 'turn'],
+        'waving': ['wave', 'waving', 'wavy'],
+        'hopping': ['hopping', 'skip'],
+        'swaying': ['sway', 'swaying', 'gentle'],
+        'crawling': ['crawl', 'crawling'],
+        'running': ['run', 'running', 'fast'],
+        'walking': ['walk', 'walking', 'step'],
+        'rolling': ['roll', 'rolling', 'tumble'],
+        'shaking': ['shake', 'shaking', 'vibrate'],
+        'floating': ['float', 'floating', 'hover'],
+        'zooming': ['zoom', 'zooming', 'scale'],
+        'pulsing': ['pulse', 'pulsing', 'heartbeat', 'glow']
     };
-
     
     for (const [anim, keywords] of Object.entries(animationMap)) {
         if (keywords.some(keyword => lowerPrompt.includes(keyword))) {
