@@ -1,10 +1,20 @@
 {
   "apps": [
+      {
+      "id": "tnte",
+      "name": "上網",
+      "description": "TNTExplorer 網頁瀏覽器",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/1024px-Safari_browser_logo.svg.png",
+      "iconColor": "#007aff",
+      "url": "https://tnttc2.github.io/iog.github.io/TNTExplorer/latest.html",
+      "category": "Web",
+      "type": "website"
+    },
     {
       "id": "apple-music",
       "name": "Apple Music",
       "description": "音樂串流服務",
-      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/1024px-Apple_Music_logo.svg.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/1024px-Apple_Music_icon.svg.png",
       "iconColor": "#fa243c",
       "url": "https://music.apple.com",
       "category": "Music",
@@ -132,17 +142,6 @@
       "url": "https://mail.google.com",
       "category": "Productivity",
       "type": "website"
-    },
-    {
-      "id": "google-search",
-      "name": "Google",
-      "description": "搜尋全球資訊",
-      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_\"G\"_logo.svg/1024px-Google_\"G\"_logo.svg.png",
-      "iconColor": "#4285f4",
-      "url": "https://www.google.com",
-      "category": "Web",
-      "type": "website",
-      "fallbackIcon": "search"
     },
     {
       "id": "google-docs",
@@ -406,6 +405,17 @@
       "fallbackIcon": "message-circle"
     },
     {
+      "id": "wechat",
+      "name": "WeChat",
+      "description": "連結十億人的社交平台",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/WeChat_logo.svg/1024px-WeChat_logo.svg.png",
+      "iconColor": "#07c160",
+      "url": "https://web.wechat.com",
+      "category": "Social",
+      "type": "website",
+      "fallbackIcon": "message-circle"
+    },
+    {
       "id": "whatsapp",
       "name": "WhatsApp",
       "description": "簡單可靠的通訊工具",
@@ -446,27 +456,6 @@
       "url": "https://zoom.us",
       "category": "Business",
       "type": "website"
-    },
-    {
-      "id": "tnte",
-      "name": "上網",
-      "description": "TNTExplorer 網頁瀏覽器",
-      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/1024px-Safari_browser_logo.svg.png",
-      "iconColor": "#007aff",
-      "url": "https://tnttc2.github.io/iog.github.io/TNTExplorer/latest.html",
-      "category": "Web",
-      "type": "website"
-    },
-    {
-      "id": "wechat",
-      "name": "微信",
-      "description": "連結十億人的社交平台",
-      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/WeChat_logo.svg/1024px-WeChat_logo.svg.png",
-      "iconColor": "#07c160",
-      "url": "https://web.wechat.com",
-      "category": "Social",
-      "type": "website",
-      "fallbackIcon": "message-circle"
     },
     {
       "id": "catfafa",
