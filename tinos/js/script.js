@@ -233,7 +233,7 @@ function openApp(appName) {
         'ai-messages': 'aiMessagesApp',
         'ai-assistant': 'aiAssistantApp',
         'terminal': 'terminalApp',
-        'cydia2': 'cydia2App',
+        'tnte': 'tnteApp',
         'aos-switcher': 'aosSwitcherApp'
     };
 
