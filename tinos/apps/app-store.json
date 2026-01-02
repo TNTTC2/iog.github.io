@@ -2,8 +2,8 @@
   "apps": [
       {
       "id": "tnte",
-      "name": "上網",
-      "description": "TNTExplorer 網頁瀏覽器",
+      "name": "TNTE上網",
+      "description": "Web Bowser for TinOS",
       "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/1024px-Safari_browser_logo.svg.png",
       "iconColor": "#007aff",
       "url": "https://tnttc2.github.io/iog.github.io/TNTExplorer/latest.html",
