@@ -234,7 +234,8 @@ function openApp(appName) {
         'ai-assistant': 'aiAssistantApp',
         'terminal': 'terminalApp',
         'cydia2': 'cydia2App',
-        'aos-switcher': 'aosSwitcherApp'
+        'aos-switcher': 'aosSwitcherApp',
+        'tnte': 'tnteApp'
     };
 
     const appWindowId = appMap[appName];
@@ -1198,9 +1199,9 @@ async function addAppToHomeScreen(appInfo) {
         `;
         
         appIcon.addEventListener('click', function() {
-            if (appData.id === 'cydia2') {
+            if (appData.id === 'tnte') {
                 // Open Cydia2 in app window
-                openApp('cydia2');
+                openApp('tnte');
             } else if (appData.type === 'website' && appData.url) {
                 // Open website in new tab/window
                 window.open(appData.url, '_blank');
