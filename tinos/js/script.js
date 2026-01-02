@@ -1034,7 +1034,7 @@ function updateInstalledAppsDisplay() {
     
     // Add dynamically installed apps (exclude hidden system apps)
     installedApps.forEach(app => {
-        if (app.id && app.id !== 'ai-calculator' && app.id !== 'cydia2') {  // Skip AI Calculator and hide Cydia2
+        if (app.id && app.id !== 'ai-calculator' && app.id !== 'tnte') {  // Skip AI Calculator and hide Cydia2
             const appElement = document.createElement('div');
             appElement.className = 'store-app installed-app dynamic-installed';
             appElement.setAttribute('data-app-id', app.id);
