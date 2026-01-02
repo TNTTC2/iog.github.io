@@ -34,19 +34,19 @@
                     <div class="app-icon-bg">
                         <div class="icon calculator" style="background-color: #e67e22;"></div>
                     </div>
-                    <span class="app-name">計算機</span>
+                    <span class="app-name">計算</span>
                 </div>
                 <div class="app-icon" data-app="ai-to-ui">
                     <div class="app-icon-bg">
                         <div class="icon code" style="background-color: #9b59b6;"></div>
                     </div>
-                    <span class="app-name">AI 介面定制</span>
+                    <span class="app-name">定制</span>
                 </div>
                 <div class="app-icon" data-app="terminal">
                     <div class="app-icon-bg">
                         <div class="icon terminal"></div>
                     </div>
-                    <span class="app-name">終端機</span>
+                    <span class="app-name">[___]</span>
                 </div>
                 <div class="app-icon" data-app="settings">
                     <div class="app-icon-bg">
@@ -58,7 +58,7 @@
                     <div class="app-icon-bg">
                         <div class="icon shopping-bag" style="background-color: #3498db;"></div>
                     </div>
-                    <span class="app-name">應用商店</span>
+                    <span class="app-name">商店</span>
                 </div>
                 <div class="app-icon" data-app="phone">
                     <div class="app-icon-bg">
@@ -70,25 +70,25 @@
                     <div class="app-icon-bg">
                         <div class="icon brain" style="background-color: #e74c3c;"></div>
                     </div>
-                    <span class="app-name">數學 AI</span>
+                    <span class="app-name">[___]</span>
                 </div>
                 <div class="app-icon" data-app="ai-messages">
                     <div class="app-icon-bg">
                         <div class="icon message-circle" style="background-color: #3498db;"></div>
                     </div>
-                    <span class="app-name">AI 訊息</span>
+                    <span class="app-name">[___]</span>
                 </div>
                 <div class="app-icon" data-app="ai-assistant">
                     <div class="app-icon-bg">
                         <div class="icon robot" style="background-color: #9b59b6;"></div>
                     </div>
-                    <span class="app-name">AI 助手</span>
+                    <span class="app-name">[___]</span>
                 </div>
                 <div class="app-icon" data-app="aos-switcher">
                     <div class="app-icon-bg">
                         <div class="icon swap" style="background-color: #f39c12;"></div>
                     </div>
-                    <span class="app-name">AIOS 切換器</span>
+                    <span class="app-name">[___]</span>
                 </div>
 
             </div>
@@ -98,7 +98,7 @@
             <div class="terminal-app">
                 <div class="terminal-header" style="position: relative; text-align: center;">
                     <button class="back-btn" onclick="closeApp('terminalApp')" style="position:absolute; left:10px; top:70%; transform: translateY(-50%);">← 返回</button>
-                    AIOS 終端機
+                    [___]
                 </div>
                 <div class="terminal-body" id="terminalBody"></div>
                 <div class="terminal-input-row">
@@ -170,7 +170,7 @@
         <div class="app-window" id="calculatorApp">
             <div class="app-header">
                 <button class="back-btn" onclick="closeApp('calculatorApp')">← 返回</button>
-                <h3>計算機</h3>
+                <h3>計算</h3>
             </div>
             <div class="app-content">
                 <div class="calculator">
@@ -205,12 +205,12 @@
         <div class="app-window" id="aiToUiApp">
             <div class="app-header">
                 <button class="back-btn" onclick="closeApp('aiToUiApp')">← 返回</button>
-                <h3>AI 介面定制</h3>
+                <h3>定制</h3>
             </div>
             <div class="app-content">
                 <div class="ai-ui-container">
                     <div class="ai-section">
-                        <h3>AI 介面定制器</h3>
+                        <h3>定制器</h3>
                         <p>描述你想如何改變系統介面，然後點擊「套用」即可看到即時變化：</p>
                         <textarea id="aiPrompt" placeholder="例如：
 • 將圖示變成星形且帶有金色
@@ -243,7 +243,7 @@
         <div class="app-window" id="appStoreApp">
             <div class="app-header">
                 <button class="back-btn" onclick="closeApp('appStoreApp')">← 返回</button>
-                <h3>應用商店</h3>
+                <h3>商店</h3>
             </div>
             <div class="app-content">
                 <div class="app-store">
@@ -278,7 +278,7 @@
 
                     <div class="store-section">
                         <div class="section-header">
-                            <h2>已安裝應用</h2>
+                            <h2>已裝</h2>
                             <span class="app-count" id="installedCount">0 個程式</span>
                         </div>
                         <div class="installed-apps-list" id="installedAppsList">
@@ -287,7 +287,7 @@
 
                     <div class="store-section">
                         <div class="section-header">
-                            <h2>推薦應用</h2>
+                            <h2>推薦</h2>
                         </div>
                         <div class="apps-list" id="appsList">
                             </div>
@@ -351,7 +351,7 @@
                     </div>
 
                     <div class="settings-section">
-                        <h4>🎨 AI 桌布與螢幕保護</h4>
+                        <h4>🎨 自製桌布與螢幕保護</h4>
                         <div class="setting-item">
                             <label>生成 AI 桌布</label>
                             <button class="settings-btn" onclick="openAIWallpaperModal()">立即製作</button>
@@ -452,7 +452,7 @@
                                 <div class="storage-bar">
                                     <div class="storage-used" style="width: 45%"></div>
                                 </div>
-                                <span id="storageText">2.1 GB / 總共 5 GB</span>
+                                <span id="storageText">2.1 GB / 總共 5 TB</span>
                             </div>
                         </div>
                         <div class="setting-item">
@@ -467,17 +467,17 @@
                     </div>
 
                     <div class="settings-section">
-                        <h4>🤖 AI 設定</h4>
+                        <h4>[___]</h4>
                         <div class="setting-item">
-                            <label>API 狀態</label>
-                            <span class="status-indicator" id="apiStatus">🟢 已連線</span>
+                            <label>[___]</label>
+                            <span class="status-indicator" id="apiStatus">🟢 [___]</span>
                         </div>
                         <div class="setting-item">
-                            <label for="aiSuggestions">AI 建議</label>
+                            <label for="aiSuggestions">[___]</label>
                             <input type="checkbox" id="aiSuggestions" checked="" onchange="toggleAISuggestions()">
                         </div>
                         <div class="setting-item">
-                            <label for="smartFeatures">智慧功能</label>
+                            <label for="smartFeatures">[___]</label>
                             <input type="checkbox" id="smartFeatures" checked="" onchange="toggleSmartFeatures()">
                         </div>
                     </div>
@@ -486,11 +486,11 @@
                         <h4>ℹ️ 關於</h4>
                         <div class="setting-item">
                             <label>版本</label>
-                            <span>Mobile OS 3.0</span>
+                            <span>TinOS OS 1.0</span>
                         </div>
                         <div class="setting-item">
                             <label>編譯版本</label>
-                            <span>2025.06.08</span>
+                            <span>2026.01.02</span>
                         </div>
                         <div class="setting-item">
                             <label>裝置資訊</label>
@@ -547,7 +547,7 @@
         <div class="app-window" id="mathsAiApp">
             <div class="app-header">
                 <button class="back-btn" onclick="closeApp('mathsAiApp')">← 返回</button>
-                <h3>數學 AI 計算機</h3>
+                <h3>[___]</h3>
             </div>
             <div class="app-content">
                 <div class="ai-math-container">
@@ -569,7 +569,7 @@
         <div class="app-window" id="aiMessagesApp">
             <div class="app-header">
                 <button class="back-btn" onclick="closeApp('aiMessagesApp')">← 返回</button>
-                <h3>AI 訊息</h3>
+                <h3>[___]</h3>
             </div>
             <div class="app-content">
                 <div class="messages-container">
@@ -600,7 +600,7 @@
         <div class="app-window" id="aiAssistantApp">
             <div class="app-header">
                 <button class="back-btn" onclick="closeApp('aiAssistantApp')">← 返回</button>
-                <h3>AI 助手</h3>
+                <h3>[___]</h3>
             </div>
             <div class="app-content">
                 <div class="assistant-container">
@@ -630,7 +630,7 @@
         <div class="ai-wallpaper-modal" id="aiWallpaperModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🎨 AI 桌布產生器</h3>
+                    <h3>🎨 自製桌布器</h3>
                     <button class="modal-close-btn" onclick="closeAIWallpaperModal()">✕</button>
                 </div>
                 <div class="modal-body">
@@ -676,7 +676,7 @@
         <div class="ai-screen-saver-modal" id="aiScreenSaverModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🎨 AI 螢幕保護產生器</h3>
+                    <h3>🎨 自製螢幕保護產生器</h3>
                     <button class="modal-close-btn" onclick="closeAIScreenSaverModal()">✕</button>
                 </div>
                 <div class="modal-body">
