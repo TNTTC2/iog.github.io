@@ -1173,10 +1173,10 @@ async function addAppToHomeScreen(appInfo) {
         
         // Create icon with consistent sizing
         let iconElement;
-        if (appData.id === 'cydia2') {
+        if (appData.id === 'tnte') {
             // Special handling for Cydia2 with image icon
-            iconElement = `<div class="icon cydia2" style="background-color: ${appData.iconColor || '#f39c12'}; width: 65px; height: 65px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                <img src="icons/cydia2.png" alt="cydia2 icon" style="width: 100%; height: 100%; object-fit: contain;">
+            iconElement = `<div class="icon tnte" style="background-color: ${appData.iconColor || '#f39c12'}; width: 65px; height: 65px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/1024px-Safari_browser_logo.svg.png" alt="tnte icon" style="width: 100%; height: 100%; object-fit: contain;">
             </div>`;
         } else if (appData.icon.startsWith('http')) {
             iconElement = `<img src="${appData.icon}" alt="${appData.name}" style="width: 65px; height: 65px; object-fit: cover; border-radius: 15px;" onerror="createFallbackIcon(this, '${appData.fallbackIcon || 'smartphone'}', '${appData.iconColor || '#667eea'}')">
