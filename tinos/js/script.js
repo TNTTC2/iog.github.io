@@ -3489,19 +3489,19 @@ function initializeAIToUI() {
         aiContainer.innerHTML = `
             <div class="ai-ui-horizontal">
                 <div class="ai-left-panel">
-                    <h3 style="color: #939292 !important;">🎨 AI Theme Designer</h3>
+                    <h3 style="color: #939292 !important;">🎨 智慧主題定製</h3>
                     <div class="ai-input-group">
                         <textarea id="aiPrompt" placeholder="Describe your dream interface theme..." 
                                   style="width: 100%; height: 120px; margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; resize: vertical;"></textarea>
                         <div class="ai-controls-horizontal">
                             <button onclick="generateAITheme()" class="ai-btn primary">
-                                ✨ Generate Theme
+                                ✨ 生成主題
                             </button>
                             <button onclick="importAITheme()" class="ai-btn secondary">
-                                📂 Import Theme
+                                📂 匯入主題
                             </button>
                             <button onclick="exportAITheme()" class="ai-btn tertiary">
-                                📤 Export Theme
+                                📤 匯出主題
                             </button>
                         </div>
                     </div>
@@ -3550,11 +3550,11 @@ function initializeAIToUI() {
 function generateAITheme() {
     const prompt = document.getElementById('aiPrompt').value.trim();
     if (!prompt) {
-        showNotification('💭 Please describe your theme idea first!', 'info');
+        showNotification('💭 請先描述一下你的主題想法！', 'info');
         return;
     }
 
-    showNotification('🎨 Generating magical theme...', 'info');
+    showNotification('🎨 生成神奇的主題......', 'info');
     
     // Analyze prompt for theme elements
     const themeData = analyzeThemePrompt(prompt);
