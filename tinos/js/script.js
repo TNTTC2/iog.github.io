@@ -3598,69 +3598,62 @@ function analyzeThemePrompt(prompt) {
     // Comprehensive Shape Analysis - 30+ shapes
     let iconShape = 'circle';
     const shapeMap = {
-        'square': ['square', 'geometric', 'box'],
-        'rectangle': ['rectangle', 'rectangular', 'horizontal'],
-        'circle': ['circle', 'round', 'circular'],
-        'triangle': ['triangle', 'triangular', 'arrow'],
-        'pentagon': ['pentagon', 'five'],
-        'hexagon': ['hexagon', 'six', 'honeycomb'],
-        'heptagon': ['heptagon', 'seven'],
-        'octagon': ['octagon', 'eight', 'stop'],
-        'nonagon': ['nonagon', 'nine'],
-        'decagon': ['decagon', 'ten'],
-        'star': ['star', 'cosmic', 'space', 'stellar'],
-        'oval': ['oval', 'ellipse', 'egg'],
-        'trapezoid': ['trapezoid', 'trapezium'],
-        'parallelogram': ['parallelogram', 'slanted'],
-        'rhombus': ['rhombus', 'diamond'],
-        'kite': ['kite', 'flying'],
-        'heart': ['heart', 'love', 'romantic'],
-        'crescent': ['crescent', 'moon', 'lunar'],
-        'arrow': ['arrow', 'pointer', 'direction'],
-        'cross': ['cross', 'plus', 'medical'],
-        'spiral': ['spiral', 'swirl', 'vortex'],
-        'diamond': ['diamond', 'crystal', 'gem'],
-        'semicircle': ['semicircle', 'half', 'arch'],
-        'lshape': ['l-shape', 'lshape', 'corner'],
-        'tshape': ['t-shape', 'tshape', 'junction'],
-        'teardrop': ['teardrop', 'drop', 'water'],
-        'shield': ['shield', 'protection', 'security'],
-        'cloud': ['cloud', 'fluffy', 'weather'],
-        'blob': ['blob', 'organic', 'amorphous', 'irregular']
+            const shapeMap = {
+        'square': ['square', 'geometric', 'box', '方', '方塊', '方格', '方形', '正方形', '四方', '四方形', '方方', '磚頭', '豆腐'],
+        'rectangle': ['rectangle', 'rectangular', 'horizontal', '矩形', '長方形', '長方', '扁方', '磚仔'],
+        'circle': ['circle', 'round', 'circular', '圓', '圓形', '圓圈', '圓咕碌', '圓圈圈', '圓督督', '波波'],
+        'triangle': ['triangle', 'triangular', 'arrow', '三角', '三角形', '箭頭', '衫角', '三角尖', '山形'],
+        'pentagon': ['pentagon', 'five', '五角', '五邊', '五邊形', '五角形'],
+        'hexagon': ['hexagon', 'six', 'honeycomb', '六角', '六邊', '六邊形', '六角形', '讚不絕口'],
+        'heptagon': ['heptagon', 'seven', '七角', '七邊', '七邊形'],
+        'octagon': ['octagon', 'eight', 'stop', '八角', '八邊', '八邊形'],
+        'nonagon': ['nonagon', 'nine', '九角', '九邊', '九邊形'],
+        'decagon': ['decagon', 'ten', '十角', '十邊', '十邊形'],
+        'star': ['star', 'cosmic', 'space', 'stellar', '星', '星星', '五角星', '星形', '聲星', '閃閃'],
+        'oval': ['oval', 'ellipse', 'egg', '橢圓', '卵形', '蛋形', '蛋蛋', '鵝蛋形', '蛋形仔'],
+        'trapezoid': ['trapezoid', 'trapezium', '梯形', '梯仔'],
+        'parallelogram': ['parallelogram', 'slanted', '平行四邊形', '斜形', '斜邊', '歪斜'],
+        'rhombus': ['rhombus', 'diamond', '菱形', '菱', '菱角'],
+        'kite': ['kite', 'flying', '鳶形', '風箏形', '風箏'],
+        'heart': ['heart', 'love', 'romantic', '愛心', '心形', '心心', '心', '心跳'],
+        'crescent': ['crescent', 'moon', 'lunar', '新月', '月亮', '月牙', '月亮仔', '彎月', '香蕉形'],
+        'arrow': ['arrow', 'pointer', 'direction', '箭頭', '指針', '方向', '箭', '箭咀'],
+        'cross': ['cross', 'plus', 'medical', '十字', '加號', '交叉', '十字架', '加仔', '十仔'],
+        'spiral': ['spiral', 'swirl', 'vortex', '螺旋', '漩渦', '螺絲', '圈圈', '圈下圈下', '蚊香'],
+        'diamond': ['diamond', 'crystal', 'gem', '鑽石', '晶體', '鑽', '閃石'],
+        'semicircle': ['semicircle', 'half', 'arch', '半圓', '拱形', '半圓形', '半月', '切開一半'],
+        'lshape': ['l-shape', 'lshape', 'corner', 'L型', '轉角', 'L形', '直角'],
+        'tshape': ['t-shape', 'tshape', 'junction', 'T型', '交叉口', 'T形', '丁字'],
+        'teardrop': ['teardrop', 'drop', 'water', '淚滴', '水滴', '水珠', '滴下'],
+        'shield': ['shield', 'protection', 'security', '盾牌', '防護', '盾', '板'],
+        'cloud': ['cloud', 'fluffy', 'weather', '雲', '雲朵', '雲片', '雲雲'],
+        'blob': ['blob', 'organic', 'amorphous', 'irregular', '水漬', '不規則', '團塊', '一pat', '一舊', '軟淋淋']
     };
-    
-    for (const [shape, keywords] of Object.entries(shapeMap)) {
-        if (keywords.some(keyword => lowerPrompt.includes(keyword))) {
-            iconShape = shape;
-            break;
-        }
-    }
-    
-    // Comprehensive Animation Analysis - 20+ animations
-    let animation = 'none';
+
     const animationMap = {
-        'jumping': ['jump', 'jumping', 'hop'],
-        'rotating': ['rotate', 'rotating', 'spin'],
-        'dancing': ['dance', 'dancing', 'groove'],
-        'spinning': ['spinning', 'whirl', 'orbital'],
-        'bouncing': ['bounce', 'bouncing', 'elastic'],
-        'sliding': ['slide', 'sliding', 'glide'],
-        'twisting': ['twist', 'twisting', 'spiral'],
-        'swinging': ['swing', 'swinging', 'pendulum'],
-        'gliding': ['gliding', 'smooth', 'flowing'],
-        'flipping': ['flip', 'flipping', 'turn'],
-        'waving': ['wave', 'waving', 'wavy'],
-        'hopping': ['hopping', 'skip'],
-        'swaying': ['sway', 'swaying', 'gentle'],
-        'crawling': ['crawl', 'crawling'],
-        'running': ['run', 'running', 'fast'],
-        'walking': ['walk', 'walking', 'step'],
-        'rolling': ['roll', 'rolling', 'tumble'],
-        'shaking': ['shake', 'shaking', 'vibrate'],
-        'floating': ['float', 'floating', 'hover'],
-        'zooming': ['zoom', 'zooming', 'scale'],
-        'pulsing': ['pulse', 'pulsing', 'heartbeat', 'glow']
+        'jumping': ['jump', 'jumping', 'hop', '跳', '彈跳', '跳跳', '跳下跳下', '跳起', '彈下彈下', '跳起嚟'],
+        'rotating': ['rotate', 'rotating', 'spin', '旋轉', '轉動', '轉圈', '轉圈圈', '轉下轉下', '公轉'],
+        'dancing': ['dance', 'dancing', 'groove', '跳舞', '舞動', '跳舞仔', '扭下扭下', '起舞'],
+        'spinning': ['spinning', 'whirl', 'orbital', '自轉', '打轉', '係咁轉', '暈下暈下', '狂轉'],
+        'bouncing': ['bounce', 'bouncing', 'elastic', '反彈', '彈起', '彈下彈下', '蹦蹦跳', '唔停咁彈'],
+        'sliding': ['slide', 'sliding', 'glide', '滑動', '滑行', '滑下', '𨃩下𨃩下', '𨃩去', '跣住去'],
+        'twisting': ['twist', 'twisting', 'spiral', '扭動', '扭轉', '扭下扭下', '擰', '擰下擰下', '扭計'],
+        'swinging': ['swing', 'swinging', 'pendulum', '擺動', '搖擺', '揈', '揈下揈下', '吊吊揈', '盪'],
+        'gliding': ['gliding', 'smooth', 'flowing', '滑翔', '流暢', '滑', '流下流下', '順滑'],
+        'flipping': ['flip', 'flipping', 'turn', '翻轉', '翻面', '翻', '翻騰', '轉身', '反轉', '反嚟反去', '覆'],
+        'waving': ['wave', 'waving', 'wavy', '波動', '揮動', '揮手', '浪', '浪下浪下', '海浪', '波浪'],
+        'hopping': ['hopping', 'skip', '單腳跳', '蹦跳', '跳下', '跳下跳下'],
+        'swaying': ['sway', 'swaying', 'gentle', '搖曳', '輕搖', '晃', '晃下晃下', '擺下擺下', '左搖右擺'],
+        'crawling': ['crawl', 'crawling', '爬行', '蠕動', '爬下爬下', '慢爬', '爬下'],
+        'running': ['run', 'running', 'fast', '跑', '跑步', '快速', '跑下跑下', '跑得快', '衝'],
+        'walking': ['walk', 'walking', 'step', '走路', '步行', '行路', '行下行下', '慢行', '散步'],
+        'rolling': ['roll', 'rolling', 'tumble', '滾動', '翻滾', '碌', '碌下碌下', '打滾', '翻側'],
+        'shaking': ['shake', 'shaking', 'vibrate', '抖動', '震動', '搖晃', '震下震下', '擸下擸下', '發抖', '震震震'],
+        'floating': ['float', 'floating', 'hover', '漂浮', '懸浮', '飄', '飄下飄下', '浮下浮下', '浮'],
+        'zooming': ['zoom', 'zooming', 'scale', '縮放', '放大', '變大變細', '大下細下', '縮下縮下'],
+        'pulsing': ['pulse', 'pulsing', 'heartbeat', 'glow', '脈動', '跳動', '發光', '閃下閃下', '拍動', '閃爍']
     };
+
     
     for (const [anim, keywords] of Object.entries(animationMap)) {
         if (keywords.some(keyword => lowerPrompt.includes(keyword))) {
