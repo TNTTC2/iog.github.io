@@ -3572,83 +3572,78 @@ function analyzeThemePrompt(prompt) {
     const lowerPrompt = prompt.toLowerCase();
     
         // Enhanced Color Analysis with Region-specific Moods & Clandestine Easter Eggs    // === 1. 顏色、心情與氛圍風格分析 (50+ 色彩與心情組合) ===
-        // === 1. 顏色、心情與氛圍風格分析 (心情會連動顏色、動畫與形狀) ===
+    // === 1. 顏色、心情、感受與風格分析 (整合 100+ 詞彙) ===
     let colors = { primary: '#667eea', secondary: '#764ba2', accent: '#ff6b9d', text: '#ffffff' };
-    let moodAnimation = 'none';
+    let moodAnimation = 'none'; 
     let moodShape = 'circle'; 
 
     const colorRules = [
         {
             key: 'purple',
-            keywords: ['purple', 'neon', 'cyberpunk', '紫色', '紫紫地', '霓虹', '幻彩', '未來感', '科幻', '茄子色', '𩚨紫', '神祕感', '迷幻', '奇怪', '奇異', '古怪', '離奇', '怪怪地', '玄學', '神神忽忽'],
+            keywords: ['purple', 'neon', 'cyberpunk', '紫色', '紫紫地', '霓虹', '幻彩', '未來感', '科幻', '茄子色', '𩚨紫', '神祕感', '迷幻', '奇怪', '奇異', '古怪', '離奇', '怪怪地', '玄學', '荒謬', '幻滅'],
             theme: { primary: '#8b5cf6', secondary: '#a855f7', accent: '#06ffa5', text: '#00ffff' },
             autoAnim: 'twisting',
             autoShape: 'spiral' // 奇怪/古怪 -> 螺旋
         },
         {
             key: 'green',
-            keywords: ['green', 'nature', 'forest', '綠色', '綠油油', '綠袖子', '翠綠', '草地色', '森系', '放鬆', '平靜', 'hea', '悠閒', '舒服', '生機', '舒坦', '佛系', '清靜', '無聊', '淡定', '閒適', '悶悶地', '冇嘢做'],
+            keywords: ['green', 'nature', 'forest', '綠色', '綠油油', '綠袖子', '翠綠', '草地色', '森系', '放鬆', '平靜', 'hea', '悠閒', '舒服', '生機', '舒坦', '佛系', '清靜', '無聊', '淡定', '閒適', '安逸', '自在'],
             theme: { primary: '#10b981', secondary: '#059669', accent: '#34d399', text: '#ffffff' },
             autoAnim: 'swaying',
-            autoShape: 'blob' // 無聊/悠閒 -> 軟綿綿不規則形
+            autoShape: 'cloud' // 悠閒/舒服 -> 雲朵
         },
         {
             key: 'blue',
-            keywords: ['blue', 'ocean', 'water', '藍色', '海洋色', '大海色', '藍藍地', '天藍', '青花瓷', '蔚藍', '深海', '憂鬱', '灰咗', 'emo', '寂寞', '想喊', '頹廢', '心淡', 'sad', '可惜', '傷心', '難過', '心碎', '灰心', '落寞', '失落', '遺憾'],
+            keywords: ['blue', 'ocean', 'water', '藍色', '海洋色', '大海色', '藍藍地', '天藍', '青花瓷', '蔚藍', '深海', '憂鬱', '灰咗', 'emo', '寂寞', '想喊', '頹廢', '心淡', 'sad', '可惜', '傷心', '難過', '心碎', '灰心', '落寞', '抑鬱', '哀愁', '委屈'],
             theme: { primary: '#3b82f6', secondary: '#1d4ed8', accent: '#60a5fa', text: '#ffffff' },
             autoAnim: 'floating',
-            autoShape: 'teardrop' // 傷心/可惜 -> 淚滴形
+            autoShape: 'teardrop' // 傷心/可惜 -> 淚滴
         },
         {
             key: 'red',
-            keywords: ['red', 'sunset', '紅色', '烈火', '夕陽色', '辣', '熱烈', '紅吱吱', '大紅', '紅卜卜', '火紅', '好嬲', '發火', '火滾', '熱血', '衝勁', '嬲爆爆', '氣炸', '火大', '袂爽', '抓狂', '激進', '躁底', '唔憤氣'],
+            keywords: ['red', 'sunset', '紅色', '烈火', '夕陽色', '辣', '熱烈', '紅吱吱', '大紅', '紅卜卜', '火紅', '好嬲', '發火', '火滾', '熱血', '衝勁', '嬲爆爆', '氣炸', '火大', '袂爽', '抓狂', '激進', '躁底', '憤怒', '不爽'],
             theme: { primary: '#ef4444', secondary: '#dc2626', accent: '#fbbf24', text: '#ffffff' },
             autoAnim: 'shaking',
-            autoShape: 'triangle' // 嬲/激進 -> 尖銳三角形
+            autoShape: 'triangle' // 憤怒/火滾 -> 尖銳三角形
         },
         {
             key: 'pink',
-            keywords: ['pink', 'love', 'romantic', '粉紅', '粉紅色', '少女心', '粉粉地', '粉油抄手', '冧滋滋', '甜蜜', '放閃', '甜到漏', '糖黐豆', '初戀感', '幸福感', '怕醜', '面紅', '溫馨', '心花怒放', '愛意'],
+            keywords: ['pink', 'love', 'romantic', '粉紅', '粉紅色', '少女心', '粉粉地', '粉油抄手', '冧滋滋', '甜蜜', '放閃', '甜到漏', '糖黐豆', '初戀感', '幸福感', '怕醜', '面紅', '溫馨', '心花怒放', '害羞', '戀愛'],
             theme: { primary: '#ec4899', secondary: '#be185d', accent: '#f472b6', text: '#ffffff' },
             autoAnim: 'pulsing',
-            autoShape: 'heart' // 甜蜜/溫馨 -> 心形
+            autoShape: 'heart' // 甜蜜/幸福 -> 心形
         },
         {
             key: 'gold',
-            keywords: ['gold', 'golden', 'luxury', '金色', '金閃閃', '金爍爍', '奢華感', '高貴', '滿城盡帶黃金甲', '發財色', '富貴', '登樣', '貴氣', '招財', '揪格', '高級感', '得瑟', '威風', '自信'],
+            keywords: ['gold', 'golden', 'luxury', '金色', '金閃閃', '金爍爍', '奢華感', '高貴', '滿城盡帶黃金甲', '發財色', '富貴', '登樣', '貴氣', '招財', '揪格', '高級感', '得瑟', '威風', '榮耀', '強大'],
             theme: { primary: '#fbbf24', secondary: '#f59e0b', accent: '#fffbeb', text: '#92400e' },
             autoAnim: 'zooming',
-            autoShape: 'star' // 貴氣/自信 -> 星形
+            autoShape: 'star' // 榮耀/高貴 -> 星形
         },
         {
             key: 'silver',
-            keywords: ['silver', 'chrome', 'metallic', '銀色', '金屬感', '鋼鐵色', '銀閃閃', '亮銀', '鈦鋼色', '冷酷', '皮皮剉', '畏寒', '孤傲', '冷感', '擔心', '驚驚', '驚青', '驚怕', '焦慮', '唔安樂', '恐怖', '可怕', '嚇親'],
+            keywords: ['silver', 'chrome', 'metallic', '銀色', '金屬感', '鋼鐵色', '銀閃閃', '亮銀', '鈦鋼色', '冷酷', '皮皮剉', '畏寒', '孤傲', '冷感', '擔心', '驚驚', '驚青', '驚怕', '焦慮', '唔安樂', '不安', '恐懼'],
             theme: { primary: '#94a3b8', secondary: '#64748b', accent: '#f1f5f9', text: '#1e293b' },
             autoAnim: 'shaking',
-            autoShape: 'shield' // 擔心/驚 -> 盾牌形(防衛)
+            autoShape: 'shield' // 擔心/驚怕 -> 盾牌（尋求保護）
         },
         {
             key: 'rainbow',
-            keywords: ['rainbow', 'colorful', 'vibrant', '彩色', '多色', '鮮艷', '七彩', '繽紛', '五彩', '花哩碌', '花喇喇', '開心', '興奮', '爽歪歪', '歡樂', '雀躍', '盞鬼', '好型', '正點', '快樂', '嗨皮', '笑呵呵', '得意'],
+            keywords: ['rainbow', 'colorful', 'vibrant', '彩色', '多色', '鮮艷', '七彩', '繽紛', '五彩', '花哩碌', '花喇喇', '開心', '興奮', '爽歪歪', '歡樂', '雀躍', '盞鬼', '好型', '正點', '快樂', '嗨皮', '笑呵呵', '狂歡'],
             theme: { primary: '#ec4899', secondary: '#8b5cf6', accent: '#06ffa5', text: '#ffffff' },
-            autoAnim: 'jumping'
-        },
-        {
-            key: 'orange',
-            keywords: ['orange', 'autumn', 'warm', '橙色', '秋天感', '暖色系', '夕陽紅', '鹹蛋黃色', '暖洋洋', '溫馨', '朝氣', '陽光', '活力', '親切', '充滿希望'],
-            theme: { primary: '#f97316', secondary: '#ea580c', accent: '#fed7aa', text: '#ffffff' },
-            autoShape: 'circle'
+            autoAnim: 'jumping',
+            autoShape: 'blob' // 開心/彩色 -> 不規則活力波浪
         },
         {
             key: 'black',
-            keywords: ['black', 'dark', 'minimal', '黑色', '黑暗風', '暗黑系', '極簡風', '型格', '黑鼆鼆', '墨色', '冷淡風', '沈重', '黑人問號', '懞查查', '霧煞煞', '衰小', '倒霉', '陰森', '毛骨悚然', '絕望'],
+            keywords: ['black', 'dark', 'minimal', '黑色', '黑暗風', '暗黑系', '極簡風', '型格', '黑鼆鼆', '墨色', '冷淡風', '沈重', '黑人問號', '懞查查', '霧煞煞', '衰小', '倒霉', '陰森', '可怕', '恐怖', '毛骨悚然', '絕望', '死亡'],
             theme: { primary: '#000000', secondary: '#1f1f1f', accent: '#ffffff', text: '#ffffff' },
             autoAnim: 'crawling',
-            autoShape: 'square' // 沈重/型格 -> 方正
+            autoShape: 'square' // 可怕/沈重 -> 沉穩方形
         }
     ];
 
-    // 優先判定顏色與心情
+    // 判定顏色與心情帶動的風格
     for (const rule of colorRules) {
         if (rule.keywords.some(k => lowerPrompt.includes(k))) {
             colors = rule.theme;
@@ -3658,21 +3653,23 @@ function analyzeThemePrompt(prompt) {
         }
     }
 
-    // === 2. 獨立形狀分析 (擁有對心情形狀嘅覆蓋權) ===
+    // === 2. 獨立形狀分析 (最高優先權，保留你原本所有關鍵字) ===
     let explicitShape = null;
     const shapeMap = {
-        'square': ['square', 'geometric', 'box', '方形', '正方形', '四方', '磚頭', '豆腐'],
-        'circle': ['circle', 'round', '圓形', '圓圈', '圓咕碌', '波波', '圓圈圈'],
-        'star': ['star', 'cosmic', '星', '星星', '五角星', '閃閃'],
-        'heart': ['heart', 'love', '愛心', '心形', '心心', '心跳'],
-        'triangle': ['triangle', 'triangular', '三角形', '三角', '山形'],
-        'diamond': ['diamond', 'crystal', '鑽石', '晶體', '閃石'],
-        'cloud': ['cloud', 'fluffy', '雲', '雲朵', '雲片'],
-        'blob': ['blob', 'organic', '水漬', '不規則', '一pat', '軟淋淋'],
-        'crescent': ['crescent', 'moon', '月亮', '新月', '彎月'],
-        'teardrop': ['teardrop', 'drop', '淚滴', '水滴', '水珠'],
-        'spiral': ['spiral', 'swirl', '螺旋', '漩渦', '蚊香'],
-        'shield': ['shield', 'protection', '盾牌', '防衛']
+        'square': ['square', 'geometric', 'box', '方形', '正方形', '四方', '方塊', '磚頭', '豆腐', '四角形', '方方'],
+        'rectangle': ['rectangle', 'rectangular', 'horizontal', '矩形', '長方形', '長方', '扁方', '磚仔'],
+        'circle': ['circle', 'round', 'circular', '圓', '圓形', '圓圈', '圓咕碌', '圓圈圈', '波波'],
+        'triangle': ['triangle', 'triangular', 'arrow', '三角', '三角形', '箭頭', '衫角', '三角尖', '山形'],
+        'pentagon': ['pentagon', 'five', '五角', '五邊', '五邊形', '五角形'],
+        'hexagon': ['hexagon', 'six', 'honeycomb', '六角', '六邊', '六邊形', '六角形', '讚不絕口'],
+        'star': ['star', 'cosmic', 'space', 'stellar', '星', '星星', '五角星', '星形', '聲星', '閃閃'],
+        'heart': ['heart', 'love', 'romantic', '愛心', '心形', '心心', '心', '心跳'],
+        'diamond': ['diamond', 'crystal', 'gem', '鑽石', '晶體', '鑽', '菱形', '閃石'],
+        'spiral': ['spiral', 'swirl', 'vortex', '螺旋', '漩渦', '螺絲', '蚊香'],
+        'teardrop': ['teardrop', 'drop', 'water', '淚滴', '水滴', '水珠'],
+        'shield': ['shield', 'protection', 'security', '盾牌', '防護', '盾'],
+        'cloud': ['cloud', 'fluffy', 'weather', '雲', '雲朵', '雲片'],
+        'blob': ['blob', 'organic', '不規則', '一pat', '一舊', '軟淋淋']
     };
 
     for (const [shape, keywords] of Object.entries(shapeMap)) {
@@ -3681,25 +3678,18 @@ function analyzeThemePrompt(prompt) {
             break;
         }
     }
-    
-    // 最後決定形狀
-    let iconShape = explicitShape || moodShape;
 
-    // === 3. 獨立動畫分析 (擁有對心情動畫嘅覆蓋權) ===
+    // === 3. 獨立動畫分析 (最高優先權) ===
     let explicitAnimation = null;
     const animationMap = {
-        'jumping': ['jump', 'jumping', '跳', '彈跳', '跳跳', '跳起'],
-        'rotating': ['rotate', 'rotating', '旋轉', '轉動', '轉下轉下', '公轉'],
-        'dancing': ['dance', 'dancing', '跳舞', '舞動', '扭下扭下'],
-        'spinning': ['spinning', 'whirl', '自轉', '打轉', '係咁轉'],
-        'bouncing': ['bounce', 'bouncing', '彈起', '彈下彈下', '蹦蹦跳'],
-        'shaking': ['shake', 'shaking', '震動', '搖晃', '震下震下'],
-        'floating': ['float', 'floating', '漂浮', '懸浮', '飄下飄下'],
-        'pulsing': ['pulse', 'pulsing', '跳動', '閃下閃下', '閃爍'],
-        'waving': ['wave', 'waving', '波動', '浪下浪下', '波浪'],
-        'swaying': ['sway', 'swaying', '輕搖', '左搖右擺'],
-        'crawling': ['crawl', 'crawling', '爬行', '蠕動'],
-        'zooming': ['zoom', 'zooming', '縮放', '放大']
+        'jumping': ['jump', 'jumping', 'hop', '跳', '彈跳', '跳跳', '跳下跳下', '跳起', '彈下彈下'],
+        'rotating': ['rotate', 'rotating', 'spin', '旋轉', '轉動', '轉圈', '轉圈圈', '轉下轉下'],
+        'dancing': ['dance', 'dancing', 'groove', '跳舞', '舞動', '扭下扭下'],
+        'shaking': ['shake', 'shaking', '震動', '搖晃', '震下震下', '發抖'],
+        'floating': ['float', 'floating', 'hover', '漂浮', '懸浮', '飄下飄下', '浮下浮下'],
+        'pulsing': ['pulse', 'pulsing', 'heartbeat', 'glow', '脈動', '跳動', '閃下閃下', '閃爍'],
+        'sliding': ['slide', 'sliding', 'glide', '滑動', '滑行', '𨃩下𨃩下'],
+        'waving': ['wave', 'waving', 'wavy', '波動', '浪下浪下', '波浪']
     };
 
     for (const [anim, keywords] of Object.entries(animationMap)) {
@@ -3709,15 +3699,16 @@ function analyzeThemePrompt(prompt) {
         }
     }
 
-    // 最後決定動畫
+    // === 最終決定邏輯 ===
+    // 優先使用使用者明確指定嘅形狀/動畫，否則使用心情帶動嘅
+    let iconShape = explicitShape || moodShape;
     let animation = explicitAnimation || moodAnimation;
 
-    // === 4. 純顏色輸入保護邏輯 ===
-    // 如果輸入字串非常短且只包含顏色名稱，強制關閉心情連動嘅形狀同動畫
-    const pureColorsOnly = ['purple', 'green', 'blue', 'red', 'pink', 'gold', 'silver', 'orange', 'black', 'white', '紫色', '綠色', '藍色', '紅色', '粉紅色', '金色', '銀色', '橙色', '黑色', '白色'];
-    if (pureColorsOnly.includes(lowerPrompt.trim())) {
+    // 保護機制：如果只輸入顏色，唔影響動畫同形狀
+    const colorOnlyKeywords = ['purple', 'green', 'blue', 'red', 'pink', 'gold', 'silver', 'orange', 'black', 'white', '紫色', '綠色', '藍色', '紅色', '粉紅色', '金色', '銀色', '橙色', '黑色', '白色', '紫紫地', '藍藍地', '紅卜卜', '粉粉地'];
+    if (colorOnlyKeywords.includes(lowerPrompt.trim())) {
         if (!explicitAnimation) animation = 'none';
-        if (!explicitShape) iconShape = 'circle'; // 回歸預設圓形
+        if (!explicitShape) iconShape = 'circle'; // 顏色預設圓形
     }
 
     
