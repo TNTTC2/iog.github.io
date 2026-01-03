@@ -33,16 +33,16 @@
         
         .food { position: absolute; font-size: 45px; cursor: move; z-index: 200; transition: opacity 0.3s; padding: 10px; }
         
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(2px); }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 10000; display: flex; flex-direction: column; align-items: center; text-align: center; backdrop-filter: blur(2px); }
         .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
         .finger-emoji { font-size: 60px; display: inline-block; animation: fingerBounce 1s infinite ease-in-out; margin-top: 20px; }
         @keyframes fingerBounce { 0%, 100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.2); } }
         
-        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.7); border-top: 1px solid #444; margin-top: auto; }
+        .debug-section { width: 100%; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.9); border-top: 1px solid #444; margin-top: auto; }
         .debug-label { color: #888; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
         .debug-input { width: 90%; max-width: 350px; background: #111; border: 1px solid #333; color: #fff; padding: 12px; font-size: 16px; text-align: center; border-radius: 8px; font-family: monospace; outline: none; }
 
-        #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.9); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 75vh; }
+        #guideBox { color: #eee; text-align: left; max-width: 360px; font-size: 14px; line-height: 1.5; background: rgba(34, 34, 34, 0.98); padding: 20px; border-radius: 20px; border: 1px solid #555; overflow-y: auto; max-height: 75vh; }
         .btn-start { display: block; background: #fff; color: #000; text-align: center; padding: 12px; border-radius: 10px; margin-top: 15px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -57,7 +57,7 @@
                 <p>• <b>基本食物</b>：一般會出現 🐟魚魚 、 🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
                 <br>
                 <p>🌟<b>特別玩法</b>🌟：</p>
-                <p>• 當你每1秒都唔放過努力去餵貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
+                <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
                 <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
                 <br>
                 <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
@@ -98,6 +98,7 @@
         let timeLeft, stamina, score = 0, hitCount = 0, isCrazy = false, isFlipping = false, isPaused = false;
         let isDebugLocked = false, isShrunk = false, lastSecHits = 0, crazyWins = 0, specialStatus = "normal", specialCounter = 0;
         let gameLoop, foodLoop, shrinkLoop, crazyLoop, prePauseCode = "";
+        let canRestart = true; // 新增：控制 5 秒無敵時間
 
         function closeGuide() { document.getElementById('guideOverlay').style.display = 'none'; document.getElementById('startOverlay').style.display = 'flex'; }
         function getCurrentCode() {
@@ -110,12 +111,29 @@
             prePauseCode = getCurrentCode();
             document.getElementById('debugPause').value = prePauseCode;
             document.getElementById('pauseOverlay').style.display = 'flex';
+            document.getElementById('catBox').classList.add('paused-anim');
         }
         function resumeGame() {
             let val = document.getElementById('debugPause').value.trim();
-            if (val !== prePauseCode && val !== "") isDebugLocked = true;
-            isPaused = false; applyAndContinue(val);
-            document.getElementById('pauseOverlay').style.display = 'none';
+            // 修復：如果代碼有變才重設遊戲，否則只恢復計時器
+            if (val !== prePauseCode && val !== "") {
+                isDebugLocked = true;
+                isPaused = false;
+                applyAndContinue(val);
+            } else {
+                isPaused = false;
+                document.getElementById('pauseOverlay').style.display = 'none';
+                document.getElementById('catBox').classList.remove('paused-anim');
+                if (isCrazy) {
+                    // 恢復暴走模式
+                    runCrazyMove(hitCount >= 1 ? 50 : 80);
+                } else {
+                    // 恢復一般模式
+                    gameLoop = setInterval(tick, 1000);
+                    foodLoop = setInterval(spawnFood, 3000);
+                    shrinkLoop = setInterval(() => { if(!isCrazy && !isShrunk && Math.random()<0.2) { isShrunk=true; document.getElementById('catBox').classList.add('shrunk'); } }, 10000);
+                }
+            }
         }
         function startApp() {
             let val = document.getElementById('debugStart').value.trim();
@@ -137,7 +155,10 @@
             }
             updateUI();
         }
-        function fullRestart() { score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; hitCount = 0; isShrunk = false; resetGame(); }
+        function fullRestart() {
+            if (!canRestart) return; // 新增：無敵時間內不可重啟
+            score = 0; stamina = config.initS; lastSecHits = 0; crazyWins = 0; hitCount = 0; isShrunk = false; resetGame();
+        }
         function stopAllIntervals() { clearInterval(gameLoop); clearInterval(foodLoop); clearInterval(shrinkLoop); clearInterval(crazyLoop); }
         function resetGame() {
             stopAllIntervals();
@@ -145,6 +166,9 @@
             document.querySelectorAll('.food').forEach(f => f.remove());
             isCrazy = false; hitCount = 0;
             const cb = document.getElementById('catBox');
+            // 修復：強制重置旋轉動畫
+            document.getElementById('catImg').className = ''; 
+            void document.getElementById('catImg').offsetWidth; 
             cb.style.transition = "none"; cb.style.left = "50%"; cb.style.top = "50%";
             cb.style.width = isShrunk ? "110px" : "280px"; cb.style.height = isShrunk ? "110px" : "280px";
             void cb.offsetWidth; cb.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
@@ -203,7 +227,7 @@
                 } else {
                     if (type === '🐠') { specialStatus = "golden"; specialCounter = 10; resetGame(); }
                     else if (type === '🦈') { specialStatus = "devil"; resetGame(); }
-                    else if (type === '🐡') { startCrazy(true); score -= 5; }
+                    else if (type === '🐡') { score -= 5; startCrazy(true); return; }
                     else { stamina = Math.min(10, stamina + (type === '🍖' ? 2 : 1)); score += 1; }
                 }
                 updateUI(); applyBg();
@@ -216,7 +240,14 @@
             let start = Date.now();
             crazyLoop = setInterval(() => {
                 if ((Date.now() - start) > config.crazyT * 1000) {
-                    clearInterval(crazyLoop); document.getElementById('finalScore').innerHTML = `總分: ${score}`; document.getElementById('angryOverlay').style.display = 'flex';
+                    clearInterval(crazyLoop); 
+                    document.getElementById('finalScore').innerHTML = `總分: ${score}`; 
+                    
+                    // 新增：啟用 5 秒無敵時間
+                    canRestart = false;
+                    setTimeout(() => { canRestart = true; }, 5000);
+
+                    document.getElementById('angryOverlay').style.display = 'flex'; 
                 }
                 cb.style.left = (Math.random() * 80 + 10) + "%"; cb.style.top = (Math.random() * 70 + 15) + "%";
             }, poison || hitCount > 0 ? 50 : 100);
