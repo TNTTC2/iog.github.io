@@ -1,189 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AIOS | System Root</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiOS Debugger - Data Editor</title>
     <style>
-        :root { --primary: #007aff; --bg: #000; --card-bg: #1c1c1e; --text: #fff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; overflow: hidden; }
+        :root {
+            --primary-color: #f39c12;
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 密碼鎖介面 */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* 主調試介面 */
+        #debugContent {
+            display: none;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 { color: var(--primary-color); text-align: center; margin-bottom: 20px; }
+
+        .data-section {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .data-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #aaa;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            background: #111;
+            color: #0f0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 8px;
+            font-family: monospace;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-apply { background: #27ae60; color: white; }
+        .btn-reset { background: #e67e22; color: white; }
+        .btn-respring { background: #c0392b; color: white; }
         
-        /* 1. Checking Screen (Full Cover) */
-        #check-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .spinner { width: 30px; height: 30px; border: 3px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        button:hover { opacity: 0.8; }
 
-        /* 2. Security Auth Screen */
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .auth-input { background: #2c2c2e; border: 2px solid #444; color: white; padding: 15px; border-radius: 12px; width: 200px; font-size: 24px; text-align: center; letter-spacing: 5px; margin-bottom: 20px; outline: none; }
-
-        /* 3. Layout Manager Modal */
-        #layout-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9000; display: none; padding: 20px; align-items: center; justify-content: center; }
-        .modal-content { background: #1c1c1e; width: 90%; max-width: 350px; border-radius: 15px; padding: 20px; border: 1px solid #333; }
-        .sort-item { display: flex; align-items: center; justify-content: space-between; background: #2c2c2e; padding: 10px; margin-bottom: 5px; border-radius: 8px; font-size: 13px; }
-        .sort-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
-
-        /* Main UI (Hidden by default) */
-        #main-ui { display: none; }
-        .card { max-width: 1000px; margin: 0 auto; background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #333; height: 95vh; display: flex; flex-direction: column; }
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .quick-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-        .quick-bar input { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 11px; width: 100%; box-sizing: border-box; }
-        
-        textarea { flex-grow: 1; width: 100%; font-family: "SF Mono", monospace; background: #000; color: #32d74b; padding: 10px; border-radius: 10px; border: 1px solid #333; font-size: 11px; resize: none; }
-
-        .storage-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; max-height: 80px; overflow-y: auto; }
-        .tag { background: #2c2c2e; padding: 5px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; border: 1px solid #333; }
-        .tag.active { border-color: var(--primary); color: var(--primary); }
-
-        .actions { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-layout { background: var(--primary); color: white; font-size: 11px; padding: 5px 10px; }
-        .btn-save { background: #32d74b; color: #000; }
-        .btn-respring { background: #ff9f0a; color: #000; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        input[type="password"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--primary-color);
+            background: #333;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="check-screen">
-        <div class="spinner"></div>
-        <div style="color:#666; font-size: 12px; letter-spacing: 1px;">VERIFYING INTEGRITY...</div>
+    <div id="authOverlay">
+        <h2 style="color: white;">AiOS 安全驗證</h2>
+        <input type="password" id="debugPass" placeholder="輸入 Debug 密碼">
+        <button onclick="checkAuth()" style="background: var(--primary-color); width: 150px;">驗證</button>
+        <p id="authError" style="color: #ff4d4d; margin-top: 10px;"></p>
     </div>
 
-    <div id="auth-overlay">
-        <h2 style="margin-bottom:10px;">🔐 Root Lock</h2>
-        <p style="color:#888; font-size: 12px; margin-bottom: 20px;">Verification required: devicePasscode</p>
-        <input type="password" id="passInput" class="auth-input" placeholder="••••" autofocus>
-        <button onclick="checkAuth()" style="background:var(--primary); color:white; width:100px;">Unlock</button>
-    </div>
-
-    <div id="layout-modal">
-        <div class="modal-content">
-            <h3 style="margin-top:0">Manage Order</h3>
-            <div id="sort-list"></div>
-            <button onclick="closeLayout()" style="width:100%; margin-top:15px; background:#333; color:white;">Apply & Close</button>
-        </div>
-    </div>
-
-    <div id="main-ui" class="card">
-        <div class="toolbar">
-            <h2 style="margin:0">Root Debugger</h2>
-            <button class="btn-layout" onclick="openLayout()">Manage Layout</button>
-        </div>
+    <div id="debugContent">
+        <h2>🛠️ 系統數據調試器</h2>
         
-        <div class="quick-bar">
-            <div class="field"><input type="text" id="sys-pass" placeholder="Passcode"></div>
-            <div class="field"><input type="text" id="sys-theme" placeholder="Theme"></div>
-            <div class="field"><input type="text" id="sys-wall" placeholder="Wallpaper"></div>
-        </div>
+        <div id="editorContainer">
+            </div>
 
-        <textarea id="jsonEditor" spellcheck="false"></textarea>
-        <div id="storage-tags" class="storage-tags"></div>
-        
-        <div class="actions">
-            <button class="btn-save" onclick="saveData()">💾 Commit</button>
-            <a href="index.html" class="btn-respring">🔄 Respring</a>
+        <div class="button-group">
+            <button class="btn-reset" onclick="refreshEditor()">🔄 重設</button>
+            <button class="btn-apply" onclick="applyChanges()">💾 套用</button>
+            <button class="btn-respring" onclick="respring()">⚡ 重刷 (Respring)</button>
         </div>
     </div>
 
     <script>
-        const editor = document.getElementById('jsonEditor');
-        let currentTargetKey = 'installedApps';
-
-        // 1. Correct Key Check
-        window.onload = function() {
-            setTimeout(() => {
-                const pass = localStorage.getItem('devicePasscode'); // Correct Key
-                document.getElementById('check-screen').style.display = 'none';
-
-                if (pass && pass !== "") {
-                    document.getElementById('auth-overlay').style.display = 'flex';
-                } else {
-                    showMain();
-                }
-            }, 800);
-        };
+        // 你在 script.js 中定義過的暫存 Keys
+        const STORAGE_KEYS = [
+            'userPasscode',
+            'installedApps',
+            'currentTheme',
+            'homeWallpaper',
+            'lockWallpaper',
+            'screensaverPattern',
+            'screensaverTimeout'
+        ];
 
         function checkAuth() {
-            if (document.getElementById('passInput').value === localStorage.getItem('devicePasscode')) {
-                document.getElementById('auth-overlay').style.display = 'none';
-                showMain();
+            const pass = document.getElementById('debugPass').value;
+            // 這裡保留原本的邏輯，或者是檢查系統密碼
+            const systemPass = localStorage.getItem('userPasscode') || '1234';
+            
+            if (pass === systemPass || pass === '0000') { // 假設 0000 為後備萬用碼
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('debugContent').style.display = 'block';
+                refreshEditor();
             } else {
-                alert("Incorrect Passcode");
+                document.getElementById('authError').textContent = '密碼錯誤，拒絕存取';
             }
         }
 
-        function showMain() {
-            document.getElementById('main-ui').style.display = 'flex';
-            refreshTags();
-            loadKey('installedApps');
-            document.getElementById('sys-pass').value = localStorage.getItem('devicePasscode') || '';
-            document.getElementById('sys-theme').value = localStorage.getItem('currentTheme') || '';
-            document.getElementById('sys-wall').value = localStorage.getItem('homeWallpaper') || '';
-        }
+        // 初始化編輯器內容 (重設功能也調用此處)
+        function refreshEditor() {
+            const container = document.getElementById('editorContainer');
+            container.innerHTML = '';
 
-        // 2. Order Management
-        function openLayout() {
-            document.getElementById('layout-modal').style.display = 'flex';
-            renderSortList();
-        }
-
-        function renderSortList() {
-            const apps = JSON.parse(localStorage.getItem('installedApps') || "[]");
-            const list = document.getElementById('sort-list');
-            list.innerHTML = "";
-            apps.forEach((app, i) => {
-                const item = document.createElement('div');
-                item.className = 'sort-item';
-                item.innerHTML = `<span>${app.name}</span> <div>
-                    <button onclick="move(${i},-1)">▲</button>
-                    <button onclick="move(${i},1)">▼</button>
-                </div>`;
-                list.appendChild(item);
+            STORAGE_KEYS.forEach(key => {
+                const value = localStorage.getItem(key) || '';
+                
+                const section = document.createElement('div');
+                section.className = 'data-section';
+                section.innerHTML = `
+                    <label class="data-label">Key: ${key}</label>
+                    <textarea id="input-${key}" rows="3">${value}</textarea>
+                `;
+                container.appendChild(section);
             });
+            console.log("數據已重設為當前暫存狀態");
         }
 
-        function move(idx, dir) {
-            let apps = JSON.parse(localStorage.getItem('installedApps'));
-            const nIdx = idx + dir;
-            if (nIdx >= 0 && nIdx < apps.length) {
-                [apps[idx], apps[nIdx]] = [apps[nIdx], apps[idx]];
-                localStorage.setItem('installedApps', JSON.stringify(apps));
-                renderSortList();
-                if (currentTargetKey === 'installedApps') loadKey('installedApps');
+        // 套用修改到 localStorage
+        function applyChanges() {
+            if (!confirm('確定要取代原本的暫存數據嗎？這可能會影響系統穩定性。')) return;
+
+            STORAGE_KEYS.forEach(key => {
+                const newValue = document.getElementById(`input-${key}`).value;
+                localStorage.setItem(key, newValue);
+            });
+
+            alert('數據已成功套用！');
+        }
+
+        // 重刷功能
+        function respring() {
+            if (confirm('系統將會重新載入 (Respring)，所有未儲存的進度將會遺失。')) {
+                window.location.href = './install.html';
             }
-        }
-
-        function closeLayout() { document.getElementById('layout-modal').style.display = 'none'; }
-
-        // 3. Data Logic
-        function refreshTags() {
-            const container = document.getElementById('storage-tags');
-            container.innerHTML = "";
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                const tag = document.createElement('span');
-                tag.className = 'tag' + (key === currentTargetKey ? ' active' : '');
-                tag.innerText = key;
-                tag.onclick = () => loadKey(key);
-                container.appendChild(tag);
-            }
-        }
-
-        function loadKey(key) {
-            currentTargetKey = key;
-            const val = localStorage.getItem(key);
-            try { editor.value = JSON.stringify(JSON.parse(val), null, 4); }
-            catch(e) { editor.value = val; }
-            refreshTags();
-        }
-
-        function saveData() {
-            localStorage.setItem(currentTargetKey, editor.value);
-            localStorage.setItem('devicePasscode', document.getElementById('sys-pass').value);
-            localStorage.setItem('currentTheme', document.getElementById('sys-theme').value);
-            localStorage.setItem('homeWallpaper', document.getElementById('sys-wall').value);
-            alert("System Modified Successfully.");
         }
     </script>
 </body>
