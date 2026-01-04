@@ -3,91 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Root Debugger | System Root</title>
+    <title>Root Debugger</title>
     <style>
-        :root { --primary: #007aff; --bg: #000; --card-bg: #1c1c1e; --text: #fff; --danger: #ff3b30; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        :root { --primary: #007aff; --bg: #000; --card-bg: #1c1c1e; --text: #fff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; overflow: hidden; }
         
-        /* Loading & Auth */
-        #check-screen, #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #auth-overlay { z-index: 9999; display: none; }
-        .spinner { width: 30px; height: 30px; border: 3px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        /* 1. Loading/Fatal Screen */
+        #check-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 2. Security Auth Screen */
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .auth-card { background: var(--card-bg); padding: 30px; border-radius: 20px; text-align: center; width: 80%; max-width: 300px; }
-        .pin-input { background: #000; border: 1px solid #333; color: white; width: 100%; padding: 12px; border-radius: 10px; text-align: center; font-size: 18px; margin: 15px 0; outline: none; }
+        .pin-input { background: #000; border: 1px solid #333; color: white; width: 100%; padding: 12px; border-radius: 10px; text-align: center; font-size: 18px; letter-spacing: 5px; margin: 15px 0; outline: none; }
+        .auth-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Navigation */
-        .nav-bar { display: flex; background: #121212; border-bottom: 1px solid #2c2c2e; }
-        .nav-item { flex: 1; padding: 15px; text-align: center; font-size: 13px; color: #8e8e93; cursor: pointer; }
-        .nav-item.active { color: var(--text); border-bottom: 2px solid var(--primary); background: var(--card-bg); }
+        /* 3. Header (Only Menu Button & Title) */
+        .header { display: flex; align-items: center; padding: 10px 5px; border-bottom: 1px solid #2c2c2e; }
+        .menu-trigger { font-size: 24px; background: none; border: none; color: var(--primary); cursor: pointer; padding: 0 15px 0 5px; }
+        .header h2 { margin: 0; font-size: 18px; color: #ff3b30; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Main Content Areas */
-        .content-area { flex: 1; display: none; padding: 15px; overflow-y: auto; padding-bottom: 100px; }
-        .content-area.active { display: block; }
+        /* 4. Side Menu */
+        #side-menu { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #121212; z-index: 2000; transition: 0.3s; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); border-right: 1px solid #2c2c2e; }
+        #side-menu.open { left: 0; }
+        .menu-item { padding: 15px; background: #1c1c1e; border-radius: 12px; margin-bottom: 10px; color: #fff; cursor: pointer; font-size: 14px; border: 1px solid #333; }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1999; }
 
-        /* Editor Style */
-        .header-title { font-size: 18px; color: var(--danger); text-transform: uppercase; margin-bottom: 15px; padding: 0 5px; }
-        #json-editor { width: 100%; height: 300px; background: #000; color: #32d74b; border: 1px solid #333; border-radius: 12px; padding: 12px; font-family: monospace; font-size: 13px; outline: none; resize: none; }
-        .storage-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: #2c2c2e; color: #8e8e93; padding: 5px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; }
-        .tag.active { background: var(--primary); color: white; }
-
-        /* App Manager Style */
-        .app-item { background: var(--card-bg); border: 1px solid #2c2c2e; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-        .app-info { flex: 1; }
-        .app-name { font-size: 14px; font-weight: bold; }
-        .app-id { font-size: 11px; color: #8e8e93; }
-        .app-controls { display: flex; gap: 10px; }
-        .ctrl-btn { padding: 8px; background: #2c2c2e; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        .ctrl-del { color: var(--danger); }
-
-        /* Action Bar */
+        /* 5. Main Editor Area */
+        .main-editor { margin-top: 15px; }
+        #editor-info { font-size: 11px; color: #8e8e93; margin-bottom: 8px; font-family: monospace; }
+        #json-editor { width: 100%; height: 380px; background: #000; color: #32d74b; border: 1px solid #333; border-radius: 12px; padding: 12px; font-family: 'Courier New', monospace; font-size: 13px; box-sizing: border-box; outline: none; resize: none; }
+        
+        /* 6. Footer Actions */
         .action-bar { position: fixed; bottom: 20px; left: 10px; right: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .btn { padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; font-size: 14px; }
         .btn-reset { background: #3a3a3c; color: #fff; }
         .btn-apply { background: #32d74b; color: #000; }
-        .btn-respring { background: var(--danger); color: #fff; }
+        .btn-respring { background: #ff3b30; color: #fff; }
     </style>
 </head>
 <body>
 
     <div id="check-screen">
         <div class="spinner"></div>
-        <div style="margin-top:15px; font-size:12px; color:#8e8e93;">Initializing Root Access...</div>
+        <div id="status-msg" style="font-size: 12px; color: #8e8e93; text-align: center; padding: 0 20px;">Initializing Root Access...</div>
     </div>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h1>Root Debugger</h1>
-            <p style="font-size:13px; color:#8e8e93;">Verification Required</p>
+            <h1 style="font-size: 20px; margin: 0; color: #ff3b30;">Root Debugger</h1>
+            <p style="font-size: 13px; color: #8e8e93; margin-top: 5px;">Verification Required</p>
             <input type="password" id="auth-pin" class="pin-input" placeholder="••••">
-            <button class="btn btn-apply" style="width:100%" onclick="checkAuth()">Authenticate</button>
-            <div id="auth-msg" style="color:var(--danger); font-size:12px; margin-top:10px;"></div>
+            <button class="auth-btn" onclick="checkAuth()">Authenticate</button>
+            <div id="auth-msg" style="color: #ff3b30; font-size: 11px; margin-top: 10px;"></div>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('editor')">編輯器</div>
-        <div class="nav-item" onclick="switchTab('apps')">App 管理</div>
-        <div class="nav-item" onclick="switchTab('menu')">選單</div>
+    <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
+    <div id="side-menu">
+        <h3 style="color: #ff3b30; margin-bottom: 20px; font-size: 16px;">ROOT MENU</h3>
+        <div class="menu-item" onclick="selectTool('devicePasscode')">🛠️ 密碼與驗證 (Editor)</div>
+        <div class="menu-item" onclick="selectTool('installedApps')">📦 Apps 封裝排序</div>
+        <div class="menu-item" onclick="selectTool('homeWallpaper')">🖼️ 桌布數據管理</div>
+        <div class="menu-item" onclick="selectTool('currentTheme')">🎨 系統主題設定</div>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+        <div class="menu-item" onclick="toggleMenu()" style="text-align: center; background: none; border: none; color: #666;">Close Menu</div>
     </div>
 
-    <div id="tab-editor" class="content-area active">
-        <div class="header-title">Root Debugger</div>
+    <div class="header">
+        <button class="menu-trigger" onclick="toggleMenu()">☰</button>
+        <h2>Root Debugger</h2>
+    </div>
+
+    <div class="main-editor">
+        <div id="editor-info">TARGET: devicePasscode</div>
         <textarea id="json-editor" spellcheck="false"></textarea>
-        <div class="storage-tags" id="storage-tags"></div>
-    </div>
-
-    <div id="tab-apps" class="content-area">
-        <div class="header-title">App 管理器</div>
-        <div id="app-list-container"></div>
-    </div>
-
-    <div id="tab-menu" class="content-area">
-        <div class="header-title">系統選單</div>
-        <div style="background:var(--card-bg); padding:15px; border-radius:12px; font-size:14px; color:#8e8e93;">
-            其他系統組件正在開發中...
-        </div>
     </div>
 
     <div class="action-bar">
@@ -98,10 +89,18 @@
 
     <script>
         const editor = document.getElementById('json-editor');
-        let currentTargetKey = "devicePasscode";
-        let localApps = [];
+        let activeKey = "devicePasscode";
 
         window.onload = function() {
+            const passcode = localStorage.getItem('devicePasscode');
+            
+            // 拒絕空密碼
+            if (!passcode || passcode.trim() === "") {
+                document.getElementById('spinner').style.display = 'none'; // 如果有 spinner 的話
+                document.getElementById('status-msg').innerHTML = "<span style='color:#ff3b30; font-weight:bold;'>ACCESS DENIED</span><br>No System Passcode Detected.";
+                return; 
+            }
+
             setTimeout(() => {
                 document.getElementById('check-screen').style.display = 'none';
                 document.getElementById('auth-overlay').style.display = 'flex';
@@ -111,114 +110,50 @@
 
         function checkAuth() {
             const input = document.getElementById('auth-pin').value;
-            const actual = localStorage.getItem('devicePasscode') || "";
+            const actual = localStorage.getItem('devicePasscode');
             if(input === actual) {
                 document.getElementById('auth-overlay').style.display = 'none';
             } else {
-                document.getElementById('auth-msg').innerText = "Access Denied";
+                document.getElementById('auth-msg').innerText = "INVALID CREDENTIALS";
             }
         }
 
         function initRoot() {
-            refreshTags();
-            loadKey(currentTargetKey);
-            loadAppsManager();
+            loadKey('devicePasscode');
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.querySelectorAll('.content-area').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('tab-' + tab).classList.add('active');
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('menu-overlay');
+            const isOpen = menu.classList.contains('open');
+            menu.classList.toggle('open');
+            overlay.style.display = isOpen ? 'none' : 'block';
         }
 
-        // --- 編輯器邏輯 ---
-        function refreshTags() {
-            const container = document.getElementById('storage-tags');
-            container.innerHTML = "";
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                const tag = document.createElement('span');
-                tag.className = 'tag' + (key === currentTargetKey ? ' active' : '');
-                tag.innerText = key;
-                tag.onclick = () => loadKey(key);
-                container.appendChild(tag);
-            }
+        function selectTool(key) {
+            activeKey = key;
+            document.getElementById('editor-info').innerText = "TARGET: " + key;
+            loadKey(key);
+            toggleMenu();
         }
 
         function loadKey(key) {
-            currentTargetKey = key;
-            const val = localStorage.getItem(key);
-            try { editor.value = JSON.stringify(JSON.parse(val), null, 4); }
-            catch(e) { editor.value = val; }
-            refreshTags();
-        }
-
-        // --- App 管理器邏輯 (從原本彈窗提取) ---
-        function loadAppsManager() {
-            const data = localStorage.getItem('installedApps');
-            localApps = data ? JSON.parse(data) : [];
-            renderAppList();
-        }
-
-        function renderAppList() {
-            const container = document.getElementById('app-list-container');
-            container.innerHTML = "";
-            localApps.forEach((app, index) => {
-                const div = document.createElement('div');
-                div.className = 'app-item';
-                div.innerHTML = `
-                    <div class="app-info">
-                        <div class="app-name">${app.name}</div>
-                        <div class="app-id">${app.id}</div>
-                    </div>
-                    <div class="app-controls">
-                        <div class="ctrl-btn" onclick="moveApp(${index}, -1)">▲</div>
-                        <div class="ctrl-btn" onclick="moveApp(${index}, 1)">▼</div>
-                        <div class="ctrl-btn ctrl-del" onclick="deleteApp(${index})">✕</div>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function moveApp(index, direction) {
-            const newIndex = index + direction;
-            if (newIndex >= 0 && newIndex < localApps.length) {
-                const temp = localApps[index];
-                localApps[index] = localApps[newIndex];
-                localApps[newIndex] = temp;
-                renderAppList();
-                syncAppsToEditor();
+            const val = localStorage.getItem(key) || "";
+            try { 
+                editor.value = JSON.stringify(JSON.parse(val), null, 4); 
+            } catch(e) { 
+                editor.value = val; 
             }
         }
 
-        function deleteApp(index) {
-            if(confirm("確定刪除此 App 封裝？")) {
-                localApps.splice(index, 1);
-                renderAppList();
-                syncAppsToEditor();
-            }
-        }
-
-        function syncAppsToEditor() {
-            // 如果當前編輯器正在看 installedApps，則同步更新它
-            if (currentTargetKey === 'installedApps') {
-                editor.value = JSON.stringify(localApps, null, 4);
-            }
-        }
-
-        // --- 全域動作 ---
         function saveData() {
-            // 儲存編輯器內容
-            localStorage.setItem(currentTargetKey, editor.value);
-            // 如果在 App 管理分頁有改動，也要確保寫入
-            localStorage.setItem('installedApps', JSON.stringify(localApps));
-            alert("System Modified Successfully.");
+            localStorage.setItem(activeKey, editor.value);
+            alert("Data Committed to System Root.");
         }
 
         function respring() {
-            window.top.location.replace('./install');
+            // 回歸原始導向方式：確保 Safari 導覽列與刷新行為一致
+            window.location.href = './install';
         }
     </script>
 </body>
