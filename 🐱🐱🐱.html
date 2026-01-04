@@ -114,11 +114,14 @@
         }
         function resumeGame() {
             let val = document.getElementById('debugPause').value.trim();
+            isPaused = false; 
+            document.getElementById('pauseOverlay').style.display = 'none'; // 確保黑幕一定關閉
+            
             if (val !== prePauseCode && val !== "") {
-                isDebugLocked = true; isPaused = false; applyAndContinue(val);
+                isDebugLocked = true;
+                applyAndContinue(val);
             } else {
-                isPaused = false; document.getElementById('pauseOverlay').style.display = 'none';
-                if (isCrazy) { runCrazyMove(hitCount >= 1 ? 50 : 100); }
+                if (isCrazy) { startCrazy(hitCount >= 1); } // 恢復暴走或極速暴走
                 else {
                     gameLoop = setInterval(tick, 1000);
                     foodLoop = setInterval(spawnFood, 3000);
