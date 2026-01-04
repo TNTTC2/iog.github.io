@@ -40,7 +40,7 @@
 
         /* Layout Modal */
         #layout-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); width: 90%; padding: 20px; border-radius: 20px; }
+        .modal-content { background: var(--card-bg); width: 90%; padding: 20px; border-radius: 20px; max-height: 80vh; overflow-y: auto; }
         .modal-item { background: #000; border: 1px solid #333; margin-bottom: 10px; padding: 12px; border-radius: 10px; font-size: 14px; }
         .modal-item label { display: block; font-size: 10px; color: #8e8e93; margin-bottom: 5px; }
         .modal-item input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 13px; }
@@ -82,7 +82,7 @@
     <div id="layout-modal">
         <div class="modal-content">
             <div class="modal-item">
-                <label>ROOT_PASSCODE</label>
+                <label>DEVICE_PASSCODE</label>
                 <input type="text" id="sys-pass">
             </div>
             <div class="modal-item">
@@ -115,7 +115,7 @@
             const actual = localStorage.getItem('devicePasscode') || "";
             if(input === actual) {
                 document.getElementById('auth-overlay').style.display = 'none';
-                addLog("Root Access Authorized.");
+                console.log("[ROOT] Access Authorized.");
             } else {
                 document.getElementById('auth-msg').innerText = "Access Denied: Invalid PIN";
             }
@@ -132,13 +132,15 @@
         }
 
         function respring() {
-            window.location.href = './install';
+            // 使用強制刷新並跳轉的方式，確保在所有環境下都能運作
+            window.top.location.replace('./install');
         }
 
         // 2. UI Logic
         function showLayout() { 
             if(confirm("Enter System Layout Config?")) {
                 document.getElementById('layout-modal').style.display = 'flex'; 
+                // 原文中的邏輯：如果當前 key 是 installedApps 則載入它
                 if(currentTargetKey === 'installedApps') loadKey('installedApps');
             }
         }
@@ -169,13 +171,12 @@
 
         function saveData() {
             localStorage.setItem(currentTargetKey, editor.value);
+            // 同步 Modal 內容回 localStorage
             localStorage.setItem('devicePasscode', document.getElementById('sys-pass').value);
             localStorage.setItem('currentTheme', document.getElementById('sys-theme').value);
             localStorage.setItem('homeWallpaper', document.getElementById('sys-wall').value);
             alert("System Modified Successfully.");
         }
-
-        function addLog(msg) { console.log("[ROOT] " + msg); }
     </script>
 </body>
 </html>
