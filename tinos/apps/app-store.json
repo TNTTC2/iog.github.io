@@ -1,9 +1,9 @@
 {
   "apps": [
-      {
+    {
       "id": "tnte",
       "name": "TNTE上網",
-      "description": "Web Bowser for TinOS",
+      "description": "Web Browser for TinOS",
       "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Safari_browser_logo.svg/1024px-Safari_browser_logo.svg.png",
       "iconColor": "#007aff",
       "url": "https://tnttc2.github.io/iog.github.io/TNTExplorer/latest.html",
@@ -14,7 +14,7 @@
       "id": "apple-music",
       "name": "Apple Music",
       "description": "音樂串流服務",
-      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/1024px-Apple_Music_icon.svg.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/1024px-Apple_Music_logo.svg.png",
       "iconColor": "#fa243c",
       "url": "https://music.apple.com",
       "category": "Music",
@@ -24,7 +24,7 @@
       "id": "bbc",
       "name": "BBC News",
       "description": "世界新聞與分析",
-      "icon": "https://nav.files.bbci.co.uk/orbit/2.0.0-1011.6669865/img/apple-touch-icon.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/BBC_News_2019.svg/1024px-BBC_News_2019.svg.png",
       "iconColor": "#bb1919",
       "url": "https://www.bbc.com/news",
       "category": "News",
@@ -34,7 +34,7 @@
       "id": "canva",
       "name": "Canva",
       "description": "平面設計平台",
-      "icon": "https://www.canva.com/favicon.ico",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/1024px-Canva_icon_2021.svg.png",
       "iconColor": "#00c4cc",
       "url": "https://www.canva.com",
       "category": "Design",
@@ -44,7 +44,7 @@
       "id": "codepen",
       "name": "CodePen",
       "description": "代碼遊樂場",
-      "icon": "https://cpwebassets.codepen.io/assets/favicon/favicon-aec34ad4052902e7aa1a547738c805252ed0561bd0c3674b88960161405a415b.ico",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/CodePen_logo.svg/1024px-CodePen_logo.svg.png",
       "iconColor": "#000000",
       "url": "https://codepen.io",
       "category": "Developer",
@@ -58,8 +58,7 @@
       "iconColor": "#0078d4",
       "url": "https://copilot.microsoft.com",
       "category": "Productivity",
-      "type": "website",
-      "fallbackIcon": "message-square"
+      "type": "website"
     },
     {
       "id": "discord",
@@ -75,7 +74,7 @@
       "id": "disney-plus",
       "name": "Disney+",
       "description": "迪士尼串流服務",
-      "icon": "https://static-assets.bamgrid.com/product/disneyplus/images/share-default.14f44415f79102c01725c4356eb35593.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Disney%2B_logo.svg/1024px-Disney%2B_logo.svg.png",
       "iconColor": "#113ccf",
       "url": "https://www.disneyplus.com",
       "category": "Entertainment",
@@ -85,7 +84,7 @@
       "id": "dropbox",
       "name": "Dropbox",
       "description": "雲端儲存空間",
-      "icon": "https://aem.dropbox.com/cms/content/dam/dropbox/www/en-us/branding/dropbox-logo-glyph-blue.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Dropbox_Icon.svg/1024px-Dropbox_Icon.svg.png",
       "iconColor": "#0061ff",
       "url": "https://www.dropbox.com",
       "category": "Productivity",
@@ -95,39 +94,27 @@
       "id": "duolingo",
       "name": "Duolingo",
       "description": "語言學習應用",
-      "icon": "https://www.duolingo.com/favicon.ico",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Duolingo_logo_%282019%29.svg/1024px-Duolingo_logo_%282019%29.svg.png",
       "iconColor": "#58cc02",
       "url": "https://www.duolingo.com",
       "category": "Education",
       "type": "website"
     },
     {
-      "id": "eclass",
-      "name": "EClass",
-      "description": "CCASS 學校學習平台",
-      "icon": "https://eclass.ccass.edu.hk/templates/favicon.ico",
-      "iconColor": "#1a73e8",
-      "url": "https://eclass.ccass.edu.hk/templates/",
-      "category": "Education",
-      "type": "website",
-      "fallbackIcon": "graduation-cap"
-    },
-    {
       "id": "facebook",
       "name": "Facebook",
       "description": "與朋友和世界保持聯繫",
-      "icon": "https://www.facebook.com/apple-touch-icon.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png",
       "iconColor": "#1877f2",
       "url": "https://www.facebook.com",
       "category": "Social",
-      "type": "website",
-      "fallbackIcon": "users"
+      "type": "website"
     },
     {
       "id": "github",
       "name": "GitHub",
       "description": "代碼協作平台",
-      "icon": "https://github.githubassets.com/favicons/favicon.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/1024px-Octicons-mark-github.svg.png",
       "iconColor": "#333333",
       "url": "https://github.com",
       "category": "Productivity",
@@ -171,8 +158,7 @@
       "iconColor": "#fbbc04",
       "url": "https://keep.google.com",
       "category": "Productivity",
-      "type": "website",
-      "fallbackIcon": "sticky-note"
+      "type": "website"
     },
     {
       "id": "maps",
@@ -198,7 +184,7 @@
       "id": "icloud",
       "name": "iCloud",
       "description": "Apple 雲端服務",
-      "icon": "https://www.icloud.com/favicon.ico",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/ICloud_logo.svg/1024px-ICloud_logo.svg.png",
       "iconColor": "#007aff",
       "url": "https://www.icloud.com",
       "category": "Productivity",
@@ -208,12 +194,11 @@
       "id": "instagram",
       "name": "Instagram",
       "description": "照片與影片分享",
-      "icon": "https://www.instagram.com/apple-touch-icon.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/1024px-Instagram_logo_2016.svg.png",
       "iconColor": "#e4405f",
       "url": "https://www.instagram.com",
       "category": "Social",
-      "type": "website",
-      "fallbackIcon": "camera"
+      "type": "website"
     },
     {
       "id": "minecraft-classic",
@@ -223,8 +208,7 @@
       "iconColor": "#3e3e3e",
       "url": "https://www.classicube.net/server/play/",
       "category": "Game",
-      "type": "website",
-      "fallbackIcon": "box"
+      "type": "website"
     },
     {
       "id": "minecraft-java",
@@ -234,14 +218,13 @@
       "iconColor": "#2e7d32",
       "url": "https://eaglercraft.com/play/?version=1.8.8&userscript=flameddogo99-eaglermobile.js",
       "category": "Game",
-      "type": "website",
-      "fallbackIcon": "box"
+      "type": "website"
     },
     {
       "id": "netflix",
       "name": "Netflix",
       "description": "電影、節目及更多內容",
-      "icon": "https://images.ctfassets.net/4cd45et68cgf/4nrtXComponent_4nrtXComponent_4nrtXComponent_79949432_20240723_1423/50a9807b8b80b74100d8697669d06822/Netflix_Logo_PMS.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1024px-Netflix_2015_logo.svg.png",
       "iconColor": "#e50914",
       "url": "https://www.netflix.com",
       "category": "Entertainment",
@@ -265,8 +248,7 @@
       "iconColor": "#7719aa",
       "url": "https://www.onenote.com",
       "category": "Productivity",
-      "type": "website",
-      "fallbackIcon": "book"
+      "type": "website"
     },
     {
       "id": "outlook",
@@ -276,8 +258,7 @@
       "iconColor": "#0078d4",
       "url": "https://outlook.live.com",
       "category": "Productivity",
-      "type": "website",
-      "fallbackIcon": "mail"
+      "type": "website"
     },
     {
       "id": "perplexity",
@@ -287,8 +268,7 @@
       "iconColor": "#20b2aa",
       "url": "https://www.perplexity.ai",
       "category": "Productivity",
-      "type": "website",
-      "fallbackIcon": "search"
+      "type": "website"
     },
     {
       "id": "pinterest",
@@ -304,18 +284,17 @@
       "id": "qrcode",
       "name": "Qrcode",
       "description": "網頁版 QR Code 掃描器",
-      "icon": "https://qrcodescan.in/favicon.ico",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Qr-1.svg/1024px-Qr-1.svg.png",
       "iconColor": "#000000",
       "url": "https://qrcodescan.in/",
       "category": "Tool",
-      "type": "website",
-      "fallbackIcon": "maximize"
+      "type": "website"
     },
     {
       "id": "reddit",
       "name": "Reddit",
       "description": "互聯網的首頁",
-      "icon": "https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-180x180.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Reddit_icon.svg/1024px-Reddit_icon.svg.png",
       "iconColor": "#ff4500",
       "url": "https://www.reddit.com",
       "category": "News",
@@ -335,7 +314,7 @@
       "id": "snapchat",
       "name": "Snapchat",
       "description": "相機與即時通訊應用",
-      "icon": "https://www.snapchat.com/favicon.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Snapchat_logo.svg/1024px-Snapchat_logo.svg.png",
       "iconColor": "#fffc00",
       "url": "https://web.snapchat.com",
       "category": "Social",
@@ -369,8 +348,7 @@
       "iconColor": "#6366f1",
       "url": "https://thetawise.ai",
       "category": "Education",
-      "type": "website",
-      "fallbackIcon": "calculator"
+      "type": "website"
     },
     {
       "id": "threads",
@@ -380,14 +358,13 @@
       "iconColor": "#000000",
       "url": "https://www.threads.net",
       "category": "Social",
-      "type": "website",
-      "fallbackIcon": "at-sign"
+      "type": "website"
     },
     {
       "id": "twitch",
       "name": "Twitch",
       "description": "遊戲實況與娛樂平台",
-      "icon": "https://cdn.pixabay.com/photo/2021/12/10/16/38/twitch-6860918_1280.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Twitch_Glitch_Logo_Purple.svg/1024px-Twitch_Glitch_Logo_Purple.svg.png",
       "iconColor": "#9146ff",
       "url": "https://www.twitch.tv",
       "category": "Entertainment",
@@ -397,12 +374,11 @@
       "id": "twitter",
       "name": "Twitter",
       "description": "隨時掌握最新動態",
-      "icon": "https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc7275.png",
-      "iconColor": "#1da1f2",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/X_logo_2023.svg/1024px-X_logo_2023.svg.png",
+      "iconColor": "#000000",
       "url": "https://twitter.com",
       "category": "Social",
-      "type": "website",
-      "fallbackIcon": "message-circle"
+      "type": "website"
     },
     {
       "id": "wechat",
@@ -412,8 +388,7 @@
       "iconColor": "#07c160",
       "url": "https://web.wechat.com",
       "category": "Social",
-      "type": "website",
-      "fallbackIcon": "message-circle"
+      "type": "website"
     },
     {
       "id": "whatsapp",
@@ -429,12 +404,11 @@
       "id": "youtube",
       "name": "YouTube",
       "description": "觀看、上傳及分享影片",
-      "icon": "https://www.youtube.com/apple-touch-icon.png",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/1024px-YouTube_full-color_icon_%282017%29.svg.png",
       "iconColor": "#ff0000",
       "url": "https://www.youtube.com",
       "category": "Entertainment",
-      "type": "website",
-      "fallbackIcon": "play"
+      "type": "website"
     },
     {
       "id": "ytmusic",
@@ -444,14 +418,13 @@
       "iconColor": "#ff0000",
       "url": "https://music.youtube.com",
       "category": "Music",
-      "type": "website",
-      "fallbackIcon": "play-circle"
+      "type": "website"
     },
     {
       "id": "zoom",
       "name": "Zoom",
       "description": "視訊會議服務",
-      "icon": "https://st2.zoom.us/zoom.ico",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Zoom_app_icon.svg/1024px-Zoom_app_icon.svg.png",
       "iconColor": "#2d8cff",
       "url": "https://zoom.us",
       "category": "Business",
@@ -462,6 +435,7 @@
       "name": "🐱🐱🐱",
       "description": "🐱貓咪遊戲🐱",
       "icon": "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG",
+      "iconColor": "#ffeb3b",
       "url": "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.html",
       "category": "Game",
       "type": "website"
