@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg: #000000;
-            --card: #1c1c1e;
+            --card: #121212;
             --primary: #ff3b30;
             --text: #ffffff;
             --code: #32d74b;
@@ -19,261 +19,295 @@
             color: var(--text);
             font-family: -apple-system, system-ui, sans-serif;
             margin: 0;
-            padding: 20px;
             display: flex;
             justify-content: center;
+            height: 100vh;
         }
 
-        .container {
+        .window {
             width: 100%;
-            max-width: 600px;
-            background: var(--card);
-            border-radius: 20px;
-            border: 1px solid #2c2c2e;
-            overflow: hidden;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: var(--bg);
         }
 
-        /* 標題欄 */
-        .header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #2c2c2e;
-        }
-
-        .header h2 {
-            margin: 0;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 18px;
-        }
-
-        /* 分頁導覽列 (對應你的設計圖選單) */
-        .nav-tabs {
+        /* 頂部導航列 */
+        .nav-bar {
             display: flex;
-            background: #121212;
-            overflow-x: auto;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #1c1c1e;
             border-bottom: 1px solid #2c2c2e;
         }
 
-        .tab {
-            flex: 1;
-            padding: 15px 10px;
-            text-align: center;
-            font-size: 13px;
-            color: #8e8e93;
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 24px;
             cursor: pointer;
-            white-space: nowrap;
+            padding: 0 10px;
         }
 
-        .tab.active {
-            color: var(--text);
-            border-bottom: 2px solid var(--primary);
-            background: var(--card);
+        .title {
+            font-weight: bold;
+            font-size: 17px;
+            letter-spacing: 1px;
         }
 
         /* 內容區域 */
-        .content-section {
-            display: none;
-            padding: 20px;
-            height: 60vh;
+        .content {
+            flex: 1;
             overflow-y: auto;
+            padding: 20px;
         }
 
-        .content-section.active {
-            display: block;
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* 選單介面 */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        /* 編輯器分頁樣式 */
-        .key-group {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
+        .menu-item {
+            background: #1c1c1e;
+            padding: 18px;
             border-radius: 12px;
-            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        /* App 管理樣式 */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-sm {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
             border: 1px solid #333;
+            background: #1c1c1e;
+            color: white;
+            font-size: 12px;
         }
 
-        .key-label {
-            color: var(--accent);
-            font-size: 11px;
-            font-family: monospace;
-            margin-bottom: 8px;
-            display: block;
+        .app-card {
+            background: #1c1c1e;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
+        .uninstall-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        /* Wallpaper 管理樣式 */
+        .wp-section {
+            background: #1c1c1e;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .wp-preview {
+            width: 100%;
+            height: 120px;
+            background: #000;
+            border-radius: 10px;
+            margin: 10px 0;
+            object-fit: cover;
+        }
+
+        /* 數據編輯器 */
         textarea {
             width: 100%;
             background: #000;
             color: var(--code);
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px;
             font-family: monospace;
             font-size: 13px;
-            resize: vertical;
-        }
-
-        /* 底部按鈕欄 */
-        .footer-actions {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            background: #121212;
-        }
-
-        .btn {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .btn-reset { background: #3a3a3c; color: white; }
-        .btn-apply { background: #32d74b; color: black; }
-        .btn-respring { background: var(--primary); color: white; }
-
-        /* 清單樣式 (Apps/Wallpaper 管理) */
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #2c2c2e;
-            border-radius: 10px;
             margin-bottom: 10px;
         }
 
-        .badge {
-            background: var(--primary);
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 10px;
+        /* 底部固定按鈕 (數據頁面專用) */
+        .footer-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 20px;
+            background: #000;
+            border-top: 1px solid #2c2c2e;
+        }
+
+        .action-btn {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h2>Root Debugger</h2>
-        </div>
+<div class="window">
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="openMenu()">≡</button>
+        <div class="title" id="pageTitle">數據編輯器</div>
+        <button class="nav-btn" onclick="window.close()" style="font-size: 20px;">✕</button>
+    </div>
 
-        <div class="nav-tabs">
-            <div class="tab active" onclick="switchTab('tab-editor')">編輯器</div>
-            <div class="tab" onclick="switchTab('tab-apps')">Apps管理</div>
-            <div class="tab" onclick="switchTab('tab-wallpaper')">Wallpaper管理</div>
-            <div class="tab" onclick="switchTab('tab-menu')">選單</div>
-        </div>
-
-        <div id="tab-editor" class="content-section active">
-            <div id="editor-container">
-                </div>
-        </div>
-
-        <div id="tab-apps" class="content-section">
-            <p style="font-size: 12px; color: #8e8e93;">已偵測到安裝的應用程式：</p>
-            <div id="apps-list">
-                <div class="list-item"><span>System Core</span> <span class="badge">Running</span></div>
-                <div id="dynamic-apps-count"></div>
+    <div class="content">
+        <div id="page-menu" class="page">
+            <div class="menu-list">
+                <div class="menu-item" onclick="switchPage('editor', '數據編輯器')">🛠️ 數據編輯器 <span>›</span></div>
+                <div class="menu-item" onclick="switchPage('apps', 'Apps 管理')">📦 Apps 管理 <span>›</span></div>
+                <div class="menu-item" onclick="switchPage('wallpaper', 'Wallpaper 管理')">🖼️ Wallpaper 管理 <span>›</span></div>
+                <div class="menu-item" style="opacity: 0.5;">⌨️ 指令主機 (未設計)</div>
             </div>
         </div>
 
-        <div id="tab-wallpaper" class="content-section">
-            <div class="key-group">
-                <span class="key-label">HOME_WALLPAPER_DATA</span>
-                <div id="wallpaper-preview" style="height: 100px; background: #000; border: 1px dashed #555; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666;">
-                    Preview Loading...
-                </div>
-                <button class="btn btn-reset" style="width: 100%; font-size: 12px;" onclick="clearWallpaper()">清除桌布暫存</button>
+        <div id="page-editor" class="page active">
+            <div id="editor-fields"></div>
+        </div>
+
+        <div id="page-apps" class="page">
+            <div class="controls">
+                <button class="btn-sm" onclick="sortApps('id')">按 ID 排序</button>
+                <button class="btn-sm" onclick="sortApps('name')">按名稱排序</button>
             </div>
+            <div id="apps-container"></div>
         </div>
 
-        <div id="tab-menu" class="content-section">
-            <div class="list-item" onclick="switchTab('tab-editor')">🛠️ 進入數據編輯模式</div>
-            <div class="list-item" onclick="switchTab('tab-apps')">📦 應用程式封裝管理</div>
-            <div class="list-item" onclick="switchTab('tab-wallpaper')">🖼️ 系統佈景資源</div>
-            <div class="list-item" style="opacity: 0.5;">⌨️ 指令主機 (未設計)</div>
-        </div>
-
-        <div class="footer-actions">
-            <button class="btn btn-reset" onclick="refreshData()">重設</button>
-            <button class="btn btn-apply" onclick="saveData()">套用</button>
-            <button class="btn btn-respring" onclick="respring()">重刷</button>
+        <div id="page-wallpaper" class="page">
+            <div class="wp-section">
+                <span style="font-size: 14px; font-weight: bold;">主畫面背景 (Home)</span>
+                <img id="prev-home" class="wp-preview" src="">
+                <button class="btn-sm" style="width:100%" onclick="clearWP('homeWallpaper')">重設主畫面</button>
+            </div>
+            <div class="wp-section">
+                <span style="font-size: 14px; font-weight: bold;">鎖定畫面背景 (Lock)</span>
+                <img id="prev-lock" class="wp-preview" src="">
+                <button class="btn-sm" style="width:100%" onclick="clearWP('lockWallpaper')">重設鎖定畫面</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        const STORAGE_KEYS = ['userPasscode', 'installedApps', 'currentTheme', 'homeWallpaper', 'lockWallpaper'];
+    <div class="footer-btns" id="editor-actions">
+        <button class="action-btn" style="background:#3a3a3c; color:white;" onclick="initData()">重設</button>
+        <button class="action-btn" style="background:#32d74b; color:black;" onclick="saveData()">套用</button>
+        <button class="action-btn" style="background:#ff3b30; color:white;" onclick="respring()">重刷</button>
+    </div>
+</div>
 
-        function switchTab(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            
-            // 找到點擊的 Tab (如果是點選單內的項目跳轉)
-            const activeTab = Array.from(document.querySelectorAll('.tab')).find(t => t.getAttribute('onclick').includes(id));
-            if(activeTab) activeTab.classList.add('active');
-            
-            document.getElementById(id).classList.add('active');
-        }
+<script>
+    const KEYS = ['userPasscode', 'installedApps', 'currentTheme', 'homeWallpaper', 'lockWallpaper'];
 
-        function refreshData() {
-            // 1. 編輯器重設
-            const container = document.getElementById('editor-container');
-            container.innerHTML = '';
-            STORAGE_KEYS.forEach(key => {
-                const val = localStorage.getItem(key) || "";
-                container.innerHTML += `
-                    <div class="key-group">
-                        <span class="key-label">SYSTEM_ROOT_KEY: ${key}</span>
-                        <textarea id="field-${key}" rows="4" spellcheck="false">${val}</textarea>
-                    </div>
-                `;
-            });
+    function switchPage(id, title) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + id).classList.add('active');
+        document.getElementById('pageTitle').innerText = title;
+        document.getElementById('editor-actions').style.display = (id === 'editor') ? 'grid' : 'none';
+        
+        if(id === 'apps') renderApps();
+        if(id === 'wallpaper') renderWallpapers();
+    }
 
-            // 2. Apps 管理更新
-            const apps = JSON.parse(localStorage.getItem('installedApps') || '[]');
-            document.getElementById('dynamic-apps-count').innerHTML = `
-                <div class="list-item"><span>User Apps</span> <span class="badge" style="background: #0a84ff">${apps.length} Installed</span></div>
+    function openMenu() {
+        switchPage('menu', 'Root Debugger 選單');
+    }
+
+    // --- 數據編輯器功能 ---
+    function initData() {
+        const container = document.getElementById('editor-fields');
+        container.innerHTML = '';
+        KEYS.forEach(key => {
+            const val = localStorage.getItem(key) || "";
+            container.innerHTML += `
+                <div style="margin-bottom:15px">
+                    <label style="color:var(--accent); font-size:11px; font-family:monospace;">KEY: ${key}</label>
+                    <textarea id="edit-${key}" rows="4" spellcheck="false">${val}</textarea>
+                </div>
             `;
+        });
+    }
 
-            // 3. Wallpaper 預覽
-            const wp = localStorage.getItem('homeWallpaper');
-            const preview = document.getElementById('wallpaper-preview');
-            if(wp && wp.startsWith('data:image')) {
-                preview.innerHTML = `<img src="${wp}" style="max-height: 100%; border-radius: 5px;">`;
-            } else {
-                preview.innerHTML = "無自定義桌布數據";
-            }
-        }
+    function saveData() {
+        if(!confirm("確定套用更改？")) return;
+        KEYS.forEach(key => {
+            const el = document.getElementById('edit-' + key);
+            if(el) localStorage.setItem(key, el.value);
+        });
+        alert("已更新暫存。");
+    }
 
-        function saveData() {
-            if(!confirm("確定套用所有分頁的更改？")) return;
-            STORAGE_KEYS.forEach(key => {
-                const txt = document.getElementById(`field-${key}`);
-                if(txt) localStorage.setItem(key, txt.value);
-            });
-            alert("✅ 暫存數據已更新");
-        }
+    // --- Apps 管理功能 ---
+    function renderApps(sortByKey = 'id') {
+        const container = document.getElementById('apps-container');
+        let apps = JSON.parse(localStorage.getItem('installedApps') || '[]');
+        
+        apps.sort((a, b) => (a[sortByKey] > b[sortByKey]) ? 1 : -1);
+        
+        container.innerHTML = '';
+        apps.forEach(app => {
+            container.innerHTML += `
+                <div class="app-card">
+                    <div>
+                        <div style="font-weight:bold">${app.name}</div>
+                        <div style="font-size:10px; color:#8e8e93">ID: ${app.id}</div>
+                    </div>
+                    <button class="uninstall-btn" onclick="uninstallApp('${app.id}')">剷 App</button>
+                </div>
+            `;
+        });
+    }
 
-        function clearWallpaper() {
-            if(confirm("確定刪除桌布數據？")) {
-                localStorage.removeItem('homeWallpaper');
-                localStorage.removeItem('lockWallpaper');
-                refreshData();
-            }
-        }
+    function sortApps(key) { renderApps(key); }
 
-        function respring() {
-            window.location.href = './install.html';
-        }
+    function uninstallApp(id) {
+        if(!confirm(`確定要剷除 ${id} 嗎？`)) return;
+        let apps = JSON.parse(localStorage.getItem('installedApps') || '[]');
+        apps = apps.filter(a => a.id !== id);
+        localStorage.setItem('installedApps', JSON.stringify(apps));
+        renderApps();
+    }
 
-        window.onload = refreshData;
-    </script>
+    // --- Wallpaper 管理功能 ---
+    function renderWallpapers() {
+        document.getElementById('prev-home').src = localStorage.getItem('homeWallpaper') || "";
+        document.getElementById('prev-lock').src = localStorage.getItem('lockWallpaper') || "";
+    }
+
+    function clearWP(key) {
+        localStorage.removeItem(key);
+        renderWallpapers();
+    }
+
+    function respring() {
+        window.location.href = './install.html';
+    }
+
+    window.onload = initData;
+</script>
 </body>
 </html>
