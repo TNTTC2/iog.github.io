@@ -3,216 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Root Debugger</title>
+    <title>Root Debugger | System Root</title>
     <style>
-        :root { --primary: #007aff; --bg: #000; --card: #1c1c1e; --text: #fff; --code: #32d74b; --danger: #ff3b30; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        :root { --primary: #007aff; --bg: #000; --card-bg: #1c1c1e; --text: #fff; --code: #32d74b; --danger: #ff3b30; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; overflow: hidden; height: 100vh; box-sizing: border-box; }
         
-        /* 導航欄 */
-        .nav-tabs { display: flex; background: #121212; border-bottom: 1px solid #2c2c2e; z-index: 100; }
-        .tab { flex: 1; padding: 15px; text-align: center; font-size: 13px; color: #8e8e93; cursor: pointer; }
-        .tab.active { color: var(--text); border-bottom: 2px solid var(--primary); background: var(--card); }
+        /* 1. Loading & Auth (完全保留原本邏輯) */
+        #check-screen, #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .auth-card { background: var(--card-bg); padding: 30px; border-radius: 20px; text-align: center; width: 80%; max-width: 300px; }
+        .pin-input { background: #000; border: 1px solid #333; color: white; width: 100%; padding: 12px; border-radius: 10px; text-align: center; font-size: 18px; margin: 15px 0; outline: none; }
 
-        .content { flex: 1; overflow-y: auto; padding: 20px; display: none; padding-bottom: 100px; }
-        .content.active { display: block; }
+        /* 2. Header (保持簡潔，點擊標題切換) */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 5px; border-bottom: 1px solid #2c2c2e; cursor: pointer; }
+        .header h2 { margin: 0; font-size: 18px; color: var(--danger); text-transform: uppercase; }
+        .view-indicator { font-size: 11px; background: #333; padding: 2px 8px; border-radius: 10px; color: #8e8e93; }
 
-        /* 編輯器強化版 */
-        .editor-container { display: flex; flex-direction: column; gap: 10px; }
-        .header-info { display: flex; justify-content: space-between; align-items: center; color: var(--danger); font-size: 14px; font-weight: bold; }
-        #main-textarea { width: 100%; height: 320px; background: #000; color: var(--code); border: 1px solid #333; border-radius: 12px; padding: 15px; font-family: 'Courier New', monospace; font-size: 13px; box-sizing: border-box; outline: none; }
+        /* 3. Content Switcher (切換編輯器與 App 管理) */
+        #view-editor, #view-apps { height: calc(100vh - 180px); overflow-y: auto; margin-top: 15px; }
+        #view-apps { display: none; }
+
+        /* 編輯器樣式 (強化版) */
+        #json-editor { width: 100%; height: 300px; background: #000; color: var(--code); border: 1px solid #333; border-radius: 12px; padding: 12px; font-family: monospace; font-size: 13px; box-sizing: border-box; outline: none; resize: none; }
         .storage-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: #2c2c2e; color: #8e8e93; padding: 6px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; border: 1px solid transparent; }
-        .tag.active { border-color: var(--primary); color: var(--primary); background: rgba(0,122,255,0.1); }
+        .tag { background: #2c2c2e; color: #8e8e93; padding: 5px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; transition: 0.2s; }
+        .tag.active { background: var(--primary); color: white; }
 
-        /* Apps 管理器 (恢復完整設計) */
-        .app-card { background: var(--card); border: 1px solid #2c2c2e; border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; }
-        .app-icon { width: 45px; height: 45px; background: #333; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .app-details { flex: 1; }
-        .app-name { font-weight: bold; font-size: 15px; }
+        /* App 管理樣式 (還原你稱讚的版本) */
+        .app-item { background: var(--card-bg); border: 1px solid #2c2c2e; border-radius: 15px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+        .app-icon { width: 40px; height: 40px; background: #333; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: var(--primary); }
+        .app-info { flex: 1; }
+        .app-name { font-size: 14px; font-weight: bold; }
         .app-id { font-size: 11px; color: #666; }
-        .app-actions { display: flex; gap: 8px; }
-        .action-btn { background: #2c2c2e; border: none; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
-        .del-btn { color: var(--danger); }
+        .app-actions { display: flex; gap: 5px; }
+        .ctrl-btn { padding: 6px 10px; background: #2c2c2e; border-radius: 8px; font-size: 12px; color: #fff; cursor: pointer; }
+        .ctrl-del { color: var(--danger); }
 
-        /* 底部按鈕 */
-        .footer { position: fixed; bottom: 0; width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); box-sizing: border-box; }
-        .btn { padding: 15px; border: none; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
-        .btn-reset { background: #3a3a3c; color: white; }
-        .btn-apply { background: #32d74b; color: black; }
-        .btn-respring { background: var(--danger); color: white; }
-
-        /* 隱藏原生 Loading */
-        #loading { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* 4. Action Bar (固定底部) */
+        .action-bar { position: fixed; bottom: 20px; left: 10px; right: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn { padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; font-size: 14px; }
+        .btn-reset { background: #3a3a3c; color: #fff; }
+        .btn-apply { background: var(--code); color: #000; }
+        .btn-respring { background: var(--danger); color: #fff; }
     </style>
 </head>
 <body>
 
-    <div id="loading">
-        <div style="text-align: center;">
-            <div style="width: 30px; height: 30px; border: 3px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="font-size: 12px; color: #666; margin-top: 10px;">Root Debugger Initializing...</p>
+    <div id="check-screen"><div class="spinner"></div></div>
+
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h1>Root Debugger</h1>
+            <input type="password" id="auth-pin" class="pin-input" placeholder="••••">
+            <button class="btn btn-apply" style="width:100%" onclick="checkAuth()">Authenticate</button>
         </div>
     </div>
 
-    <div class="nav-tabs">
-        <div class="tab active" onclick="showTab('editor')">編輯器</div>
-        <div class="tab" onclick="showTab('apps')">Apps 管理</div>
-        <div class="tab" onclick="showTab('menu')">選單</div>
+    <div class="header" onclick="toggleView()">
+        <h2 id="header-text">Root Debugger</h2>
+        <div class="view-indicator" id="view-mode">EDITOR MODE</div>
     </div>
 
-    <div id="editor-page" class="content active">
-        <div class="editor-container">
-            <div class="header-info">KEY: <span id="active-key-name">devicePasscode</span></div>
-            <textarea id="main-textarea" spellcheck="false" oninput="saveToCache()"></textarea>
-            <div class="storage-tags" id="tag-list"></div>
-        </div>
+    <div id="view-editor">
+        <textarea id="json-editor" spellcheck="false" oninput="cacheCurrentInput()"></textarea>
+        <div class="storage-tags" id="storage-tags"></div>
     </div>
 
-    <div id="apps-page" class="content">
-        <div class="header-info">APP ENCAPSULATION MANAGER</div>
-        <div id="app-list-container" style="margin-top: 15px;"></div>
+    <div id="view-apps">
+        <div id="app-list-container"></div>
     </div>
 
-    <div id="menu-page" class="content">
-        <div class="app-card" onclick="showTab('editor')">🛠️ 系統核心數據編輯器</div>
-        <div class="app-card" onclick="showTab('apps')">📦 應用程式封裝與排序管理</div>
-        <div class="app-card" style="opacity: 0.5;">🖼️ 背景圖片管理 (開發中)</div>
-    </div>
-
-    <div class="footer">
-        <button class="btn btn-reset" onclick="initDebugger()">重設</button>
-        <button class="btn btn-apply" onclick="applyChanges()">套用</button>
-        <button class="btn btn-respring" onclick="respring()">重刷</button>
+    <div class="action-bar">
+        <div class="btn btn-reset" onclick="resetToSystem()">Reset</div>
+        <div class="btn btn-apply" onclick="saveToSystem()">Apply</div>
+        <div class="btn btn-respring" onclick="respring()">Respring</div>
     </div>
 
     <script>
         let currentKey = "devicePasscode";
-        let tempStorage = {};
-        let installedApps = [];
+        let memoryCache = {}; // 暫存所有 Key 的改動，避免切換時丟失
+        let appsData = [];
 
         window.onload = function() {
             setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('check-screen').style.display = 'none';
+                document.getElementById('auth-overlay').style.display = 'flex';
                 initDebugger();
-            }, 800);
+            }, 1000);
         };
 
+        function checkAuth() {
+            if(document.getElementById('auth-pin').value === (localStorage.getItem('devicePasscode') || "")) {
+                document.getElementById('auth-overlay').style.display = 'none';
+            }
+        }
+
         function initDebugger() {
-            // 讀取所有 Key 到暫存
+            // 1. 將 localStorage 載入 memoryCache
             for (let i = 0; i < localStorage.length; i++) {
                 const k = localStorage.key(i);
-                tempStorage[k] = localStorage.getItem(k);
+                memoryCache[k] = localStorage.getItem(k);
             }
+            // 2. 獨立處理 Apps
+            appsData = JSON.parse(memoryCache['installedApps'] || '[]');
             
-            // 確保 installedApps 正確讀取
-            const appsData = localStorage.getItem('installedApps');
-            installedApps = appsData ? JSON.parse(appsData) : [];
-
             renderTags();
-            loadEditorContent(currentKey);
+            loadKeyToEditor(currentKey);
             renderAppManager();
         }
 
-        // --- 編輯器功能 ---
+        // 切換視圖 (編輯器 <-> App 管理)
+        function toggleView() {
+            const vEditor = document.getElementById('view-editor');
+            const vApps = document.getElementById('view-apps');
+            const indicator = document.getElementById('view-mode');
+            
+            if (vEditor.style.display !== 'none') {
+                vEditor.style.display = 'none';
+                vApps.style.display = 'block';
+                indicator.innerText = "APP MANAGER";
+                renderAppManager(); // 切換時刷新列表
+            } else {
+                vEditor.style.display = 'block';
+                vApps.style.display = 'none';
+                indicator.innerText = "EDITOR MODE";
+            }
+        }
+
+        // --- 編輯器邏輯 ---
         function renderTags() {
-            const list = document.getElementById('tag-list');
-            list.innerHTML = "";
-            Object.keys(tempStorage).forEach(k => {
-                const span = document.createElement('span');
-                span.className = 'tag' + (k === currentKey ? ' active' : '');
-                span.innerText = k;
-                span.onclick = () => switchKey(k);
-                list.appendChild(span);
+            const container = document.getElementById('storage-tags');
+            container.innerHTML = "";
+            Object.keys(memoryCache).forEach(k => {
+                const tag = document.createElement('span');
+                tag.className = 'tag' + (k === currentKey ? ' active' : '');
+                tag.innerText = k;
+                tag.onclick = (e) => { e.stopPropagation(); loadKeyToEditor(k); };
+                container.appendChild(tag);
             });
         }
 
-        function switchKey(key) {
+        function loadKeyToEditor(key) {
             currentKey = key;
-            document.getElementById('active-key-name').innerText = key;
-            loadEditorContent(key);
+            const val = memoryCache[key] || "";
+            try { document.getElementById('json-editor').value = JSON.stringify(JSON.parse(val), null, 4); }
+            catch(e) { document.getElementById('json-editor').value = val; }
             renderTags();
         }
 
-        function loadEditorContent(key) {
-            const val = tempStorage[key] || "";
-            try {
-                document.getElementById('main-textarea').value = JSON.stringify(JSON.parse(val), null, 4);
-            } catch(e) {
-                document.getElementById('main-textarea').value = val;
-            }
-        }
-
-        function saveToCache() {
-            tempStorage[currentKey] = document.getElementById('main-textarea').value;
-            // 如果編輯的是 apps，同步更新管理介面
+        function cacheCurrentInput() {
+            memoryCache[currentKey] = document.getElementById('json-editor').value;
             if(currentKey === 'installedApps') {
-                try { installedApps = JSON.parse(tempStorage[currentKey]); renderAppManager(); } catch(e){}
+                try { appsData = JSON.parse(memoryCache[currentKey]); } catch(e){}
             }
         }
 
-        // --- Apps 管理功能 (復原設計) ---
+        // --- App 管理邏輯 (復原你滿意的版本) ---
         function renderAppManager() {
             const container = document.getElementById('app-list-container');
             container.innerHTML = "";
-            installedApps.forEach((app, index) => {
-                const div = document.createElement('div');
-                div.className = 'app-card';
-                div.innerHTML = `
-                    <div class="app-icon">${app.name.charAt(0).toUpperCase()}</div>
-                    <div class="app-details">
+            appsData.forEach((app, idx) => {
+                const item = document.createElement('div');
+                item.className = 'app-item';
+                item.innerHTML = `
+                    <div class="app-icon">${app.name[0]}</div>
+                    <div class="app-info">
                         <div class="app-name">${app.name}</div>
                         <div class="app-id">${app.id}</div>
                     </div>
                     <div class="app-actions">
-                        <button class="action-btn" onclick="moveApp(${index}, -1)">▲</button>
-                        <button class="action-btn" onclick="moveApp(${index}, 1)">▼</button>
-                        <button class="action-btn del-btn" onclick="deleteApp(${index})">✕</button>
+                        <div class="ctrl-btn" onclick="moveApp(${idx},-1)">▲</div>
+                        <div class="ctrl-btn" onclick="moveApp(${idx},1)">▼</div>
+                        <div class="ctrl-btn ctrl-del" onclick="deleteApp(${idx})">✕</div>
                     </div>
                 `;
-                container.appendChild(div);
+                container.appendChild(item);
             });
         }
 
-        function moveApp(idx, step) {
-            const target = idx + step;
-            if(target >= 0 && target < installedApps.length) {
-                const temp = installedApps[idx];
-                installedApps[idx] = installedApps[target];
-                installedApps[target] = temp;
-                tempStorage['installedApps'] = JSON.stringify(installedApps);
-                if(currentKey === 'installedApps') loadEditorContent('installedApps');
-                renderAppManager();
+        function moveApp(idx, dir) {
+            let target = idx + dir;
+            if(target >= 0 && target < appsData.length) {
+                [appsData[idx], appsData[target]] = [appsData[target], appsData[idx]];
+                syncAppsBackToCache();
             }
         }
 
         function deleteApp(idx) {
-            if(confirm("確定刪除此應用程式封裝？")) {
-                installedApps.splice(idx, 1);
-                tempStorage['installedApps'] = JSON.stringify(installedApps);
-                if(currentKey === 'installedApps') loadEditorContent('installedApps');
-                renderAppManager();
+            if(confirm("Delete App Package?")) {
+                appsData.splice(idx, 1);
+                syncAppsBackToCache();
             }
         }
 
-        // --- 通用功能 ---
-        function showTab(tab) {
-            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tab + '-page').classList.add('active');
-            event.currentTarget.classList.add('active');
+        function syncAppsBackToCache() {
+            memoryCache['installedApps'] = JSON.stringify(appsData);
+            if(currentKey === 'installedApps') loadKeyToEditor('installedApps');
+            renderAppManager();
         }
 
-        function applyChanges() {
-            Object.keys(tempStorage).forEach(k => {
-                localStorage.setItem(k, tempStorage[k]);
-            });
-            alert("✅ 系統數據已成功寫入實體存儲層");
+        // --- 底部按鈕動作 ---
+        function resetToSystem() {
+            if(confirm("Discard all local changes?")) location.reload();
+        }
+
+        function saveToSystem() {
+            Object.keys(memoryCache).forEach(k => localStorage.setItem(k, memoryCache[k]));
+            alert("✅ Root data synchronized.");
         }
 
         function respring() {
             window.top.location.replace('./install');
         }
     </script>
-    <style> @keyframes spin { to { transform: rotate(360deg); } } </style>
 </body>
 </html>
