@@ -6,7 +6,7 @@
     <title>AiOS Root Debugger</title>
     <style>
         :root {
-            --primary-color: #ff3b30;
+            --primary-color: #ff3b30; /* 調試器使用更顯眼的紅色系 */
             --bg-color: #000000;
             --card-bg: #1c1c1e;
             --text-color: #ffffff;
@@ -22,7 +22,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         /* 驗證介面 */
@@ -43,88 +42,83 @@
         #debugContent {
             display: none;
             width: 90%;
-            max-width: 700px;
-            padding: 30px;
+            max-width: 650px;
+            padding: 25px;
             background: var(--card-bg);
             border-radius: 20px;
-            box-shadow: 0 0 50px rgba(255, 59, 48, 0.15);
-            margin: 20px 0;
+            box-shadow: 0 0 40px rgba(255, 59, 48, 0.2);
         }
 
-        h2 { color: var(--primary-color); text-align: center; margin-bottom: 25px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        h2 { color: var(--primary-color); text-align: center; margin-bottom: 25px; font-weight: 700; letter-spacing: 1px; }
 
         .data-section {
             margin-bottom: 20px;
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
             border-radius: 12px;
-            border: 1px solid #333;
         }
 
         .data-label {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--accent-color);
             display: block;
             margin-bottom: 8px;
-            font-family: monospace;
+            text-transform: uppercase;
         }
 
         textarea {
             width: 100%;
             background: #000;
-            color: #32d74b;
-            border: 1px solid #444;
+            color: #32d74b; /* 綠色代碼感 */
+            border: 1px solid #333;
             border-radius: 8px;
-            padding: 12px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 13px;
+            padding: 10px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 12px;
             resize: vertical;
             box-sizing: border-box;
             outline: none;
-            line-height: 1.5;
         }
 
-        textarea:focus { border-color: var(--accent-color); box-shadow: 0 0 10px rgba(10, 132, 255, 0.3); }
+        textarea:focus { border-color: var(--accent-color); }
 
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         button {
-            padding: 15px;
+            padding: 14px;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
-        .btn-apply { background: #32d74b; color: #000; }
-        .btn-reset { background: #3a3a3c; color: #fff; }
-        .btn-respring { background: var(--primary-color); color: #fff; }
+        .btn-apply { background: #32d74b; color: black; }
+        .btn-reset { background: #636366; color: white; }
+        .btn-respring { background: var(--primary-color); color: white; }
         
-        button:hover { filter: brightness(1.2); }
-        button:active { transform: scale(0.96); }
+        button:active { transform: scale(0.95); opacity: 0.8; }
 
         input[type="password"] {
             padding: 15px;
-            width: 220px;
-            border-radius: 12px;
-            border: 1px solid #444;
+            width: 200px;
+            border-radius: 10px;
+            border: 1px solid #333;
             background: #1c1c1e;
             color: white;
             text-align: center;
-            font-size: 20px;
-            margin-bottom: 20px;
+            font-size: 18px;
+            margin-bottom: 15px;
             outline: none;
-            letter-spacing: 5px;
         }
 
-        .status-msg { margin-top: 20px; font-size: 14px; line-height: 1.6; }
+        .status-msg { margin-top: 15px; font-size: 14px; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -132,28 +126,28 @@
     <div id="authOverlay">
         <h2 id="authTitle">Root Debugger</h2>
         <div id="authBox">
-            <input type="password" id="debugPass" placeholder="••••">
+            <input type="password" id="debugPass" placeholder="請輸入密碼">
             <br>
-            <button onclick="checkAuth()" style="background: var(--accent-color); color: white; width: 220px;">ACCESS KERNEL</button>
+            <button onclick="checkAuth()" style="background: var(--accent-color); color: white; width: 200px;">解除鎖定</button>
         </div>
-        <div id="authError" class="status-msg"></div>
+        <p id="authError" class="status-msg" style="color: #ff453a;"></p>
     </div>
 
     <div id="debugContent">
-        <h2>🛠️ ROOT SYSTEM DATA</h2>
+        <h2>🛠️ ROOT DEBUGGER</h2>
         
         <div id="editorContainer">
             </div>
 
         <div class="button-group">
-            <button class="btn-reset" onclick="refreshEditor()">🔄 重設數據 (Reset)</button>
-            <button class="btn-apply" onclick="applyChanges()">💾 套用更改 (Apply)</button>
-            <button class="btn-respring" onclick="respring()">⚡ 重刷系統 (Respring)</button>
+            <button class="btn-reset" onclick="refreshEditor()">🔄 重設編輯</button>
+            <button class="btn-apply" onclick="applyChanges()">💾 套用更改</button>
+            <button class="btn-respring" onclick="respring()">⚡ 重刷 (Respring)</button>
         </div>
     </div>
 
     <script>
-        // 定義需要操作的暫存 Keys
+        // 定義需要編輯的系統 Key
         const STORAGE_KEYS = [
             'userPasscode',
             'installedApps',
@@ -164,92 +158,82 @@
             'screensaverTimeout'
         ];
 
-        // 核心檢查：確保 localStorage 能被讀取
-        function getSystemPasscode() {
-            // 直接讀取網頁 localStorage
-            const pass = window.localStorage.getItem('userPasscode');
-            return (pass !== null && pass !== undefined) ? pass.toString().trim() : null;
-        }
-
+        // 頁面加載時先檢查是否有設置密碼
         window.onload = function() {
-            const systemPass = getSystemPasscode();
-            const errorEl = document.getElementById('authError');
-            
-            // 如果連 Key 都不存在或為空字串，則視為未設定
-            if (!systemPass || systemPass === "") {
+            const systemPass = localStorage.getItem('userPasscode');
+            if (!systemPass || systemPass.trim() === "") {
                 document.getElementById('authBox').style.display = 'none';
-                errorEl.style.color = '#ff9500';
-                errorEl.innerHTML = '⚠️ <b>SECURITY ALERT</b><br>偵測到系統密碼未設定或暫存已遺失。<br>請先在主系統設置密碼後再嘗試進入。';
-                console.warn("Debugger: userPasscode is empty or missing in localStorage.");
-            } else {
-                console.log("Debugger: Security check passed. Waiting for input...");
+                document.getElementById('authError').innerHTML = '⚠️ <b>存取拒絕</b><br>偵測到系統未加密，請先在「設定」中設置系統密碼。';
+                document.getElementById('authTitle').style.color = '#666';
             }
         };
 
         function checkAuth() {
-            const inputPass = document.getElementById('debugPass').value.trim();
-            const systemPass = getSystemPasscode();
+            const inputPass = document.getElementById('debugPass').value;
+            const systemPass = localStorage.getItem('userPasscode');
             const errorEl = document.getElementById('authError');
 
+            // 確保有密碼才進行驗證
+            if (!systemPass) {
+                errorEl.textContent = '請先設定系統密碼';
+                return;
+            }
+
             if (inputPass === systemPass) {
-                // 驗證成功
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('debugContent').style.display = 'block';
                 refreshEditor();
             } else {
-                // 驗證失敗
-                errorEl.style.color = '#ff453a';
-                errorEl.textContent = '❌ 密碼錯誤，拒絕存取';
+                errorEl.textContent = '密碼錯誤，拒絕存取';
                 document.getElementById('debugPass').value = '';
-                
-                // 輸出到控制台方便你 Debug
-                console.error("Auth Failed. Input:", inputPass, "System:", systemPass);
+                // 震動回饋感（CSS 動畫可自行加入）
             }
         }
 
-        // 讀取暫存並顯示在編輯器
+        // 恢復當前暫存狀態 (Reset 編輯器內容)
         function refreshEditor() {
             const container = document.getElementById('editorContainer');
             container.innerHTML = '';
 
             STORAGE_KEYS.forEach(key => {
-                const value = window.localStorage.getItem(key) || "";
+                const value = localStorage.getItem(key) || '';
                 
                 const section = document.createElement('div');
                 section.className = 'data-section';
                 section.innerHTML = `
-                    <label class="data-label">DEVICE_STORAGE://ROOT/${key}</label>
-                    <textarea id="input-${key}" rows="5" spellcheck="false" placeholder="EMPTY VALUE">${value}</textarea>
+                    <label class="data-label">系統路徑: /${key}</label>
+                    <textarea id="input-${key}" rows="4" spellcheck="false">${value}</textarea>
                 `;
                 container.appendChild(section);
             });
-            console.log("Editor refreshed with current localStorage values.");
         }
 
-        // 套用編輯 (取代原本的暫存)
+        // 套用編輯內容到 localStorage (Apply)
         function applyChanges() {
-            if (!confirm('警告：此操作將覆寫系統核心暫存數據。確定繼續？')) return;
+            if (!confirm('警告：直接修改 Root 數據可能會導致系統損壞。確定套用？')) return;
 
             STORAGE_KEYS.forEach(key => {
                 const textarea = document.getElementById(`input-${key}`);
                 if (textarea) {
-                    window.localStorage.setItem(key, textarea.value);
+                    localStorage.setItem(key, textarea.value);
                 }
             });
 
-            alert('✅ 數據已寫入 localStorage');
+            alert('✅ 數據已寫入暫存');
         }
 
-        // 重刷 (跳轉回安裝/載入頁面)
+        // 重刷 (Respring)
         function respring() {
-            if (confirm('執行 Respring 將重新載入所有系統配置。')) {
+            if (confirm('即將執行 Respring 以載入最新配置？')) {
                 window.location.href = './install.html';
             }
         }
 
-        // 快捷鍵支援
-        document.getElementById('debugPass').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkAuth();
+        // 支援 Enter 鍵驗證
+        document.getElementById('debugPass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkAuth();
+            }
         });
     </script>
 </body>
