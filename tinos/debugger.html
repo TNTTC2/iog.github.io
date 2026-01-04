@@ -2,21 +2,22 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AiOS Root Debugger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Root Debugger</title>
     <style>
         :root {
-            --primary-color: #ff3b30; /* 調試器使用更顯眼的紅色系 */
-            --bg-color: #000000;
-            --card-bg: #1c1c1e;
-            --text-color: #ffffff;
-            --accent-color: #0a84ff;
+            --bg: #000000;
+            --card: #121212;
+            --primary: #ff3b30;
+            --text: #ffffff;
+            --code: #32d74b;
+            --accent: #0a84ff;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, system-ui, sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -24,216 +25,223 @@
             min-height: 100vh;
         }
 
-        /* 驗證介面 */
-        #authOverlay {
+        /* 鎖定介面 */
+        #lockScreen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
+            background: var(--bg);
+            z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            text-align: center;
-            padding: 20px;
         }
 
-        /* 主調試介面 */
-        #debugContent {
+        .lock-title {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .pass-input {
+            background: #1c1c1e;
+            border: 1px solid #333;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 20px;
+            text-align: center;
+            width: 200px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        /* 主介面 */
+        #mainContent {
             display: none;
             width: 90%;
-            max-width: 650px;
+            max-width: 600px;
+            background: var(--card);
             padding: 25px;
-            background: var(--card-bg);
             border-radius: 20px;
-            box-shadow: 0 0 40px rgba(255, 59, 48, 0.2);
+            box-shadow: 0 0 30px rgba(255, 59, 48, 0.2);
         }
 
-        h2 { color: var(--primary-color); text-align: center; margin-bottom: 25px; font-weight: 700; letter-spacing: 1px; }
-
-        .data-section {
-            margin-bottom: 20px;
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 12px;
+        .header-title {
+            color: var(--primary);
+            text-align: center;
+            margin-top: 0;
+            font-size: 22px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
         }
 
-        .data-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--accent-color);
+        .editor-box {
+            margin-top: 20px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .key-group {
+            margin-bottom: 15px;
+            background: #1c1c1e;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .key-name {
+            color: var(--accent);
+            font-size: 12px;
+            font-family: monospace;
+            margin-bottom: 5px;
             display: block;
-            margin-bottom: 8px;
-            text-transform: uppercase;
         }
 
         textarea {
             width: 100%;
             background: #000;
-            color: #32d74b; /* 綠色代碼感 */
+            color: var(--code);
             border: 1px solid #333;
-            border-radius: 8px;
+            border-radius: 5px;
             padding: 10px;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 12px;
-            resize: vertical;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
             box-sizing: border-box;
-            outline: none;
+            resize: vertical;
         }
 
-        textarea:focus { border-color: var(--accent-color); }
-
-        .button-group {
+        .action-bar {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-top: 25px;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        button {
-            padding: 14px;
+        .btn {
+            padding: 15px 5px;
             border: none;
             border-radius: 12px;
+            font-weight: bold;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .btn-apply { background: #32d74b; color: black; }
-        .btn-reset { background: #636366; color: white; }
-        .btn-respring { background: var(--primary-color); color: white; }
-        
-        button:active { transform: scale(0.95); opacity: 0.8; }
-
-        input[type="password"] {
-            padding: 15px;
-            width: 200px;
-            border-radius: 10px;
-            border: 1px solid #333;
-            background: #1c1c1e;
             color: white;
-            text-align: center;
-            font-size: 18px;
-            margin-bottom: 15px;
-            outline: none;
+            font-size: 14px;
         }
 
-        .status-msg { margin-top: 15px; font-size: 14px; min-height: 20px; }
+        .btn-reset { background: #636366; }
+        .btn-apply { background: #34c759; color: black; }
+        .btn-respring { background: #ff3b30; }
+
+        #errorMsg {
+            color: var(--primary);
+            font-size: 14px;
+            margin-top: 10px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="authOverlay">
-        <h2 id="authTitle">Root Debugger</h2>
-        <div id="authBox">
-            <input type="password" id="debugPass" placeholder="請輸入密碼">
+    <div id="lockScreen">
+        <div class="lock-title">ROOT DEBUGGER</div>
+        <div id="inputArea">
+            <input type="password" id="passField" class="pass-input" placeholder="ENTER PIN">
             <br>
-            <button onclick="checkAuth()" style="background: var(--accent-color); color: white; width: 200px;">解除鎖定</button>
+            <button class="btn btn-apply" style="width: 232px;" onclick="validate()">UNLOCK</button>
         </div>
-        <p id="authError" class="status-msg" style="color: #ff453a;"></p>
+        <div id="errorMsg"></div>
     </div>
 
-    <div id="debugContent">
-        <h2>🛠️ ROOT DEBUGGER</h2>
+    <div id="mainContent">
+        <h2 class="header-title">SYSTEM KERNEL DATA</h2>
         
-        <div id="editorContainer">
+        <div id="editor" class="editor-box">
             </div>
 
-        <div class="button-group">
-            <button class="btn-reset" onclick="refreshEditor()">🔄 重設編輯</button>
-            <button class="btn-apply" onclick="applyChanges()">💾 套用更改</button>
-            <button class="btn-respring" onclick="respring()">⚡ 重刷 (Respring)</button>
+        <div class="action-bar">
+            <button class="btn btn-reset" onclick="initEditor()">重設</button>
+            <button class="btn btn-apply" onclick="saveData()">套用</button>
+            <button class="btn btn-respring" onclick="respring()">重刷</button>
         </div>
     </div>
 
     <script>
-        // 定義需要編輯的系統 Key
-        const STORAGE_KEYS = [
+        // 目標資料
+        const TARGET_KEYS = [
             'userPasscode',
             'installedApps',
             'currentTheme',
             'homeWallpaper',
             'lockWallpaper',
-            'screensaverPattern',
-            'screensaverTimeout'
+            'screensaverPattern'
         ];
 
-        // 頁面加載時先檢查是否有設置密碼
+        // 強制直接檢查 localStorage
+        function getRawPass() {
+            return window.localStorage.getItem('userPasscode');
+        }
+
+        // 初始化檢查
         window.onload = function() {
-            const systemPass = localStorage.getItem('userPasscode');
-            if (!systemPass || systemPass.trim() === "") {
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('authError').innerHTML = '⚠️ <b>存取拒絕</b><br>偵測到系統未加密，請先在「設定」中設置系統密碼。';
-                document.getElementById('authTitle').style.color = '#666';
+            const raw = getRawPass();
+            if (raw === null || raw === "") {
+                document.getElementById('inputArea').style.display = 'none';
+                document.getElementById('errorMsg').innerHTML = "⚠️ 安全錯誤：偵測不到系統密碼。<br>請先在 TinOS 設定中建立密碼。";
             }
         };
 
-        function checkAuth() {
-            const inputPass = document.getElementById('debugPass').value;
-            const systemPass = localStorage.getItem('userPasscode');
-            const errorEl = document.getElementById('authError');
+        // 驗證邏輯
+        function validate() {
+            const input = document.getElementById('passField').value;
+            const actual = getRawPass();
 
-            // 確保有密碼才進行驗證
-            if (!systemPass) {
-                errorEl.textContent = '請先設定系統密碼';
-                return;
-            }
-
-            if (inputPass === systemPass) {
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('debugContent').style.display = 'block';
-                refreshEditor();
+            if (input === actual && actual !== null) {
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initEditor();
             } else {
-                errorEl.textContent = '密碼錯誤，拒絕存取';
-                document.getElementById('debugPass').value = '';
-                // 震動回饋感（CSS 動畫可自行加入）
+                document.getElementById('errorMsg').innerText = "密碼錯誤，存取被拒。";
+                document.getElementById('passField').value = "";
             }
         }
 
-        // 恢復當前暫存狀態 (Reset 編輯器內容)
-        function refreshEditor() {
-            const container = document.getElementById('editorContainer');
+        // 載入編輯器數據 (重設按鈕也會觸發此處)
+        function initEditor() {
+            const container = document.getElementById('editor');
             container.innerHTML = '';
 
-            STORAGE_KEYS.forEach(key => {
-                const value = localStorage.getItem(key) || '';
-                
-                const section = document.createElement('div');
-                section.className = 'data-section';
-                section.innerHTML = `
-                    <label class="data-label">系統路徑: /${key}</label>
-                    <textarea id="input-${key}" rows="4" spellcheck="false">${value}</textarea>
+            TARGET_KEYS.forEach(key => {
+                const val = window.localStorage.getItem(key) || "";
+                const div = document.createElement('div');
+                div.className = 'key-group';
+                div.innerHTML = `
+                    <span class="key-name">DATA_PATH: /SYSTEM/${key}</span>
+                    <textarea id="field-${key}" rows="4">${val}</textarea>
                 `;
-                container.appendChild(section);
+                container.appendChild(div);
             });
         }
 
-        // 套用編輯內容到 localStorage (Apply)
-        function applyChanges() {
-            if (!confirm('警告：直接修改 Root 數據可能會導致系統損壞。確定套用？')) return;
+        // 套用數據
+        function saveData() {
+            if(!confirm("確認要覆寫系統暫存數據？")) return;
 
-            STORAGE_KEYS.forEach(key => {
-                const textarea = document.getElementById(`input-${key}`);
-                if (textarea) {
-                    localStorage.setItem(key, textarea.value);
-                }
+            TARGET_KEYS.forEach(key => {
+                const txt = document.getElementById(`field-${key}`).value;
+                window.localStorage.setItem(key, txt);
             });
-
-            alert('✅ 數據已寫入暫存');
+            alert("數據已同步至存取層。");
         }
 
-        // 重刷 (Respring)
+        // 重刷連結
         function respring() {
-            if (confirm('即將執行 Respring 以載入最新配置？')) {
-                window.location.href = './install.html';
-            }
+            window.location.href = './install.html';
         }
 
-        // 支援 Enter 鍵驗證
-        document.getElementById('debugPass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkAuth();
-            }
+        // 監聽 Enter
+        document.getElementById('passField').addEventListener('keyup', (e) => {
+            if(e.key === 'Enter') validate();
         });
     </script>
 </body>
