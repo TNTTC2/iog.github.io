@@ -6,308 +6,232 @@
     <title>Root Debugger</title>
     <style>
         :root {
-            --bg: #000000;
-            --card: #121212;
-            --primary: #ff3b30;
-            --text: #ffffff;
-            --code: #32d74b;
-            --accent: #0a84ff;
+            --bg: #000; --card: #1c1c1e; --primary: #ff3b30; --text: #fff; --code: #32d74b; --accent: #0a84ff;
         }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 600px; background: var(--card); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Tab Bar */
+        .nav-tabs { display: flex; background: #121212; border-bottom: 1px solid #2c2c2e; position: sticky; top: 0; z-index: 10; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 12px; color: #8e8e93; cursor: pointer; }
+        .tab.active { color: var(--text); border-bottom: 2px solid var(--primary); background: var(--card); }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            height: 100vh;
-        }
+        .content { padding: 20px; flex: 1; display: none; }
+        .content.active { display: block; }
 
-        .window {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg);
-        }
+        /* 編輯器分頁 (關鍵改進) */
+        .editor-header { color: var(--accent); font-size: 12px; margin-bottom: 5px; font-family: monospace; }
+        .main-textarea { width: 100%; height: 250px; background: #000; color: var(--code); border: 1px solid #333; border-radius: 12px; padding: 15px; font-family: monospace; box-sizing: border-box; outline: none; }
+        .key-selector { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .key-btn { background: #2c2c2e; border: 1px solid #444; color: #ccc; padding: 10px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: left; overflow: hidden; text-overflow: ellipsis; }
+        .key-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(10,132,255,0.1); }
 
-        /* 頂部導航列 */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: #1c1c1e;
-            border-bottom: 1px solid #2c2c2e;
-        }
+        /* Wallpaper 管理 (並排設計) */
+        .wp-preview-container { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        .wp-box { flex: 1; background: #000; border-radius: 15px; border: 1px solid #333; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+        .wp-img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; background: #222; margin-bottom: 10px; }
+        .wp-label { font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .wp-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 100%; }
+        .wp-btn { font-size: 10px; padding: 6px; background: #3a3a3c; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
 
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 10px;
-        }
+        /* Apps 管理 */
+        .info-card { background: #2c2c2e; padding: 15px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; }
 
-        .title {
-            font-weight: bold;
-            font-size: 17px;
-            letter-spacing: 1px;
-        }
-
-        /* 內容區域 */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* 選單介面 */
-        .menu-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .menu-item {
-            background: #1c1c1e;
-            padding: 18px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 500;
-        }
-
-        /* App 管理樣式 */
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn-sm {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: #1c1c1e;
-            color: white;
-            font-size: 12px;
-        }
-
-        .app-card {
-            background: #1c1c1e;
-            margin-bottom: 10px;
-            padding: 12px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .uninstall-btn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-
-        /* Wallpaper 管理樣式 */
-        .wp-section {
-            background: #1c1c1e;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-
-        .wp-preview {
-            width: 100%;
-            height: 120px;
-            background: #000;
-            border-radius: 10px;
-            margin: 10px 0;
-            object-fit: cover;
-        }
-
-        /* 數據編輯器 */
-        textarea {
-            width: 100%;
-            background: #000;
-            color: var(--code);
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        /* 底部固定按鈕 (數據頁面專用) */
-        .footer-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            padding: 20px;
-            background: #000;
-            border-top: 1px solid #2c2c2e;
-        }
-
-        .action-btn {
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-weight: bold;
-        }
+        /* Footer Actions */
+        .footer { padding: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; background: #121212; border-top: 1px solid #2c2c2e; }
+        .btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 14px; text-align: center; }
+        .btn-apply { background: #32d74b; color: #000; }
+        .btn-reset { background: #3a3a3c; color: #fff; }
+        .btn-respring { background: var(--primary); color: #fff; }
     </style>
 </head>
 <body>
 
-<div class="window">
-    <div class="nav-bar">
-        <button class="nav-btn" onclick="openMenu()">≡</button>
-        <div class="title" id="pageTitle">數據編輯器</div>
-        <button class="nav-btn" onclick="window.close()" style="font-size: 20px;">✕</button>
+<div class="container">
+    <div class="nav-tabs">
+        <div class="tab active" onclick="showTab('editor')">編輯器</div>
+        <div class="tab" onclick="showTab('apps')">Apps管理</div>
+        <div class="tab" onclick="showTab('wallpaper')">Wallpaper管理</div>
+        <div class="tab" onclick="showTab('menu')">選單</div>
     </div>
 
-    <div class="content">
-        <div id="page-menu" class="page">
-            <div class="menu-list">
-                <div class="menu-item" onclick="switchPage('editor', '數據編輯器')">🛠️ 數據編輯器 <span>›</span></div>
-                <div class="menu-item" onclick="switchPage('apps', 'Apps 管理')">📦 Apps 管理 <span>›</span></div>
-                <div class="menu-item" onclick="switchPage('wallpaper', 'Wallpaper 管理')">🖼️ Wallpaper 管理 <span>›</span></div>
-                <div class="menu-item" style="opacity: 0.5;">⌨️ 指令主機 (未設計)</div>
-            </div>
-        </div>
-
-        <div id="page-editor" class="page active">
-            <div id="editor-fields"></div>
-        </div>
-
-        <div id="page-apps" class="page">
-            <div class="controls">
-                <button class="btn-sm" onclick="sortApps('id')">按 ID 排序</button>
-                <button class="btn-sm" onclick="sortApps('name')">按名稱排序</button>
-            </div>
-            <div id="apps-container"></div>
-        </div>
-
-        <div id="page-wallpaper" class="page">
-            <div class="wp-section">
-                <span style="font-size: 14px; font-weight: bold;">主畫面背景 (Home)</span>
-                <img id="prev-home" class="wp-preview" src="">
-                <button class="btn-sm" style="width:100%" onclick="clearWP('homeWallpaper')">重設主畫面</button>
-            </div>
-            <div class="wp-section">
-                <span style="font-size: 14px; font-weight: bold;">鎖定畫面背景 (Lock)</span>
-                <img id="prev-lock" class="wp-preview" src="">
-                <button class="btn-sm" style="width:100%" onclick="clearWP('lockWallpaper')">重設鎖定畫面</button>
-            </div>
-        </div>
+    <div id="editor" class="content active">
+        <div class="editor-header" id="current-key-display">KEY: userPasscode</div>
+        <textarea id="mainEditor" class="main-textarea" spellcheck="false" oninput="updateTempCache()"></textarea>
+        <div class="key-selector" id="keySelector"></div>
     </div>
 
-    <div class="footer-btns" id="editor-actions">
-        <button class="action-btn" style="background:#3a3a3c; color:white;" onclick="initData()">重設</button>
-        <button class="action-btn" style="background:#32d74b; color:black;" onclick="saveData()">套用</button>
-        <button class="action-btn" style="background:#ff3b30; color:white;" onclick="respring()">重刷</button>
+    <div id="apps" class="content">
+        <div class="info-card">💡 提示：如需排序 App，請在「編輯器」中切換至 <b>installedApps</b> 鍵值，直接移動 JSON 數組內的物件順序。</div>
+        <div id="appsStatusList"></div>
+    </div>
+
+    <div id="wallpaper" class="content">
+        <div class="wp-preview-container">
+            <div class="wp-box">
+                <div class="wp-label">Lock Screen</div>
+                <img id="prev-lockWallpaper" class="wp-img">
+                <div class="wp-actions">
+                    <button class="wp-btn" onclick="wpImport('lockWallpaper')">匯入</button>
+                    <button class="wp-btn" onclick="wpExport('lockWallpaper')">匯出</button>
+                    <button class="wp-btn" onclick="wpLink('lockWallpaper')">連結</button>
+                    <button class="wp-btn" onclick="wpClear('lockWallpaper')">清除</button>
+                </div>
+            </div>
+            <div class="wp-box">
+                <div class="wp-label">Home Screen</div>
+                <img id="prev-homeWallpaper" class="wp-img">
+                <div class="wp-actions">
+                    <button class="wp-btn" onclick="wpImport('homeWallpaper')">匯入</button>
+                    <button class="wp-btn" onclick="wpExport('homeWallpaper')">匯出</button>
+                    <button class="wp-btn" onclick="wpLink('homeWallpaper')">連結</button>
+                    <button class="wp-btn" onclick="wpClear('homeWallpaper')">清除</button>
+                </div>
+            </div>
+        </div>
+        <input type="file" id="wpFileLoader" style="display:none" accept="image/*">
+    </div>
+
+    <div id="menu" class="content">
+        <div class="info-card" onclick="showTab('editor')">🛠️ 系統數據深度編輯 (Root Access)</div>
+        <div class="info-card" onclick="showTab('apps')">📦 應用程式包序位與狀態管理</div>
+        <div class="info-card" onclick="showTab('wallpaper')">🖼️ 蘋果風格桌布預覽與 DataURL 管理</div>
+        <div class="info-card" style="opacity:0.5">⌨️ 指令主機 (開發中)</div>
+    </div>
+
+    <div class="footer">
+        <div class="btn btn-reset" onclick="initRoot()">重設</div>
+        <div class="btn btn-apply" onclick="saveToSystem()">套用</div>
+        <div class="btn btn-respring" onclick="location.href='./install.html'">重刷</div>
     </div>
 </div>
 
 <script>
-    const KEYS = ['userPasscode', 'installedApps', 'currentTheme', 'homeWallpaper', 'lockWallpaper'];
+    const KEYS = ['userPasscode', 'installedApps', 'currentTheme', 'homeWallpaper', 'lockWallpaper', 'userPhotos'];
+    let tempCache = {};
+    let activeKey = 'userPasscode';
 
-    function switchPage(id, title) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + id).classList.add('active');
-        document.getElementById('pageTitle').innerText = title;
-        document.getElementById('editor-actions').style.display = (id === 'editor') ? 'grid' : 'none';
-        
-        if(id === 'apps') renderApps();
-        if(id === 'wallpaper') renderWallpapers();
+    // 初始化與讀取
+    function initRoot() {
+        KEYS.forEach(key => {
+            tempCache[key] = localStorage.getItem(key) || "";
+        });
+        renderKeySelector();
+        loadKeyToEditor(activeKey);
+        updateWallpaperPreviews();
+        renderAppsStatus();
     }
 
-    function openMenu() {
-        switchPage('menu', 'Root Debugger 選單');
-    }
-
-    // --- 數據編輯器功能 ---
-    function initData() {
-        const container = document.getElementById('editor-fields');
+    // 編輯器邏輯
+    function renderKeySelector() {
+        const container = document.getElementById('keySelector');
         container.innerHTML = '';
         KEYS.forEach(key => {
-            const val = localStorage.getItem(key) || "";
-            container.innerHTML += `
-                <div style="margin-bottom:15px">
-                    <label style="color:var(--accent); font-size:11px; font-family:monospace;">KEY: ${key}</label>
-                    <textarea id="edit-${key}" rows="4" spellcheck="false">${val}</textarea>
-                </div>
-            `;
+            const btn = document.createElement('div');
+            btn.className = `key-btn ${key === activeKey ? 'active' : ''}`;
+            btn.innerText = key;
+            btn.onclick = () => {
+                activeKey = key;
+                renderKeySelector();
+                loadKeyToEditor(key);
+                document.getElementById('current-key-display').innerText = `KEY: ${key}`;
+            };
+            container.appendChild(btn);
         });
     }
 
-    function saveData() {
-        if(!confirm("確定套用更改？")) return;
-        KEYS.forEach(key => {
-            const el = document.getElementById('edit-' + key);
-            if(el) localStorage.setItem(key, el.value);
-        });
-        alert("已更新暫存。");
+    function loadKeyToEditor(key) {
+        document.getElementById('mainEditor').value = tempCache[key];
     }
 
-    // --- Apps 管理功能 ---
-    function renderApps(sortByKey = 'id') {
-        const container = document.getElementById('apps-container');
-        let apps = JSON.parse(localStorage.getItem('installedApps') || '[]');
-        
-        apps.sort((a, b) => (a[sortByKey] > b[sortByKey]) ? 1 : -1);
-        
-        container.innerHTML = '';
-        apps.forEach(app => {
-            container.innerHTML += `
-                <div class="app-card">
-                    <div>
-                        <div style="font-weight:bold">${app.name}</div>
-                        <div style="font-size:10px; color:#8e8e93">ID: ${app.id}</div>
-                    </div>
-                    <button class="uninstall-btn" onclick="uninstallApp('${app.id}')">剷 App</button>
-                </div>
-            `;
+    function updateTempCache() {
+        tempCache[activeKey] = document.getElementById('mainEditor').value;
+    }
+
+    function saveToSystem() {
+        if(!confirm("將暫存數據寫入系統實體存取層？")) return;
+        Object.keys(tempCache).forEach(key => {
+            localStorage.setItem(key, tempCache[key]);
+        });
+        alert("✅ 數據已更新");
+        updateWallpaperPreviews();
+        renderAppsStatus();
+    }
+
+    // Wallpaper 功能
+    function updateWallpaperPreviews() {
+        ['homeWallpaper', 'lockWallpaper'].forEach(key => {
+            const data = localStorage.getItem(key);
+            const img = document.getElementById(`prev-${key}`);
+            img.src = data || "";
+            img.alt = data ? "" : "No Image";
         });
     }
 
-    function sortApps(key) { renderApps(key); }
-
-    function uninstallApp(id) {
-        if(!confirm(`確定要剷除 ${id} 嗎？`)) return;
-        let apps = JSON.parse(localStorage.getItem('installedApps') || '[]');
-        apps = apps.filter(a => a.id !== id);
-        localStorage.setItem('installedApps', JSON.stringify(apps));
-        renderApps();
+    function wpImport(key) {
+        const loader = document.getElementById('wpFileLoader');
+        loader.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = event => {
+                tempCache[key] = event.target.result;
+                localStorage.setItem(key, event.target.result);
+                updateWallpaperPreviews();
+                if(activeKey === key) loadKeyToEditor(key);
+            };
+            reader.readAsDataURL(file);
+        };
+        loader.click();
     }
 
-    // --- Wallpaper 管理功能 ---
-    function renderWallpapers() {
-        document.getElementById('prev-home').src = localStorage.getItem('homeWallpaper') || "";
-        document.getElementById('prev-lock').src = localStorage.getItem('lockWallpaper') || "";
+    function wpExport(key) {
+        const data = localStorage.getItem(key);
+        if(!data) return alert("無數據可匯出");
+        const link = document.createElement('a');
+        link.href = data;
+        link.download = `${key}_backup.png`;
+        link.click();
     }
 
-    function clearWP(key) {
-        localStorage.removeItem(key);
-        renderWallpapers();
+    function wpLink(key) {
+        const data = localStorage.getItem(key) || "Empty";
+        const newUrl = prompt(`編輯 ${key} 的連結 (支援 DataURL):`, data);
+        if(newUrl !== null) {
+            localStorage.setItem(key, newUrl);
+            tempCache[key] = newUrl;
+            updateWallpaperPreviews();
+            if(activeKey === key) loadKeyToEditor(key);
+        }
     }
 
-    function respring() {
-        window.location.href = './install.html';
+    function wpClear(key) {
+        if(confirm(`確定清除 ${key}？`)) {
+            localStorage.removeItem(key);
+            tempCache[key] = "";
+            updateWallpaperPreviews();
+            if(activeKey === key) loadKeyToEditor(key);
+        }
     }
 
-    window.onload = initData;
+    // Apps 管理
+    function renderAppsStatus() {
+        const apps = JSON.parse(localStorage.getItem('installedApps') || '[]');
+        document.getElementById('appsStatusList').innerHTML = apps.map((a, i) => 
+            `<div class="info-card">#${i+1} - ${a.name} (${a.id})</div>`
+        ).join('');
+    }
+
+    // 分頁切換
+    function showTab(id) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const activeTab = Array.from(document.querySelectorAll('.tab')).find(t => t.innerText.toLowerCase().includes(id) || (id==='editor' && t.innerText==='編輯器'));
+        if(activeTab) activeTab.classList.add('active');
+    }
+
+    window.onload = initRoot;
 </script>
+
 </body>
 </html>
