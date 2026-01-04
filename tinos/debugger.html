@@ -25,48 +25,14 @@
             min-height: 100vh;
         }
 
-        /* 鎖定介面 */
-        #lockScreen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .lock-title {
-            color: var(--primary);
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .pass-input {
-            background: #1c1c1e;
-            border: 1px solid #333;
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 20px;
-            text-align: center;
-            width: 200px;
-            margin-bottom: 15px;
-            outline: none;
-        }
-
-        /* 主介面 */
         #mainContent {
-            display: none;
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             background: var(--card);
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 0 30px rgba(255, 59, 48, 0.2);
+            margin: 20px;
         }
 
         .header-title {
@@ -74,29 +40,39 @@
             text-align: center;
             margin-top: 0;
             font-size: 22px;
+            font-weight: 800;
             border-bottom: 1px solid #333;
             padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .editor-box {
             margin-top: 20px;
-            max-height: 50vh;
+            max-height: 60vh;
             overflow-y: auto;
+            padding-right: 5px;
         }
 
+        /* 滾動條樣式 */
+        .editor-box::-webkit-scrollbar { width: 5px; }
+        .editor-box::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
         .key-group {
-            margin-bottom: 15px;
-            background: #1c1c1e;
-            padding: 10px;
-            border-radius: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #222;
         }
 
         .key-name {
             color: var(--accent);
-            font-size: 12px;
-            font-family: monospace;
-            margin-bottom: 5px;
+            font-size: 11px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            margin-bottom: 8px;
             display: block;
+            text-transform: uppercase;
         }
 
         textarea {
@@ -104,19 +80,23 @@
             background: #000;
             color: var(--code);
             border: 1px solid #333;
-            border-radius: 5px;
-            padding: 10px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 13px;
             box-sizing: border-box;
             resize: vertical;
+            outline: none;
+            line-height: 1.4;
         }
+
+        textarea:focus { border-color: var(--accent); }
 
         .action-bar {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         .btn {
@@ -127,34 +107,27 @@
             cursor: pointer;
             color: white;
             font-size: 14px;
+            transition: 0.2s;
         }
 
-        .btn-reset { background: #636366; }
+        .btn-reset { background: #3a3a3c; }
         .btn-apply { background: #34c759; color: black; }
         .btn-respring { background: #ff3b30; }
 
-        #errorMsg {
-            color: var(--primary);
-            font-size: 14px;
-            margin-top: 10px;
-            height: 20px;
+        .btn:active { transform: scale(0.95); opacity: 0.8; }
+        
+        .status-tip {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div id="lockScreen">
-        <div class="lock-title">ROOT DEBUGGER</div>
-        <div id="inputArea">
-            <input type="password" id="passField" class="pass-input" placeholder="ENTER PIN">
-            <br>
-            <button class="btn btn-apply" style="width: 232px;" onclick="validate()">UNLOCK</button>
-        </div>
-        <div id="errorMsg"></div>
-    </div>
-
     <div id="mainContent">
-        <h2 class="header-title">SYSTEM KERNEL DATA</h2>
+        <h2 class="header-title">Root Debugger</h2>
         
         <div id="editor" class="editor-box">
             </div>
@@ -164,85 +137,65 @@
             <button class="btn btn-apply" onclick="saveData()">套用</button>
             <button class="btn btn-respring" onclick="respring()">重刷</button>
         </div>
+        
+        <div class="status-tip">警告：修改核心數據可能導致系統無法啟動</div>
     </div>
 
     <script>
-        // 目標資料
+        // 定義要管理的所有系統暫存 Key
         const TARGET_KEYS = [
             'userPasscode',
             'installedApps',
             'currentTheme',
             'homeWallpaper',
             'lockWallpaper',
-            'screensaverPattern'
+            'screensaverPattern',
+            'screensaverTimeout'
         ];
 
-        // 強制直接檢查 localStorage
-        function getRawPass() {
-            return window.localStorage.getItem('userPasscode');
-        }
-
-        // 初始化檢查
+        // 頁面加載時自動初始化
         window.onload = function() {
-            const raw = getRawPass();
-            if (raw === null || raw === "") {
-                document.getElementById('inputArea').style.display = 'none';
-                document.getElementById('errorMsg').innerHTML = "⚠️ 安全錯誤：偵測不到系統密碼。<br>請先在 TinOS 設定中建立密碼。";
-            }
+            initEditor();
         };
 
-        // 驗證邏輯
-        function validate() {
-            const input = document.getElementById('passField').value;
-            const actual = getRawPass();
-
-            if (input === actual && actual !== null) {
-                document.getElementById('lockScreen').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                initEditor();
-            } else {
-                document.getElementById('errorMsg').innerText = "密碼錯誤，存取被拒。";
-                document.getElementById('passField').value = "";
-            }
-        }
-
-        // 載入編輯器數據 (重設按鈕也會觸發此處)
+        // 讀取暫存並顯示 (重設功能)
         function initEditor() {
             const container = document.getElementById('editor');
             container.innerHTML = '';
 
             TARGET_KEYS.forEach(key => {
+                // 直接從 localStorage 抓取
                 const val = window.localStorage.getItem(key) || "";
+                
                 const div = document.createElement('div');
                 div.className = 'key-group';
                 div.innerHTML = `
-                    <span class="key-name">DATA_PATH: /SYSTEM/${key}</span>
-                    <textarea id="field-${key}" rows="4">${val}</textarea>
+                    <span class="key-name">KERNEL_PATH: /SYSTEM_STORAGE/${key}</span>
+                    <textarea id="field-${key}" rows="4" spellcheck="false">${val}</textarea>
                 `;
                 container.appendChild(div);
             });
+            console.log("Root Debugger: Data Loaded.");
         }
 
-        // 套用數據
+        // 套用變更 (Apply)
         function saveData() {
-            if(!confirm("確認要覆寫系統暫存數據？")) return;
+            if(!confirm("確定要將當前編輯的內容強制寫入系統暫存？")) return;
 
             TARGET_KEYS.forEach(key => {
-                const txt = document.getElementById(`field-${key}`).value;
-                window.localStorage.setItem(key, txt);
+                const textarea = document.getElementById(`field-${key}`);
+                if (textarea) {
+                    window.localStorage.setItem(key, textarea.value);
+                }
             });
-            alert("數據已同步至存取層。");
+            alert("✅ 系統暫存已更新");
         }
 
-        // 重刷連結
+        // 重刷 (Respring)
         function respring() {
+            // 跳轉至你指定的重載頁面
             window.location.href = './install.html';
         }
-
-        // 監聽 Enter
-        document.getElementById('passField').addEventListener('keyup', (e) => {
-            if(e.key === 'Enter') validate();
-        });
     </script>
 </body>
 </html>
