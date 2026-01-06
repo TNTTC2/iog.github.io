@@ -1874,7 +1874,7 @@ function restoreData() {
                 const backupDate = new Date(backupData.timestamp).toLocaleDateString();
                 const version = backupData.version || '1.0';
                 
-                if (confirm(`Restore backup from ${backupDate} (v${version})?\n\nThis will overwrite ALL current data including:\n• Apps and content\n• Themes and wallpapers\n• Settings and preferences\n• Security settings\n\nContinue?`)) {
+                if (confirm(`Restore backup from ${backupDate} (v${version})?\n\n這將覆蓋所有當前資料，包括:\n• 應用程式和內容\n• 主題和桌布\n• 設定和偏好設定\n• 安全設定\n\n繼續?`)) {
                     
                     // Restore all localStorage items systematically
                     const excludeKeys = ['timestamp', 'version', 'systemInfo']; // Don't restore these
@@ -1900,7 +1900,7 @@ function restoreData() {
                         }
                     }
                     
-                    showNotification('✅ Complete backup restored successfully! Reloading...', 'success');
+                    showNotification('✅ 完整備份已成功恢復！ 重新載入...', 'success');
                     
                     // Show progress indicator
                     const progressDiv = document.createElement('div');
@@ -1910,7 +1910,7 @@ function restoreData() {
                         border-radius: 10px; z-index: 10000; text-align: center;
                     `;
                     progressDiv.innerHTML = `
-                        <div>🔄 Restoring data...</div>
+                        <div>🔄 恢復資料...</div>
                         <div style="margin-top: 10px; font-size: 14px;">This will take a moment</div>
                     `;
                     document.body.appendChild(progressDiv);
@@ -1921,7 +1921,7 @@ function restoreData() {
                 }
             } catch (error) {
                 console.error('Restore error:', error);
-                showNotification('❌ Error: Invalid backup file format', 'error');
+                showNotification('❌ 錯誤: 備份檔案格式無效', 'error');
             }
         };
         reader.readAsText(file);
@@ -1963,21 +1963,21 @@ function showDeviceInfo() {
 
 // Reset Functions
 function resetAllSettings() {
-    if (confirm('Reset all settings to default? This will not delete your apps or data.')) {
+    if (confirm('將所有設定重置為預設設定？ 這不會刪除您的應用程式或資料。')) {
         // Clear only settings, keep user data
         const settingsKeys = ['darkMode', 'wallpaper', 'lockWallpaper', 'textSize', 'iconStyle', 'highContrast', 'reduceMotion', 'lowPowerMode', 'animationSpeed'];
         settingsKeys.forEach(key => localStorage.removeItem(key));
         
-        alert('Settings reset! Please reload the page.');
+        alert('重置設定！ 請重新載入頁面。');
         location.reload();
     }
 }
 
 function factoryReset() {
-    if (confirm('This will erase ALL data including apps, photos, notes, and settings. Are you sure?')) {
-        if (confirm('This action cannot be undone. Continue?')) {
+    if (confirm('這將刪除所有資料，包括應用程式、照片、筆記和設定。 你確定嗎？')) {
+        if (confirm('這一行動無法撤銷。 繼續？')) {
             localStorage.clear();
-            alert('Factory reset complete. The page will now reload.');
+            alert('恢復出廠設定完成。 頁面現在將重新載入。');
             location.reload();
         }
     }
@@ -2936,29 +2936,29 @@ function openPasscodeSettings() {
 }
 
 function setupNewPasscode() {
-    const passcode = prompt('Enter a 4-digit passcode:');
+    const passcode = prompt('輸入 4 位密碼:');
     if (passcode && passcode.length === 4 && /^\d+$/.test(passcode)) {
-        const confirmPasscode = prompt('Confirm your passcode:');
+        const confirmPasscode = prompt('確認您的密碼:');
         if (confirmPasscode === passcode) {
             localStorage.setItem('devicePasscode', passcode);
-            showNotification('🔒 Passcode set successfully! Your device is now protected.', 'success');
+            showNotification('🔒 密碼設定成功！ 您的裝置現在受到保護。', 'success');
             initializeAutoLock(); // Start auto-lock
             closeDynamicApp(document.querySelector('.app-window:last-child').id);
         } else {
-            showNotification('❌ Passcodes do not match. Please try again.', 'error');
+            showNotification('❌ 密碼不匹配。 請重試。', 'error');
         }
     } else if (passcode !== null) {
-        showNotification('⚠️ Please enter a 4-digit numeric passcode', 'error');
+        showNotification('⚠️ 請輸入4位數字密碼', 'error');
     }
 }
 
 function changePasscode() {
-    const currentPasscode = prompt('Enter your current passcode:');
+    const currentPasscode = prompt('輸入您當前的密碼:');
     const savedPasscode = localStorage.getItem('devicePasscode');
     if (currentPasscode === savedPasscode) {
         setupNewPasscode();
     } else if (currentPasscode !== null) {
-        showNotification('❌ Incorrect current passcode', 'error');
+        showNotification('❌ 當前密碼不正確', 'error');
     }
 }
 
@@ -2974,10 +2974,10 @@ function removePasscode() {
             autoLockTimer = null;
         }
         
-        showNotification('🔓 Passcode removed successfully', 'success');
+        showNotification('🔓 密碼已成功移除', 'success');
         closeDynamicApp(document.querySelector('.app-window:last-child').id);
     } else if (currentPasscode !== null) {
-        showNotification('❌ Incorrect passcode', 'error');
+        showNotification('❌ 密碼不正確', 'error');
     }
 }
 
@@ -2993,13 +2993,13 @@ function openWallpaperSettings() {
     const wallpaperWindow = createAppWindow('Easy Wallpapers', `
         <div class="ultra-simple-wallpaper">
             <div class="wallpaper-header">
-                <h3>🖼️ Tap to Apply Wallpaper</h3>
+                <h3>🖼️ 點選應用桌布</h3>
                 <p>One tap sets both home and lock screens!</p>
             </div>
             
             <!-- Built-in Presets -->
             <div class="wallpaper-section">
-                <h4>🎨 Built-in Wallpapers</h4>
+                <h4>🎨 內建桌布</h4>
                 <div class="preset-wallpaper-grid">
                     <div class="preset-wallpaper-item" onclick="applyEasyWallpaper('linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 'Purple Galaxy')">
                         <div class="preset-preview" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
@@ -3030,12 +3030,12 @@ function openWallpaperSettings() {
             
             ${photos.length > 0 ? `
                 <div class="wallpaper-section">
-                    <h4>📸 Your Photos</h4>
+                    <h4>📸 你的照片</h4>
                     <div class="photo-wallpaper-grid">
                         ${photos.map(photo => `
                             <div class="photo-wallpaper-item" onclick="applyEasyWallpaper('url(${photo.dataUrl})', 'Custom Photo')">
                                 <img src="${photo.dataUrl}" alt="Photo" />
-                                <span>📷 Tap to Apply</span>
+                                <span>📷 點選使用</span>
                             </div>
                         `).join('')}
                     </div>
@@ -3044,10 +3044,10 @@ function openWallpaperSettings() {
             
             <div class="wallpaper-actions">
                 <button class="wallpaper-action-btn primary" onclick="importPhotoForWallpaper()">
-                    📁 Add Your Image
+                    📁 新增您的影象
                 </button>
                 <button class="wallpaper-action-btn" onclick="openEnhancedCameraApp()">
-                    📸 Take Photo
+                    📸 拍照
                 </button>
             </div>
         </div>
@@ -3065,7 +3065,7 @@ function setAsHomeWallpaper(photoDataUrl) {
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundRepeat = 'no-repeat';
     localStorage.setItem('wallpaper', background);
-    showNotification('Home screen wallpaper set!', 'success');
+    showNotification('主螢幕桌布集!', 'success');
     
     // Close wallpaper settings
     setTimeout(() => {
@@ -3080,7 +3080,7 @@ function setAsLockWallpaper(photoDataUrl) {
     const background = `url(${photoDataUrl})`;
     currentLockWallpaper = background;
     localStorage.setItem('lockWallpaper', background);
-    showNotification('Lock screen wallpaper set!', 'success');
+    showNotification('鎖定螢幕桌布集!', 'success');
     
     // Close wallpaper settings
     setTimeout(() => {
@@ -3095,7 +3095,7 @@ function setAsBothWallpaper(photoDataUrl) {
     setAsHomeWallpaper(photoDataUrl);
     setTimeout(() => {
         setAsLockWallpaper(photoDataUrl);
-        showNotification('Both wallpapers set!', 'success');
+        showNotification('兩張桌布都設定好了!', 'success');
     }, 100);
 }
 
@@ -3146,7 +3146,7 @@ function applyEasyWallpaper(backgroundValue, wallpaperName) {
     // Update CSS custom properties for consistent theming
     document.documentElement.style.setProperty('--bg-primary', backgroundValue);
     
-    showNotification(`🎨 ${wallpaperName} applied to both screens!`, 'success');
+    showNotification(`🎨 ${wallpaperName} 應用於兩個螢幕!`, 'success');
     
     // Remove transition after animation completes
     setTimeout(() => {
@@ -3181,7 +3181,7 @@ function importPhotoForWallpaper() {
             };
             photos.unshift(photo);
             savePhotos();
-            showNotification('Image imported successfully!', 'success');
+            showNotification('影象匯入成功!', 'success');
             
             // Refresh wallpaper view
             openWallpaperSettings();
