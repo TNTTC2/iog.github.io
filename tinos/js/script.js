@@ -6904,7 +6904,7 @@ function toggleLockAppStore() { setAppStoreLocked(document.getElementById('lockA
 
 function isAppStoreLocked() { return localStorage.getItem('lockSettings') === 'true'; }
 function setAppStoreLocked(locked) { localStorage.setItem('lockSettings', locked ? 'true' : 'false'); }
-function toggleLockAppStore() { setAppStoreLocked(document.getElementById('lockSettings').checked); }
+function toggleLockAppStore() { setSettingsLocked(document.getElementById('lockSettings').checked); }
 
 // --- Sync Checkboxes with localStorage ---
 function syncAllLockCheckboxes() {
