@@ -6990,6 +6990,7 @@ function checkAppLockPasscode(appName) {
             case 'ai-to-ui': setAiToUiLocked(false); break;
             case 'phone': setPhoneLocked(false); break;
             case 'app-store': setAppStoreLocked(false); break;
+            case 'settings': setSettingsLocked(false); break;
         }
         syncAllLockCheckboxes();
 
@@ -7017,7 +7018,8 @@ if (!window._openAppLockPatchApplied) {
             (appName === 'camera' && isCameraLocked()) ||
             (appName === 'ai-to-ui' && isAiToUiLocked()) ||
             (appName === 'phone' && isPhoneLocked()) ||
-            (appName === 'app-store' && isAppStoreLocked())
+            (appName === 'app-store' && isAppStoreLocked()) ||
+            (appName === 'settings' && isSettingsLocked())
         ) {
             showAppLockPasscodePopup(appName);
             return;
