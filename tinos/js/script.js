@@ -2336,7 +2336,7 @@ async function startCamera() {
         await video.play();
         
         if (statusEl) {
-            statusEl.textContent = 'Camera ready - Tap capture to take photo';
+            statusEl.textContent = '相機就緒 - 輕點「捕捉」拍照';
             statusEl.style.background = '#d4edda';
             statusEl.style.color = '#155724';
         }
@@ -2380,7 +2380,7 @@ function takePhoto() {
     const context = canvas.getContext('2d');
     
     if (!video.videoWidth) {
-        alert('Camera not ready. Please wait.');
+        alert('相機還沒準備好。 請稍等。');
         return;
     }
     
@@ -3349,7 +3349,7 @@ function takeEnhancedPhoto() {
     const context = canvas.getContext('2d');
     
     if (!video.videoWidth) {
-        alert('Camera not ready. Please wait.');
+        alert('相機還沒準備好。 請稍等。');
         return;
     }
     
@@ -5649,14 +5649,14 @@ function applyPhonePhotoToHome(photoDataUrl) {
     localStorage.setItem('homeWallpaper', photoDataUrl);
     localStorage.setItem('wallpaperActive', 'true');
     
-    showNotification('🏠 Home wallpaper applied!', 'success');
+    showNotification('🏠 應用了主畫面桌布!', 'success');
     closeDynamicApp('wallpaper-settings');
 }
 
 function applyPhonePhotoToLock(photoDataUrl) {
     localStorage.setItem('lockWallpaper', `url(${photoDataUrl})`);
     
-    showNotification('🔒 Lock wallpaper applied!', 'success');
+    showNotification(🔒 應用了鎖定畫面桌布!', 'success');
     closeDynamicApp('wallpaper-settings');
 }
 
@@ -5676,7 +5676,7 @@ function applyPhonePhotoToBoth(photoDataUrl) {
     // Apply to lock screen
     localStorage.setItem('lockWallpaper', `url(${photoDataUrl})`);
     
-    showNotification('🏠🔒 Wallpaper applied to both screens!', 'success');
+    showNotification('🏠🔒 桌布應用於兩個螢幕!', 'success');
     closeDynamicApp('wallpaper-settings');
 }
 
@@ -5817,22 +5817,22 @@ function startFaceRecognitionImmediate() {
     
     // Show face recognition immediately
     faceRecognition.style.display = 'block';
-    faceStatus.textContent = 'Scanning...';
+    faceStatus.textContent = '審視...';
     faceStatus.style.color = '#ffffff';
     
     // Faster recognition process
     setTimeout(() => {
-        faceStatus.textContent = 'Face detected ✓';
+        faceStatus.textContent = '檢測到 ✓';
         faceStatus.style.color = '#34C759';
     }, 800);
     
     setTimeout(() => {
-        faceStatus.textContent = 'Face recognized! ✓';
+        faceStatus.textContent = '認可的! ✓';
         faceStatus.style.color = '#34C759';
     }, 1500);
     
     setTimeout(() => {
-        showNotification('🔓 Device unlocked with Face ID', 'success');
+        showNotification('🔓 裝置已解鎖', 'success');
         hideLockScreen();
     }, 2200);
 }
@@ -5918,7 +5918,7 @@ function updateAppTheme() {
         const defaultApps = [
             'cameraApp', 'calculatorApp', 'settingsApp', 'phoneApp', 
             'notesApp', 'weatherApp', 'musicApp', 'photosApp',
-            'mathsAiApp', 'aiMessagesApp', 'aiAssistantApp'
+            'mathsAiApp', 'aiMessagesApp', 'aiAssistantApp', 'tnteApp'
         ];
         
         // AI to UI app and store apps use dark gray colors
@@ -6361,12 +6361,12 @@ function setScreenSaverPattern(pattern) {
     localStorage.setItem('screensaverPattern', pattern);
     
     const patternNames = {
-        'clock': 'Digital Clock',
-        'analog': 'Analog Clock',
-        'patterns': 'Floating Shapes',
-        'waves': 'Dynamic Waves',
-        'photos': 'Photo Gallery',
-        'matrix': 'Matrix Rain'
+        'clock': '數字時鐘',
+        'analog': '模擬時鐘',
+        'patterns': '浮動形狀',
+        'waves': '動態波',
+        'photos': '照片庫',
+        'matrix': '矩陣雨'
     };
     
     const patternName = patternNames[pattern] || 'Unknown Pattern';
@@ -6902,9 +6902,9 @@ function isAppStoreLocked() { return localStorage.getItem('lockAppStore') === 't
 function setAppStoreLocked(locked) { localStorage.setItem('lockAppStore', locked ? 'true' : 'false'); }
 function toggleLockAppStore() { setAppStoreLocked(document.getElementById('lockAppStore').checked); }
 
-function isAppStoreLocked() { return localStorage.getItem('lockSettings') === 'true'; }
-function setAppStoreLocked(locked) { localStorage.setItem('lockSettings', locked ? 'true' : 'false'); }
-function toggleLockAppStore() { setSettingsLocked(document.getElementById('lockSettings').checked); }
+function isSettingsLocked() { return localStorage.getItem('lockSettings') === 'true'; }
+function setSettingsLocked(locked) { localStorage.setItem('lockSettings', locked ? 'true' : 'false'); }
+function toggleLockSettings() { setSettingsLocked(document.getElementById('lockSettings').checked); }
 
 // --- Sync Checkboxes with localStorage ---
 function syncAllLockCheckboxes() {
