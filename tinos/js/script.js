@@ -6902,9 +6902,13 @@ function isAppStoreLocked() { return localStorage.getItem('lockAppStore') === 't
 function setAppStoreLocked(locked) { localStorage.setItem('lockAppStore', locked ? 'true' : 'false'); }
 function toggleLockAppStore() { setAppStoreLocked(document.getElementById('lockAppStore').checked); }
 
+function isAppStoreLocked() { return localStorage.getItem('lockSettings') === 'true'; }
+function setAppStoreLocked(locked) { localStorage.setItem('lockSettings', locked ? 'true' : 'false'); }
+function toggleLockAppStore() { setAppStoreLocked(document.getElementById('lockSettings').checked); }
+
 // --- Sync Checkboxes with localStorage ---
 function syncAllLockCheckboxes() {
-    const apps = ['Calculator', 'Camera', 'AiToUi', 'Phone', 'AppStore'];
+    const apps = ['Calculator', 'Camera', 'AiToUi', 'Phone', 'AppStore', 'Settings"];
     apps.forEach(app => {
         const isLocked = localStorage.getItem(`lock${app}`) === 'true';
         const checkbox = document.getElementById(`lock${app}`);
@@ -6917,7 +6921,7 @@ function syncAllLockCheckboxes() {
 // --- Passcode and Unlock Logic ---
 function openPasscodeSettings() {
     const currentPasscode = localStorage.getItem('devicePasscode') || '';
-    const promptMessage = currentPasscode ? 'Enter new passcode (4-8 digits). Leave blank to remove.' : 'Set a new passcode (4-8 digits):';
+    const promptMessage = currentPasscode ? '輸入新的密碼（4-8 位數字）。 留空以刪除。' : '設定新密碼（4-8位數字）:';
     const newPasscode = prompt(promptMessage);
 
     if (newPasscode === null) return; // User cancelled
@@ -6925,13 +6929,13 @@ function openPasscodeSettings() {
     if (newPasscode.trim() === '') {
         if (currentPasscode) {
             localStorage.removeItem('devicePasscode');
-            alert('Passcode removed.');
+            alert('密碼已移除。');
         }
     } else if (/^\d{4,8}$/.test(newPasscode)) {
         localStorage.setItem('devicePasscode', newPasscode.trim());
-        alert('Passcode set successfully.');
+        alert('密碼設定成功。');
     } else {
-        alert('Invalid passcode. Please enter 4 to 8 digits.');
+        alert('密碼無效。 請輸入4到8位數字。');
     }
 }
 
@@ -6954,7 +6958,7 @@ function showAppLockPasscodePopup(appName) {
     if (isPasscodeSet) {
         popupHTML = `
             <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-            <div style="margin-bottom: 18px;">Enter Passcode</div>
+            <div style="margin-bottom: 18px;">輸入密碼</div>
             <input type="password" id="appLockPasscodeInput" style="width: 80%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; text-align: center; font-size: 18px; margin-bottom: 18px;" inputmode="numeric">
             <div id="appLockError" style="color: red; font-size: 14px; height: 20px; margin-bottom: 10px;"></div>
             <button style="width: 100%; padding: 12px 24px; border-radius: 8px; border: none; background: #007AFF; color: white; font-size: 16px; cursor: pointer;" onclick="checkAppLockPasscode('${appName}')">Unlock</button>
@@ -6963,7 +6967,7 @@ function showAppLockPasscodePopup(appName) {
     } else {
         popupHTML = `
             <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
-            <div style="margin-bottom: 18px; font-size: 16px;">Set a device passcode in Settings to use App Lock.</div>
+            <div style="margin-bottom: 18px; font-size: 16px;">在「設定」中設定裝置密碼以使用 App Lock。</div>
             <button style="padding: 8px 24px; border-radius: 8px; border: none; background: #007AFF; color: white; font-size: 16px; cursor: pointer;" onclick="document.getElementById('appLockPasscodePopup').remove()">OK</button>
         `;
     }
