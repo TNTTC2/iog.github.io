@@ -728,11 +728,11 @@ function updateCallButton() {
     const callBtn = document.querySelector('.call-btn');
     if (callBtn) {
         if (currentPhoneNumber.length >= 3) {
-            callBtn.textContent = '📞 Call ' + currentPhoneNumber;
+            callBtn.textContent = '📞 致電 ' + currentPhoneNumber;
             callBtn.style.backgroundColor = '#22c55e';
             callBtn.onclick = makePhoneCall;
         } else {
-            callBtn.textContent = '📞 Enter Number';
+            callBtn.textContent = '📞 輸入號碼';
             callBtn.style.backgroundColor = '#6b7280';
             callBtn.onclick = null;
         }
@@ -741,7 +741,7 @@ function updateCallButton() {
 
 function makePhoneCall() {
     if (!currentPhoneNumber) {
-        showNotification('📞 Please enter a phone number first', 'info');
+        showNotification('📞 請先輸入一個電話號碼', 'info');
         return;
     }
     
@@ -753,17 +753,17 @@ function makePhoneCall() {
         try {
             // Try to open the phone dialer with the number
             window.location.href = `tel:${cleanNumber}`;
-            showNotification(`📞 Calling ${cleanNumber}...`, 'success');
+            showNotification(`📞 正在致電 ${cleanNumber}...`, 'success');
         } catch (error) {
-            showNotification('📞 Unable to make call on this device', 'error');
+            showNotification('📞 無法在此裝置上撥打電話', 'error');
             console.log('Would call:', cleanNumber);
         }
     } else {
         // Desktop fallback - copy number to clipboard
         navigator.clipboard.writeText(cleanNumber).then(() => {
-            showNotification(`📞 Phone number copied: ${cleanNumber}`, 'info');
+            showNotification(`📞 電話號碼已複製: ${cleanNumber}`, 'info');
         }).catch(() => {
-            showNotification(`📞 Would call: ${cleanNumber} (Desktop simulation)`, 'info');
+            showNotification(`📞 會打電話: ${cleanNumber} (Desktop simulation)`, 'info');
         });
     }
 }
@@ -792,18 +792,18 @@ async function applyAIChanges() {
     
     if (!prompt.trim()) {
         statusDiv.className = 'ai-status error';
-        statusDiv.textContent = 'Please enter a description of UI changes.';
+        statusDiv.textContent = '請輸入使用者介面更改的描述。';
         return;
     }
     
     // Show loading state
     const applyBtn = document.getElementById('applyAIChanges');
     const originalText = applyBtn.textContent;
-    applyBtn.textContent = '⏳ Applying...';
+    applyBtn.textContent = '⏳ 正在套用...';
     applyBtn.disabled = true;
     
     statusDiv.className = 'ai-status loading';
-    statusDiv.textContent = 'AI is generating custom CSS for your request...';
+    statusDiv.textContent = 'AI正在為您的請求生成自定義CSS...';
     
     try {
         const response = await fetch(OPENAI_API_URL, {
@@ -884,8 +884,8 @@ Always target multiple selectors to ensure changes apply everywhere!`
         
         // Show success
         statusDiv.className = 'ai-status success';
-        statusDiv.textContent = '✅ Changes applied successfully! Your interface has been customized.';
-        applyBtn.textContent = '✅ Applied!';
+        statusDiv.textContent = '✅ 更改應用成功！ 您的介面已定製。';
+        applyBtn.textContent = '✅ 已套用!';
         setTimeout(() => {
             applyBtn.textContent = originalText;
             applyBtn.disabled = false;
@@ -894,8 +894,8 @@ Always target multiple selectors to ensure changes apply everywhere!`
     } catch (error) {
         console.error('AI Error:', error);
         statusDiv.className = 'ai-status error';
-        statusDiv.textContent = '❌ Error applying changes: ' + error.message;
-        applyBtn.textContent = '❌ Error';
+        statusDiv.textContent = '❌ 應用更改時出錯: ' + error.message;
+        applyBtn.textContent = '❌ 錯誤';
         setTimeout(() => {
             applyBtn.textContent = originalText;
             applyBtn.disabled = false;
@@ -918,7 +918,7 @@ function resetUI() {
     // Show reset confirmation
     const resetBtn = document.getElementById('resetUI');
     const originalText = resetBtn.textContent;
-    resetBtn.textContent = '✅ Reset!';
+    resetBtn.textContent = '✅ 重設!';
     setTimeout(() => {
         resetBtn.textContent = originalText;
     }, 1500);
@@ -929,12 +929,12 @@ async function refreshAppStore() {
     const appsList = document.getElementById('appsList');
     
     if (!appsList) {
-        console.error('App store list element not found');
+        console.error('未找到應用商店列表元素');
         return;
     }
     
     console.log('Refreshing app store...');
-    appsList.innerHTML = '<div style="text-align: center; padding: 20px;">Loading apps...</div>';
+    appsList.innerHTML = '<div style="text-align: center; padding: 20px;">正在載入應用程式...</div>';
     
     try {
         // Load apps from JSON file
@@ -957,7 +957,7 @@ async function refreshAppStore() {
         console.log('Displaying', availableApps.length, 'apps');
         updateAppStoreDisplay(availableApps);
     } catch (error) {
-        console.error('Error loading app store:', error);
+        console.error('載入應用商店時出錯:', error);
         // Show error message in app store
         appsList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Failed to load apps. Please refresh.<br>Error: ' + error.message + '</div>';
     }
@@ -1464,7 +1464,7 @@ function toggleBiometrics() {
 function setAutoLock() {
     const time = document.getElementById('autoLock').value;
     localStorage.setItem('autoLock', time);
-    showNotification(`🔒 Auto-lock set to ${time === 'never' ? 'never' : time + ' seconds'}`, 'success');
+    showNotification(`🔒 自動鎖定設定為 ${time === 'never' ? 'never' : time + ' 秒'}`, 'success');
     
     // Start auto-lock timer if passcode is set
     initializeAutoLock();
@@ -1532,7 +1532,7 @@ function startAutoLockTimer(timeoutMs) {
         if (timeSinceActivity >= timeoutMs) {
             // Lock the device
             // showLockScreen();
-            showNotification('🔒 Device auto-locked', 'info');
+            showNotification('🔒 裝置自動鎖定', 'info');
         } else {
             // Restart timer for remaining time
             const remainingTime = timeoutMs - timeSinceActivity;
@@ -1586,7 +1586,7 @@ function changeWallpaper() {
                     </div>
                 ` : `
                     <div class="no-photos-wallpaper">
-                        <p>📷 No photos available for wallpaper</p>
+                        <p>📷 桌布沒有可用的照片</p>
                         <button class="photos-btn" onclick="openCameraApp()">Take Photos</button>
                         <button class="photos-btn" onclick="openPhotosApp()">View Photos</button>
                     </div>
@@ -1612,7 +1612,7 @@ function changeWallpaper() {
                     </div>
                 ` : `
                     <div class="no-photos-wallpaper">
-                        <p>📷 No photos available for wallpaper</p>
+                        <p>📷 桌布沒有可用的照片</p>
                         <button class="photos-btn" onclick="openCameraApp()">Take Photos</button>
                         <button class="photos-btn" onclick="openPhotosApp()">View Photos</button>
                     </div>
@@ -1643,7 +1643,7 @@ function changeLockWallpaper() {
     
     const wallpaperWindow = createAppWindow('Lock Screen Wallpapers', `
         <div class="wallpaper-picker">
-            <h3>Choose Lock Screen Wallpaper</h3>
+            <h3>選擇鎖定螢幕桌布</h3>
             <div class="wallpaper-grid">
                 ${wallpaperOptions}
             </div>
@@ -1685,11 +1685,11 @@ function selectWallpaper(background, type = 'home') {
         }
         
         localStorage.setItem('wallpaper', background);
-        showNotification('Home screen wallpaper applied!', 'success');
+        showNotification('應用了主螢幕桌布！', 'success');
     } else if (type === 'lock') {
         currentLockWallpaper = background;
         localStorage.setItem('lockWallpaper', background);
-        showNotification('Lock screen wallpaper applied!', 'success');
+        showNotification('應用了鎖定螢幕桌布！', 'success');
     }
     
     // Close wallpaper settings automatically after a short delay
@@ -1705,7 +1705,7 @@ function selectLockWallpaper(background) {
     currentLockWallpaper = background;
     localStorage.setItem('lockWallpaper', background);
     closeDynamicApp(document.querySelector('.app-window:last-child').id);
-    alert('Lock screen wallpaper changed!');
+    alert('鎖屏桌布更改了！');
 }
 
 function setTextSize() {
@@ -1847,10 +1847,10 @@ function backupData() {
         a.click();
         
         URL.revokeObjectURL(url);
-        showNotification('✅ Complete backup downloaded successfully!', 'success');
+        showNotification('✅ 完整的備份下載成功！', 'success');
     } catch (error) {
         console.error('Backup failed:', error);
-        showNotification('❌ Backup failed: ' + error.message, 'error');
+        showNotification('❌ 備份失敗: ' + error.message, 'error');
     }
 }
 
@@ -1874,7 +1874,7 @@ function restoreData() {
                 const backupDate = new Date(backupData.timestamp).toLocaleDateString();
                 const version = backupData.version || '1.0';
                 
-                if (confirm(`Restore backup from ${backupDate} (v${version})?\n\n這將覆蓋所有當前資料，包括:\n• 應用程式和內容\n• 主題和桌布\n• 設定和偏好設定\n• 安全設定\n\n繼續?`)) {
+                if (confirm(`恢復備份 ${backupDate} (v${version})?\n\n這將覆蓋所有當前資料，包括:\n• 應用程式和內容\n• 主題和桌布\n• 設定和偏好設定\n• 安全設定\n\n繼續?`)) {
                     
                     // Restore all localStorage items systematically
                     const excludeKeys = ['timestamp', 'version', 'systemInfo']; // Don't restore these
