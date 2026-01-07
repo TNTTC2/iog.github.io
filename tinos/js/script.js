@@ -2336,7 +2336,7 @@ async function startCamera() {
         await video.play();
         
         if (statusEl) {
-            statusEl.textContent = '相機就緒 - 輕點「捕捉」拍照';
+            statusEl.textContent = 'Camera ready - Tap capture to take photo';
             statusEl.style.background = '#d4edda';
             statusEl.style.color = '#155724';
         }
@@ -2380,7 +2380,7 @@ function takePhoto() {
     const context = canvas.getContext('2d');
     
     if (!video.videoWidth) {
-        alert('相機還沒準備好。 請稍等。');
+        alert('Camera not ready. Please wait.');
         return;
     }
     
@@ -3349,7 +3349,7 @@ function takeEnhancedPhoto() {
     const context = canvas.getContext('2d');
     
     if (!video.videoWidth) {
-        alert('相機還沒準備好。 請稍等。');
+        alert('Camera not ready. Please wait.');
         return;
     }
     
@@ -5649,14 +5649,14 @@ function applyPhonePhotoToHome(photoDataUrl) {
     localStorage.setItem('homeWallpaper', photoDataUrl);
     localStorage.setItem('wallpaperActive', 'true');
     
-    showNotification('🏠 應用了主畫面桌布!', 'success');
+    showNotification('🏠 Home wallpaper applied!', 'success');
     closeDynamicApp('wallpaper-settings');
 }
 
 function applyPhonePhotoToLock(photoDataUrl) {
     localStorage.setItem('lockWallpaper', `url(${photoDataUrl})`);
     
-    showNotification(🔒 應用了鎖定畫面桌布!', 'success');
+    showNotification('🔒 Lock wallpaper applied!', 'success');
     closeDynamicApp('wallpaper-settings');
 }
 
@@ -5676,7 +5676,7 @@ function applyPhonePhotoToBoth(photoDataUrl) {
     // Apply to lock screen
     localStorage.setItem('lockWallpaper', `url(${photoDataUrl})`);
     
-    showNotification('🏠🔒 桌布應用於兩個螢幕!', 'success');
+    showNotification('🏠🔒 Wallpaper applied to both screens!', 'success');
     closeDynamicApp('wallpaper-settings');
 }
 
@@ -5817,22 +5817,22 @@ function startFaceRecognitionImmediate() {
     
     // Show face recognition immediately
     faceRecognition.style.display = 'block';
-    faceStatus.textContent = '審視...';
+    faceStatus.textContent = 'Scanning...';
     faceStatus.style.color = '#ffffff';
     
     // Faster recognition process
     setTimeout(() => {
-        faceStatus.textContent = '檢測到 ✓';
+        faceStatus.textContent = 'Face detected ✓';
         faceStatus.style.color = '#34C759';
     }, 800);
     
     setTimeout(() => {
-        faceStatus.textContent = '認可的! ✓';
+        faceStatus.textContent = 'Face recognized! ✓';
         faceStatus.style.color = '#34C759';
     }, 1500);
     
     setTimeout(() => {
-        showNotification('🔓 裝置已解鎖', 'success');
+        showNotification('🔓 Device unlocked with Face ID', 'success');
         hideLockScreen();
     }, 2200);
 }
@@ -5918,7 +5918,7 @@ function updateAppTheme() {
         const defaultApps = [
             'cameraApp', 'calculatorApp', 'settingsApp', 'phoneApp', 
             'notesApp', 'weatherApp', 'musicApp', 'photosApp',
-            'mathsAiApp', 'aiMessagesApp', 'aiAssistantApp', 'tnteApp'
+            'mathsAiApp', 'aiMessagesApp', 'aiAssistantApp'
         ];
         
         // AI to UI app and store apps use dark gray colors
@@ -6361,12 +6361,12 @@ function setScreenSaverPattern(pattern) {
     localStorage.setItem('screensaverPattern', pattern);
     
     const patternNames = {
-        'clock': '數字時鐘',
-        'analog': '模擬時鐘',
-        'patterns': '浮動形狀',
-        'waves': '動態波',
-        'photos': '照片庫',
-        'matrix': '矩陣雨'
+        'clock': 'Digital Clock',
+        'analog': 'Analog Clock',
+        'patterns': 'Floating Shapes',
+        'waves': 'Dynamic Waves',
+        'photos': 'Photo Gallery',
+        'matrix': 'Matrix Rain'
     };
     
     const patternName = patternNames[pattern] || 'Unknown Pattern';
@@ -6908,7 +6908,7 @@ function toggleLockSettings() { setSettingsLocked(document.getElementById('lockS
 
 // --- Sync Checkboxes with localStorage ---
 function syncAllLockCheckboxes() {
-    const apps = ['Calculator', 'Camera', 'AiToUi', 'Phone', 'AppStore', 'Settings"];
+    const apps = ['Calculator', 'Camera', 'AiToUi', 'Phone', 'AppStore', 'Settings'];
     apps.forEach(app => {
         const isLocked = localStorage.getItem(`lock${app}`) === 'true';
         const checkbox = document.getElementById(`lock${app}`);
@@ -6921,7 +6921,7 @@ function syncAllLockCheckboxes() {
 // --- Passcode and Unlock Logic ---
 function openPasscodeSettings() {
     const currentPasscode = localStorage.getItem('devicePasscode') || '';
-    const promptMessage = currentPasscode ? '輸入新的密碼（4-8 位數字）。 留空以刪除。' : '設定新密碼（4-8位數字）:';
+    const promptMessage = currentPasscode ? 'Enter new passcode (4-8 digits). Leave blank to remove.' : 'Set a new passcode (4-8 digits):';
     const newPasscode = prompt(promptMessage);
 
     if (newPasscode === null) return; // User cancelled
@@ -6929,13 +6929,13 @@ function openPasscodeSettings() {
     if (newPasscode.trim() === '') {
         if (currentPasscode) {
             localStorage.removeItem('devicePasscode');
-            alert('密碼已移除。');
+            alert('Passcode removed.');
         }
     } else if (/^\d{4,8}$/.test(newPasscode)) {
         localStorage.setItem('devicePasscode', newPasscode.trim());
-        alert('密碼設定成功。');
+        alert('Passcode set successfully.');
     } else {
-        alert('密碼無效。 請輸入4到8位數字。');
+        alert('Invalid passcode. Please enter 4 to 8 digits.');
     }
 }
 
@@ -6958,7 +6958,7 @@ function showAppLockPasscodePopup(appName) {
     if (isPasscodeSet) {
         popupHTML = `
             <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-            <div style="margin-bottom: 18px;">輸入密碼</div>
+            <div style="margin-bottom: 18px;">Enter Passcode</div>
             <input type="password" id="appLockPasscodeInput" style="width: 80%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; text-align: center; font-size: 18px; margin-bottom: 18px;" inputmode="numeric">
             <div id="appLockError" style="color: red; font-size: 14px; height: 20px; margin-bottom: 10px;"></div>
             <button style="width: 100%; padding: 12px 24px; border-radius: 8px; border: none; background: #007AFF; color: white; font-size: 16px; cursor: pointer;" onclick="checkAppLockPasscode('${appName}')">Unlock</button>
@@ -6967,7 +6967,7 @@ function showAppLockPasscodePopup(appName) {
     } else {
         popupHTML = `
             <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
-            <div style="margin-bottom: 18px; font-size: 16px;">在「設定」中設定裝置密碼以使用 App Lock。</div>
+            <div style="margin-bottom: 18px; font-size: 16px;">Set a device passcode in Settings to use App Lock.</div>
             <button style="padding: 8px 24px; border-radius: 8px; border: none; background: #007AFF; color: white; font-size: 16px; cursor: pointer;" onclick="document.getElementById('appLockPasscodePopup').remove()">OK</button>
         `;
     }
