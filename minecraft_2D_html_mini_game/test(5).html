@@ -3,61 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Minecraft 2D 策略版 [test(5)]</title>
+  <title>Minecraft 2D 策略更新版［test(5)］</title>
   <style>
-    /* 基礎樣式 */
-    body { margin: 0; overflow: hidden; background-color: #87CEEB; touch-action: manipulation; user-select: none; font-family: sans-serif; }
-    canvas { display: block; }
-    
-    /* 介面組件 */
-    #startScreen, #deathScreen, #craftingScreen, #smeltingScreen {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    #startScreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: #7CFC00;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
-    #startScreen { background-color: #7CFC00; }
-    #deathScreen { background-color: rgba(255,0,0,0.9); color: white; display: none; }
-    #craftingScreen { background-color: #D2B48C; display: none; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-    #smeltingScreen { background-color: #808080; display: none; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-
-    .top-controls { position: fixed; top: 10px; left: 10px; z-index: 10; display: flex; gap: 5px; }
-    .top-controls button, .ui-btn { font-size: 16px; padding: 8px 12px; border: none; border-radius: 5px; background: #fff; cursor: pointer; }
-    
+    #startScreen h1 { font-size: 72px; margin: 0; color: #000; }
+    #startScreen button {
+      font-size: 24px; padding: 10px 20px; margin-top: 10px;
+      border: none; border-radius: 5px; background-color: #fff; cursor: pointer;
+    }
+    body { margin: 0; overflow: hidden; background-color: #87CEEB; touch-action: manipulation; user-select: none; }
+    canvas { display: block; }
+    .top-controls { position: fixed; top: 10px; left: 10px; z-index: 10; }
+    .top-controls button { font-size: 16px; padding: 5px 10px; margin-right: 5px; border: none; border-radius: 5px; background-color: #fff; }
     #inventoryUI, #iteminventory {
       position: fixed; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10;
     }
     #inventoryUI { top: 60px; }
     #iteminventory { top: 120px; }
-    #inventoryUI button, #iteminventory button { width: 50px; height: 50px; border: 2px solid #000; border-radius: 5px; font-size: 12px; }
-
+    #inventoryUI button, #iteminventory button { width: 50px; height: 50px; border: 2px solid #000; border-radius: 5px; font-size: 14px; cursor: pointer; }
     #hpDisplay { position: fixed; top: 10px; right: 10px; font-size: 20px; background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 5px; z-index: 10; }
-
-    /* 控制按鈕區 */
-    #leftControls { position: fixed; bottom: 10px; left: 10px; z-index: 10; display: flex; flex-direction: column; gap: 5px; }
-    #rightControls { position: fixed; bottom: 10px; right: 10px; z-index: 10; display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
-    .control-group { display: flex; gap: 5px; }
-    .control-group button { width: 65px; height: 50px; font-size: 14px; border: none; border-radius: 5px; background: #fff; touch-action: none; }
-
-    .hidden { display: none !important; }
+    #leftControls { position: fixed; bottom: 10px; left: 10px; z-index: 10; display: flex; flex-direction: column; gap: 8px; }
+    #rightControls { position: fixed; bottom: 10px; right: 10px; z-index: 10; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+    .control-group { display: flex; gap: 8px; }
+    #leftControls button, #rightControls button { font-size: 18px; padding: 10px; border: none; border-radius: 5px; background-color: #fff; touch-action: none; min-width: 60px; }
+    #deathScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,0,0,0.9); color: white; display: none; flex-direction: column; justify-content: center; align-items: center; font-size: 40px; z-index: 100; }
+    #deathScreen button { font-size: 24px; padding: 10px 20px; margin-top: 20px; }
+    #craftingScreen, #smeltingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; display: none; overflow-y: auto; padding: 20px; }
+    #craftingScreen { background-color: #D2B48C; }
+    #smeltingScreen { background-color: #808080; }
+    #craftingOptions, #smeltingOptions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .closeBtn { margin-top: 20px; font-size: 18px; }
   </style>
 </head>
 <body>
-
   <div id="startScreen">
-    <div style="position: absolute; top: 5px; left: 5px; font-size:10px;">test(5)</div>
-    <h1>Minecraft 2D 策略版</h1>
-    <p>［策略更新！］</p>
-    <button class="ui-btn" style="margin-bottom:10px;" onclick="startGame('adventure')">探險模式</button>
-    <button class="ui-btn" style="margin-bottom:10px;" onclick="startGame('peaceful')">和平模式</button>
-    <button class="ui-btn" style="margin-bottom:10px;" onclick="startGame('creative')">創造模式</button>
-    <button id="continueBtn" class="ui-btn hidden" onclick="continueGame()">繼續遊戲</button>
+    <div style="position: absolute; top: 5px; left: 5px; font-size:10px; color:#000;">test(5)</div>
+    <h1>Minecraft 2D</h1>
+    <p style="font-size: 24px;">［策略更新！］</p>
+    <button id="continueBtn" style="display:none; background-color: #FFD700;" onclick="continueGame()">繼續遊戲</button>
+    <button onclick="startAdventure();">探險模式</button>
+    <button onclick="startPeaceful();">和平模式</button>
+    <button onclick="startCreative();" style="background-color: #E0FFFF;">創造模式</button>
   </div>
 
   <canvas id="gameCanvas"></canvas>
 
   <div class="top-controls">
-    <button onclick="goToHomePage()">主頁面</button>
-    <button onclick="openCrafting()">合成</button>
-    <button id="smeltBtn" onclick="openSmelting()" style="display:none;">熔煉</button>
+    <button onclick="goToHomePage();">主頁面</button>
+    <button onclick="openCrafting();">合成</button>
+    <button id="smeltBtn" onclick="openSmelting();" style="display:none;">熔煉</button>
   </div>
 
   <div id="inventoryUI"></div>
@@ -66,8 +70,8 @@
 
   <div id="leftControls">
     <div class="control-group">
-      <button ontouchstart="moveLeft()" ontouchend="stopMoving()">←</button>
-      <button ontouchstart="moveRight()" ontouchend="stopMoving()">→</button>
+      <button ontouchstart="moveLeft();" ontouchend="stopMoving();">←</button>
+      <button ontouchstart="moveRight();" ontouchend="stopMoving();">→</button>
     </div>
     <div class="control-group"><button onclick="destroyBlockDir('up')">破壞 上</button></div>
     <div class="control-group">
@@ -78,10 +82,9 @@
   </div>
 
   <div id="rightControls">
-    <div class="control-group"><button id="atkBtn" onclick="playerAttack()">攻擊</button></div>
+    <div class="control-group"><button onclick="playerAttack()">攻擊</button></div>
     <div class="control-group">
-      <button id="jumpBtn" onclick="handleJump()">跳躍</button>
-      <button id="downBtn" class="hidden" ontouchstart="moveDown()" ontouchend="stopVertical()">向下</button>
+        <button id="jumpBtn" ontouchstart="handleJumpTap();">跳躍</button>
     </div>
     <div class="control-group"><button onclick="placeBlockDir('up')">放置 上</button></div>
     <div class="control-group">
@@ -93,352 +96,263 @@
 
   <div id="deathScreen">
     <div>你死了</div>
-    <button class="ui-btn" onclick="restartGame()">重新開始</button>
+    <button onclick="restartGame()">重新開始</button>
   </div>
 
   <div id="craftingScreen">
-    <h2>合成介面</h2>
+    <h2>合成介面 <span id="creativeHint" style="display:none; color:blue;">(創造模式：免費)</span></h2>
     <div id="craftingOptions"></div>
-    <button id="clearInvBtn" class="ui-btn hidden" onclick="clearInventory()" style="background:#ff4444; color:white;">清除所有物品</button>
-    <button class="ui-btn" onclick="closeCrafting()">關閉</button>
+    <button id="clearInvBtn" style="display:none; margin-top:10px;" onclick="clearInventory()">清除所有物品</button><br>
+    <button class="closeBtn" onclick="closeCrafting()">關閉合成介面</button>
   </div>
 
   <div id="smeltingScreen">
     <h2>熔煉介面</h2>
     <div id="smeltingOptions"></div>
-    <button class="ui-btn" onclick="closeSmelting()">關閉</button>
+    <button class="closeBtn" onclick="closeSmelting()">關閉熔煉介面</button>
   </div>
 
-<script>
+  <script>
+    document.addEventListener("gesturestart", e => e.preventDefault());
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    let gameActive = false;
-    let worldExists = false;
-
-    // 世界設定 test(5): 100x100
-    const tileSize = 40;
-    const worldCols = 100;
-    const worldRows = 100;
-    const groundLevel = 15;
-    const bedrockStart = 95;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     
-    // 物理與狀態
-    const gravity = 0.5;
-    let gameMode = "adventure";
-    let isGhostMode = false; // 穿牆模式
-    let lastJumpTime = 0;
-    let spawnPoint = { x: 0, y: 0 };
+    const tileSize = 40;
+    const worldCols = 100; // 策略更新：100
+    const worldRows = 100; // 策略更新：100
+    const groundLevel = 10;
+    const bedrockStart = 95;
 
-    const player = {
-      x: 0, y: 0, vx: 0, vy: 0, width: 30, height: 38,
-      health: 10, onGround: false, toolLevel: 3, 
-      fallStartY: null, injured: false, injuredTime: 0
+    const gravity = 0.5, moveSpeed = 4, jumpVelocity = -12;
+    let player = {
+      x: 0, y: 0, width: tileSize, height: tileSize,
+      vx: 0, vy: 0, onGround: false, health: 10,
+      fallStartY: null, toolLevel: -1, injured: false,
+      spawnX: 0, spawnY: 0, noclip: false
     };
 
-    let worldData = [], entities = [], projectiles = [];
-    let inventory = {}, itemInventory = {};
-    let moveDirection = 0, verticalDirection = 0;
-    let cameraX = 0, cameraY = 0;
-    let selectedBlock = null;
+    let worldActive = false, gameMode = "adventure", gameOver = false, moveDirection = 0;
+    let worldData = [], entities = [], projectiles = [], inventory = {}, itemInventory = {};
+    let selectedBlock = null, lastJumpTapTime = 0, lastLavaDamageTime = Date.now();
+    let startTime = performance.now(), dayTime = 0;
 
+    const collectibleTypes = ["grass", "wood", "stone", "iron", "gold", "diamond", "coal", "water", "lava", "羊毛"];
     const recipes = [
       { name: "木劍", materials: {"wood": 2}, isTool: true, toolLevel: 1 },
       { name: "木鎬", materials: {"wood": 3}, isTool: true, toolLevel: 0 },
-      { name: "石劍", materials: {"stone": 2}, isTool: true, toolLevel: 1 },
       { name: "石鎬", materials: {"stone": 3}, isTool: true, toolLevel: 1 },
-      { name: "鐵劍", materials: {"iron": 2}, isTool: true, toolLevel: 2 },
       { name: "鐵鎬", materials: {"iron": 3}, isTool: true, toolLevel: 2 },
-      { name: "鑽石劍", materials: {"diamond": 2}, isTool: true, toolLevel: 3 },
       { name: "鑽石鎬", materials: {"diamond": 3}, isTool: true, toolLevel: 3 },
-      { name: "火把", materials: {"coal": 1, "wood": 1} },
-      { name: "鐵桶", materials: {"iron": 3} },
-      { name: "熔爐", materials: {"stone": 4} },
-      { name: "床", materials: {"羊毛": 2, "wood": 2} }
+      { name: "火把", materials: {"coal": 1, "wood": 1}, isTool: false },
+      { name: "鐵桶", materials: {"iron": 3}, isTool: true },
+      { name: "熔爐", materials: {"stone": 4}, isTool: false },
+      { name: "床", materials: {"羊毛": 2, "wood": 2}, isTool: false }
     ];
 
     const smeltingRecipes = [
-      { name: "鐵錠", input: "iron", fuel: "coal", time: 3000 },
-      { name: "黃金錠", input: "gold", fuel: "coal", time: 3000 },
-      { name: "熟豬肉", input: "生豬", fuel: "coal", time: 3000 }
+      { name: "鐵錠", input: { "iron": 1 }, fuel: { "coal": 1 }, time: 3000 },
+      { name: "黃金錠", input: { "gold": 1 }, fuel: { "coal": 1 }, time: 3000 },
+      { name: "熟豬肉", input: { "生豬": 1 }, fuel: { "coal": 1 }, time: 3000 }
     ];
 
-    // 初始化世界
+    function updateBackground() {
+      const elapsed = performance.now() - startTime;
+      dayTime = (elapsed % 360000) / 360000 * 2 * Math.PI;
+      let intensity = (Math.sin(dayTime) + 1) / 2;
+      const r = Math.floor(20 + intensity * 115), g = Math.floor(20 + intensity * 186), b = Math.floor(40 + intensity * 195);
+      document.body.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
+    function isNight() { return ((Math.sin(dayTime) + 1) / 2) < 0.5; }
+
     function generateWorld() {
       worldData = [];
-      for (let r = 0; r < worldRows; r++) {
-        for (let c = 0; c < worldCols; c++) {
-          let x = c * tileSize, y = r * tileSize;
-          if (r === groundLevel) worldData.push({x, y, type:"grass", color:"#00FF00"});
-          else if (r > groundLevel && r < bedrockStart) {
-            let rand = Math.random();
-            if (rand < 0.05) worldData.push({x, y, type:"iron", color:"#FFF8E1"});
-            else if (rand < 0.08) worldData.push({x, y, type:"coal", color:"#2F4F4F"});
-            else if (r > 50 && rand < 0.1) worldData.push({x, y, type:"diamond", color:"#00FFFF"});
-            else worldData.push({x, y, type:"stone", color:"#808080"});
-          } else if (r >= bedrockStart) {
-            worldData.push({x, y, type:"bedrock", color:"#3B3B3B"});
+      for (let row = 0; row < worldRows; row++) {
+        for (let col = 0; col < worldCols; col++) {
+          let x = col * tileSize, y = row * tileSize;
+          if (row === groundLevel) {
+            worldData.push({ x: x, y: y, type: "grass", color: "#00FF00" });
+            if (Math.random() < 0.1) { // 樹
+                worldData.push({ x: x, y: y - tileSize, type: "wood", color: "#8B4513" });
+                worldData.push({ x: x, y: y - 2*tileSize, type: "leaf", color: "#228B22" });
+            }
+          } else if (row > groundLevel && row < bedrockStart) {
+            let r = Math.random();
+            if (r < 0.1) worldData.push({ x: x, y: y, type: "iron", color: "#FFF8E1" });
+            else if (r < 0.15) worldData.push({ x: x, y: y, type: "coal", color: "#2F4F4F" });
+            else worldData.push({ x: x, y: y, type: "stone", color: "#808080" });
+          } else if (row >= bedrockStart) {
+            worldData.push({ x: x, y: y, type: "bedrock", color: "#3B3B3B" });
           }
         }
       }
-      spawnPoint = { x: tileSize * 2, y: (groundLevel - 1) * tileSize };
-      player.x = spawnPoint.x; player.y = spawnPoint.y;
-      worldExists = true;
-      document.getElementById("continueBtn").classList.remove("hidden");
     }
 
-    // 遊戲循環切換
-    function startGame(mode) {
-      gameMode = mode;
-      isGhostMode = false;
-      document.getElementById("startScreen").style.display = "none";
-      if (!worldExists) generateWorld();
-      resetPlayerState();
-      gameActive = true;
-      requestAnimationFrame(gameLoop);
-    }
-
-    function continueGame() {
-      document.getElementById("startScreen").style.display = "none";
-      gameActive = true;
-      requestAnimationFrame(gameLoop);
-    }
-
-    function resetPlayerState() {
-      player.health = 10;
-      player.vx = 0; player.vy = 0;
-      if (gameMode === "creative") player.toolLevel = 5;
-      updateInterface();
-    }
-
-    function goToHomePage() {
-      gameActive = false;
-      document.getElementById("startScreen").style.display = "flex";
-    }
-
-    // 物理與穿牆邏輯
     function updatePhysics() {
-      if (gameMode === "creative" && isGhostMode) {
-        player.x += moveDirection * 8;
-        player.y += verticalDirection * 8;
+      if (player.noclip) {
+        player.x += moveDirection * moveSpeed;
+        return; 
+      }
+      
+      let newX = player.x + moveDirection * moveSpeed;
+      if (!checkCollision(newX, player.y)) player.x = newX;
+
+      player.vy += gravity;
+      let newY = player.y + player.vy;
+      if (checkCollision(player.x, newY)) {
+        if (player.vy > 0) player.onGround = true;
         player.vy = 0;
       } else {
-        player.vx = moveDirection * 5;
-        player.vy += gravity;
-        
-        let nextX = player.x + player.vx;
-        let nextY = player.y + player.vy;
-
-        // 碰撞檢測
-        let hitX = false, hitY = false;
-        for (let b of worldData) {
-          if (b.type === "water" || b.type === "lava") continue;
-          if (rectIntersect(nextX, player.y, player.width, player.height, b.x, b.y, tileSize, tileSize)) hitX = true;
-          if (rectIntersect(player.x, nextY, player.width, player.height, b.x, b.y, tileSize, tileSize)) {
-            if (player.vy > 0) player.onGround = true;
-            hitY = true;
-          }
-        }
-
-        if (!hitX) player.x = nextX;
-        if (!hitY) player.y = nextY; else { player.vy = 0; }
-        if (!hitY) player.onGround = false;
-        
-        // 虛空傷害 (創造模式除外)
-        if (player.y > worldRows * tileSize && gameMode !== "creative") {
-           player.health = 0;
-        }
+        player.y = newY;
+        player.onGround = false;
       }
-    }
 
-    // 跳躍按鈕與穿牆切換
-    function handleJump() {
-      let now = Date.now();
-      if (gameMode === "creative" && now - lastJumpTime < 300) {
-        toggleGhostMode();
+      // 虛空傷害
+      if (player.y > (bedrockStart + 2) * tileSize) {
+        if (Date.now() - lastLavaDamageTime > 1000) { player.health -= 5; lastLavaDamageTime = Date.now(); }
+      }
+      // 探險/和平模式受傷
+      if (gameMode !== "creative") {
+          if (isPlayerInLava() && Date.now() - lastLavaDamageTime > 1000) { player.health -= 1; lastLavaDamageTime = Date.now(); }
       } else {
-        if (isGhostMode) { verticalDirection = -1; }
-        else if (player.onGround) player.vy = -12;
+          player.health = 10; // 創造模式鎖血
       }
-      lastJumpTime = now;
     }
 
-    function moveDown() { if (isGhostMode) verticalDirection = 1; }
-    function stopVertical() { verticalDirection = 0; }
+    function checkCollision(nx, ny) {
+      if (gameMode === "creative" && player.noclip) return false;
+      for (const b of worldData) {
+        if (["water", "lava", "火把"].includes(b.type)) continue;
+        if (rectIntersect(nx, ny, player.width, player.height, b.x, b.y, tileSize, tileSize)) return true;
+      }
+      return false;
+    }
 
-    function toggleGhostMode() {
-      isGhostMode = !isGhostMode;
-      const jumpBtn = document.getElementById("jumpBtn");
-      const downBtn = document.getElementById("downBtn");
-      if (isGhostMode) {
-        jumpBtn.innerText = "向上";
-        downBtn.classList.remove("hidden");
+    function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
+      return !(x2 >= x1 + w1 || x2 + w2 <= x1 || y2 >= y1 + h1 || y2 + h2 <= y1);
+    }
+
+    function handleJumpTap() {
+      const now = Date.now();
+      if (now - lastJumpTapTime < 300) {
+        if (gameMode === "creative") toggleNoclip();
       } else {
-        jumpBtn.innerText = "跳躍";
-        downBtn.classList.add("hidden");
+        if (player.noclip) { moveUp(); } else { jump(); }
+      }
+      lastJumpTapTime = now;
+    }
+
+    function toggleNoclip() {
+      player.noclip = !player.noclip;
+      const jBtn = document.getElementById("jumpBtn");
+      if (player.noclip) {
+        player.vy = 0;
+        jBtn.innerHTML = "上升";
+        jBtn.onclick = moveUp;
+        // 增加下降按鈕
+        const downBtn = document.createElement("button");
+        downBtn.id = "downBtn"; downBtn.innerHTML = "下降";
+        downBtn.onclick = moveDown;
+        jBtn.parentNode.appendChild(downBtn);
+      } else {
+        jBtn.innerHTML = "跳躍";
+        jBtn.onclick = null;
+        const db = document.getElementById("downBtn");
+        if (db) db.remove();
       }
     }
 
-    // 生物系統
+    function moveUp() { if (player.noclip) player.y -= 20; }
+    function moveDown() { if (player.noclip) player.y += 20; }
+    function jump() { if (player.onGround) { player.vy = jumpVelocity; player.onGround = false; } }
+
     function spawnMobs() {
-      if (gameMode === "peaceful" || gameMode === "creative") {
-        // 創造模式與和平模式只生動物
-        if (entities.length < 10 && Math.random() < 0.02) spawnAnimal();
-        return;
+      if (entities.length < 8 && Math.random() < 0.01) {
+        const x = player.x + (Math.random() * 600 - 300);
+        const type = (Math.random() < 0.5) ? "pig" : "sheep";
+        entities.push({ x, y: (groundLevel - 1) * tileSize, width: tileSize, height: tileSize, type, hp: 3, vx: 1 });
       }
-      if (Math.random() < 0.01 && entities.length < 15) {
-        let type = Math.random() > 0.5 ? "pig" : "sheep";
-        if (Math.random() < 0.3) type = "zombie"; 
-        entities.push({
-          x: player.x + (Math.random()*800-400), y: (groundLevel-1)*tileSize,
-          width: 30, height: 30, type: type, hp: 5, vx: 1
-        });
+      if (gameMode === "adventure" && isNight() && entities.length < 12 && Math.random() < 0.02) {
+        entities.push({ x: player.x + 400, y: (groundLevel-1)*tileSize, width: tileSize, height: tileSize, type: "zombie", hp: 10, lastAttackTime: 0 });
       }
     }
 
-    function spawnAnimal() {
-       let type = Math.random() > 0.5 ? "pig" : "sheep";
-       entities.push({
-          x: player.x + (Math.random()*1000-500), y: (groundLevel-1)*tileSize,
-          width: 30, height: 30, type: type, hp: 3, vx: 0.5
-       });
-    }
-
-    // 合成與熔煉
-    function craftItem(recipe) {
-      if (gameMode !== "creative") {
-        for (let m in recipe.materials) {
-          if ((inventory[m]||0) < recipe.materials[m]) return;
-        }
-        for (let m in recipe.materials) inventory[m] -= recipe.materials[m];
-      }
-      
-      if (recipe.name === "床") addToItemInventory("床", 1);
-      else if (recipe.isTool) {
-          player.toolLevel = Math.max(player.toolLevel, recipe.toolLevel);
-          addToItemInventory(recipe.name, 1);
-      } else addToItemInventory(recipe.name, 1);
-      
-      updateInventoryUI();
-      updateItemInventoryUI();
-    }
-
-    function smeltItem(recipe) {
-      let waitTime = (gameMode === "creative") ? 0 : recipe.time;
-      if (gameMode !== "creative") {
-        if ((inventory[recipe.input]||0) < 1 || (inventory[recipe.fuel]||0) < 1) return;
-        inventory[recipe.input]--; inventory[recipe.fuel]--;
-      }
-      setTimeout(() => {
-        addToItemInventory(recipe.name, 1);
-        updateItemInventoryUI();
-      }, waitTime);
-    }
-
-    // 睡覺功能
-    function useBed() {
-      let hours = new Date().getHours(); // 簡化模擬日夜，或者用你的 dayTime 變量
-      // 這裡使用簡化邏輯：如果當前是夜晚（根據背景強度判定）
-      let intensity = (Math.sin(dayTime) + 1) / 2;
-      if (intensity < 0.5) {
-         // 夜晚：跳到朝早
-         startTime -= 180000; // 調整時間偏移量
-         console.log("睡到朝早");
-      } else {
-         // 日頭：設置重生點
-         spawnPoint = { x: player.x, y: player.y };
-         console.log("重生點已設置");
-      }
-    }
-
-    // 輔助函式
-    function addToInventory(type, count) { inventory[type] = (inventory[type]||0)+count; updateInventoryUI(); }
-    function addToItemInventory(type, count) { 
-        itemInventory[type] = (itemInventory[type]||0)+count; 
-        if(type === "熔爐") document.getElementById("smeltBtn").style.display = "inline-block";
-        updateItemInventoryUI(); 
-    }
-    function clearInventory() { inventory = {}; itemInventory = {}; updateInventoryUI(); updateItemInventoryUI(); }
-    function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) { return !(x2 >= x1+w1 || x2+w2 <= x1 || y2 >= y1+h1 || y2+h2 <= y1); }
-
-    // 繪圖循環
-    let startTime = performance.now(), dayTime = 0;
-    function gameLoop(time) {
-      if (!gameActive) return;
-      
-      // 背景
-      dayTime = ((time - startTime) % 360000) / 360000 * 2 * Math.PI;
-      let intensity = (Math.sin(dayTime) + 1) / 2;
-      document.body.style.backgroundColor = `rgb(${20+intensity*115}, ${20+intensity*186}, ${40+intensity*195})`;
-
-      updatePhysics();
-      spawnMobs();
-      
-      // 相機
-      cameraX = player.x - canvas.width/2;
-      cameraY = player.y - canvas.height/2;
-
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      
-      // 畫方塊
-      for(let b of worldData) {
-        if (b.x > cameraX-40 && b.x < cameraX+canvas.width+40 && b.y > cameraY-40 && b.y < cameraY+canvas.height+40) {
-          ctx.fillStyle = b.color;
-          ctx.fillRect(b.x-cameraX, b.y-cameraY, tileSize, tileSize);
-        }
-      }
-
-      // 畫生物
-      for(let i=entities.length-1; i>=0; i--) {
-        let e = entities[i];
-        e.x += (e.vx||0);
-        ctx.fillStyle = (e.type === "pig") ? "#FFC0CB" : (e.type === "sheep" ? "#F5F5F5" : "#006400");
-        ctx.fillRect(e.x-cameraX, e.y-cameraY, e.width, e.height);
-        
-        // 創造模式不攻擊
-        if (gameMode !== "creative" && e.type === "zombie") {
-            if(rectIntersect(player.x, player.y, player.width, player.height, e.x, e.y, e.width, e.height)) {
-                player.health -= 0.05;
+    function updateEntities() {
+      for (let i = entities.length - 1; i >= 0; i--) {
+        let m = entities[i];
+        m.x += (m.vx || 0);
+        if (m.type === "zombie" && gameMode !== "creative") {
+            let dx = player.x - m.x;
+            m.x += dx > 0 ? 1 : -1;
+            if (rectIntersect(m.x, m.y, m.width, m.height, player.x, player.y, player.width, player.height)) {
+                if (Date.now() - m.lastAttackTime > 1000) { player.health -= 1; m.lastAttackTime = Date.now(); }
             }
         }
-      }
-
-      // 畫玩家
-      ctx.fillStyle = isGhostMode ? "rgba(0,0,255,0.5)" : "#0000FF";
-      ctx.fillRect(player.x-cameraX, player.y-cameraY, player.width, player.height);
-
-      updateInterface();
-      if (player.health <= 0 && gameMode !== "creative") {
-          document.getElementById("deathScreen").style.display = "flex";
-          gameActive = false;
-      } else {
-          requestAnimationFrame(gameLoop);
+        if (m.hp <= 0) {
+          if (m.type === "sheep") addToInventory("羊毛", 1);
+          if (m.type === "pig") addToItemInventory("生豬", 1);
+          entities.splice(i, 1);
+        }
       }
     }
 
-    // UI 控制
-    function moveLeft() { moveDirection = -1; }
-    function moveRight() { moveDirection = 1; }
-    function stopMoving() { moveDirection = 0; }
-    
-    function updateInterface() {
-        document.getElementById("hpDisplay").innerText = (gameMode === "creative") ? "HP: ∞" : "HP: " + Math.ceil(player.health);
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const camX = player.x - canvas.width / 2, camY = player.y - canvas.height / 2;
+      
+      worldData.forEach(b => {
+        ctx.fillStyle = b.color;
+        ctx.fillRect(b.x - camX, b.y - camY, tileSize, tileSize);
+      });
+
+      entities.forEach(m => {
+        ctx.fillStyle = (m.type === "sheep") ? "#FFFDD0" : (m.type === "pig" ? "#FFC0CB" : "#006400");
+        ctx.fillRect(m.x - camX, m.y - camY, m.width, m.height);
+      });
+
+      ctx.fillStyle = player.noclip ? "rgba(0,0,255,0.5)" : "#0000FF";
+      ctx.fillRect(player.x - camX, player.y - camY, player.width, player.height);
     }
 
     function openCrafting() {
+      document.getElementById("craftingScreen").style.display = "block";
+      document.getElementById("creativeHint").style.display = (gameMode === "creative") ? "inline" : "none";
+      document.getElementById("clearInvBtn").style.display = (gameMode === "creative") ? "block" : "none";
       const container = document.getElementById("craftingOptions");
       container.innerHTML = "";
-      if (gameMode === "creative") document.getElementById("clearInvBtn").classList.remove("hidden");
-      else document.getElementById("clearInvBtn").classList.add("hidden");
-
       recipes.forEach(r => {
         const btn = document.createElement("button");
-        btn.className = "ui-btn";
-        btn.style.margin = "5px";
-        btn.innerText = r.name;
+        btn.innerHTML = `${r.name}<br>${JSON.stringify(r.materials)}`;
+        btn.style.backgroundColor = getItemColor(r.name);
         btn.onclick = () => craftItem(r);
         container.appendChild(btn);
       });
-      document.getElementById("craftingScreen").style.display = "flex";
+    }
+
+    function craftItem(r) {
+      if (gameMode !== "creative") {
+        for (let m in r.materials) if ((inventory[m] || 0) < r.materials[m]) return;
+        for (let m in r.materials) inventory[m] -= r.materials[m];
+      }
+      if (r.isTool) player.toolLevel = Math.max(player.toolLevel, r.toolLevel);
+      addToItemInventory(r.name, 1);
+      updateInventoryUI(); updateItemInventoryUI();
+    }
+
+    function openSmelting() {
+      document.getElementById("smeltingScreen").style.display = "block";
+      const container = document.getElementById("smeltingOptions");
+      container.innerHTML = "";
+      smeltingRecipes.forEach(r => {
+        const btn = document.createElement("button");
+        btn.innerHTML = r.name;
+        btn.onclick = () => {
+            if (gameMode === "creative") { addToItemInventory(r.name, 1); }
+            else { smeltItem(r); }
+        };
+        container.appendChild(btn);
+      });
     }
 
     function updateItemInventoryUI() {
@@ -447,77 +361,107 @@
       for (let item in itemInventory) {
         if (itemInventory[item] <= 0) continue;
         const btn = document.createElement("button");
-        btn.innerText = item + " x" + itemInventory[item];
+        btn.innerText = `${item} x${itemInventory[item]}`;
+        btn.style.backgroundColor = getItemColor(item);
         btn.onclick = () => {
           if (item === "床") useBed();
-          else if (item === "熔爐") openSmelting();
+          if (item === "熟豬肉" || item === "生豬") { player.health = Math.min(10, player.health+3); itemInventory[item]--; updateItemInventoryUI(); }
         };
         container.appendChild(btn);
       }
     }
-    
+
+    function useBed() {
+        if (isNight()) {
+            startTime = performance.now(); // 跳到朝早
+            console.log("瞓醒喇，朝早嘞！");
+        } else {
+            player.spawnX = player.x;
+            player.spawnY = player.y;
+            console.log("重生點已設置");
+        }
+    }
+
+    function clearInventory() { inventory = {}; itemInventory = {}; updateInventoryUI(); updateItemInventoryUI(); }
+    function addToInventory(i, c) { inventory[i] = (inventory[i] || 0) + c; updateInventoryUI(); }
+    function addToItemInventory(i, c) { itemInventory[i] = (itemInventory[i] || 0) + c; updateItemInventoryUI(); updateSmeltButtonVisibility(); }
     function updateInventoryUI() {
       const container = document.getElementById("inventoryUI");
       container.innerHTML = "";
-      for (let item in inventory) {
-        if (inventory[item] <= 0) continue;
+      for (let i in inventory) {
+        if (inventory[i] <= 0) continue;
         const btn = document.createElement("button");
-        btn.innerText = item + " x" + inventory[item];
-        btn.onclick = () => selectedBlock = item;
+        btn.innerText = `${i} x${inventory[i]}`;
+        btn.style.backgroundColor = getItemColor(i);
+        btn.onclick = () => { selectedBlock = i; };
         container.appendChild(btn);
       }
     }
 
     function destroyBlockDir(dir) {
-      let tx = Math.floor((player.x + player.width/2)/tileSize);
-      let ty = Math.floor((player.y + player.height/2)/tileSize);
-      if (dir === 'up') ty--; if (dir === 'down') ty++; if (dir === 'left') tx--; if (dir === 'right') tx++;
-      
-      let idx = worldData.findIndex(b => b.x === tx*tileSize && b.y === ty*tileSize);
+      const grid = { col: Math.floor(player.x/tileSize), row: Math.floor(player.y/tileSize) };
+      if (dir === "up") grid.row--; if (dir === "down") grid.row++; if (dir === "left") grid.col--; if (dir === "right") grid.col++;
+      const idx = worldData.findIndex(b => b.x === grid.col * tileSize && b.y === grid.row * tileSize);
       if (idx !== -1) {
-        let b = worldData[idx];
-        if (b.type !== "bedrock" || gameMode === "creative") {
-          addToInventory(b.type, 1);
+          if (worldData[idx].type === "bedrock" && gameMode !== "creative") return;
+          addToInventory(worldData[idx].type, 1);
           worldData.splice(idx, 1);
-        }
       }
     }
 
     function placeBlockDir(dir) {
-      if (!selectedBlock || (inventory[selectedBlock]||0) <= 0) return;
-      let tx = Math.floor((player.x + player.width/2)/tileSize);
-      let ty = Math.floor((player.y + player.height/2)/tileSize);
-      if (dir === 'up') ty--; if (dir === 'down') ty++; if (dir === 'left') tx--; if (dir === 'right') tx++;
-      
-      if (!worldData.some(b => b.x === tx*tileSize && b.y === ty*tileSize)) {
-        worldData.push({x: tx*tileSize, y: ty*tileSize, type: selectedBlock, color: "#808080"});
-        if (gameMode !== "creative") {
-            inventory[selectedBlock]--;
-            updateInventoryUI();
-        }
-      }
+      if (!selectedBlock || inventory[selectedBlock] <= 0) return;
+      const grid = { col: Math.floor(player.x/tileSize), row: Math.floor(player.y/tileSize) };
+      if (dir === "up") grid.row--; if (dir === "down") grid.row++; if (dir === "left") grid.col--; if (dir === "right") grid.col++;
+      worldData.push({ x: grid.col * tileSize, y: grid.row * tileSize, type: selectedBlock, color: getItemColor(selectedBlock) });
+      if (gameMode !== "creative") inventory[selectedBlock]--;
+      updateInventoryUI();
     }
 
-    function playerAttack() {
-      for (let i = entities.length-1; i>=0; i--) {
-        let e = entities[i];
-        if (rectIntersect(player.x-20, player.y-20, player.width+40, player.height+40, e.x, e.y, e.width, e.height)) {
-          e.hp -= 2;
-          if (e.hp <= 0) {
-            if (e.type === "sheep") addToInventory("羊毛", 1);
-            if (e.type === "pig") addToItemInventory("生豬", 1);
-            entities.splice(i, 1);
-          }
-        }
-      }
+    function getItemColor(n) {
+      const colors = { "wood": "#8B4513", "stone": "#808080", "iron": "#FFF8E1", "羊毛": "#FFFDD0", "床": "#D3D3D3", "grass": "#00FF00", "coal": "#2F4F4F", "生豬": "#FFC0CB", "熟豬肉": "#D2B48C" };
+      return colors[n] || "#fff";
     }
 
+    function gameLoop() {
+      if (gameOver || !worldActive) return;
+      updateBackground();
+      updatePhysics();
+      spawnMobs();
+      updateEntities();
+      draw();
+      document.getElementById("hpDisplay").innerText = `HP: ${player.health.toFixed(1)}`;
+      if (player.health <= 0) { gameOver = true; document.getElementById("deathScreen").style.display = "flex"; }
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startAdventure() { gameMode = "adventure"; initGame(); }
+    function startPeaceful() { gameMode = "peaceful"; initGame(); }
+    function startCreative() { gameMode = "creative"; initGame(); }
+    function continueGame() { document.getElementById("startScreen").style.display = "none"; worldActive = true; gameLoop(); }
+    function goToHomePage() { worldActive = false; document.getElementById("startScreen").style.display = "flex"; document.getElementById("continueBtn").style.display = "block"; }
+
+    function initGame() {
+      worldData = []; entities = []; inventory = {}; itemInventory = {};
+      player = { x: 100, y: (groundLevel-1)*tileSize, width: tileSize, height: tileSize, vx: 0, vy: 0, health: 10, onGround: false, toolLevel: (gameMode==="creative"?3:-1), noclip: false, spawnX: 100, spawnY: (groundLevel-1)*tileSize };
+      generateWorld();
+      worldActive = true; gameOver = false;
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("deathScreen").style.display = "none";
+      gameLoop();
+    }
+
+    function restartGame() { initGame(); }
+    function moveLeft() { moveDirection = -1; }
+    function moveRight() { moveDirection = 1; }
+    function stopMoving() { moveDirection = 0; }
+    function isPlayerInLava() { return worldData.some(b => b.type === "lava" && rectIntersect(player.x, player.y, player.width, player.height, b.x, b.y, tileSize, tileSize)); }
+    function updateSmeltButtonVisibility() { document.getElementById("smeltBtn").style.display = (itemInventory["熔爐"] > 0 || gameMode === "creative") ? "inline-block" : "none"; }
     function closeCrafting() { document.getElementById("craftingScreen").style.display = "none"; }
     function closeSmelting() { document.getElementById("smeltingScreen").style.display = "none"; }
-    function restartGame() { worldExists = false; document.getElementById("deathScreen").style.display = "none"; startGame(gameMode); }
-
-    window.addEventListener("resize", () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-</script>
+    function playerAttack() {
+        entities.forEach(m => { if (Math.abs(m.x - player.x) < tileSize * 2) m.hp -= (gameMode==="creative"?10:1); });
+    }
+  </script>
 </body>
 </html>
