@@ -235,7 +235,7 @@
     <div id="guideOverlay" class="overlay">
         <div class="overlay-content">
             <div id="guideBox">
-                <h2>🐱 玩貓教學：(dev id 01)</h2>
+                <h2>🐱 玩貓教學：(dev id 02)</h2>
                 <p>• <b>理吓隻貓</b>：撳隻貓會打關斗，消耗1個⚡️體力。如果體力耗盡，就打唔到關斗，要餵貓補充返⚡️體力！</p>
                 <p>• <b>沉悶倒數</b>：記得每一刻每一秒都要理吓你隻貓，如果唔係佢會發大脾氣！</p>
                 <p>• <b>基本食物</b>：一般會出現 🐟魚魚 、 🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
@@ -244,7 +244,8 @@
                 <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
                 <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
                 <br>
-                <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
+                <!-- 修改為 !!連撳撫摸!! -->
+                <p style="color:#ff3300; font-weight:bold;">!!連撳撫摸!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
                 <div class="btn-start" onclick="closeGuide()">我知喇！</div>
             </div>
         </div>
@@ -299,6 +300,50 @@
     </div>
 
     <script>
+        // ======= 單檔 Service Worker 註冊 (離線及預先下載) =======
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = "cat-image-cache-v2";
+                    const ASSETS = [
+                        "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG"
+                    ];
+
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => {
+                                return cache.addAll(ASSETS);
+                            })
+                        );
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request).then(response => {
+                                // 如果有緩存就回傳緩存，否則透過網路抓取並存入緩存
+                                return response || fetch(event.request).then(netRes => {
+                                    return caches.open(CACHE_NAME).then(cache => {
+                                        cache.put(event.request, netRes.clone());
+                                        return netRes;
+                                    });
+                                });
+                            })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+
+                navigator.serviceWorker.register(swUrl).then(() => {
+                    console.log('Service Worker 註冊成功 (離線支援已啟動)');
+                }).catch(err => {
+                    console.log('Service Worker 註冊受限 (本機直接開啟 HTML 可能無法註冊 SW):', err);
+                });
+            });
+        }
+        // ========================================================
+
         const defaultConfig = "7,5,7,100,3,0,0";
         const CAT_IMAGE_URL = "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG";
         const IMAGE_CACHE_NAME = "cat-image-cache-v1";
@@ -366,7 +411,8 @@
         }
 
         function updateUI() {
-            document.getElementById('timeVal').innerHTML = isCrazy ? "!!連撳安撫!!" : timeLeft + "s";
+            // 修改為 !!連撳撫摸!!
+            document.getElementById('timeVal').innerHTML = isCrazy ? "!!連撳撫摸!!" : timeLeft + "s";
             document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             let icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
             document.getElementById('stamina').innerHTML = icon + stamina;
@@ -432,6 +478,7 @@
             resetGame();
         }
 
+        // 強制預先下載並存入 Cache API 供即時使用
         async function warmImageCache() {
             try {
                 if (navigator.storage && navigator.storage.persist) {
@@ -716,6 +763,8 @@
                 cb.style.left = (Math.random() * 80 + 10) + "%";
                 cb.style.top = (Math.random() * 70 + 15) + "%";
             }, (poison || hitCount > 0) ? 50 : 100);
+            
+            updateUI();
         }
 
         function hitCat(e) {
