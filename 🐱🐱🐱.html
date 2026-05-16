@@ -271,39 +271,6 @@
         }
         function applyBg() { document.body.style.backgroundColor = specialStatus==="golden"?"#4a3c00":(specialStatus==="devil"?"#1a0033":"#000"); }
     </script>
-        // ======= 離線快取 Service Worker 核心代碼 =======
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'cat-offline-v1';
-                const ASSETS = [ location.href, 'https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG' ];
-                self.addEventListener('install', e => {
-                    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
-                    self.skipWaiting();
-                });
-                self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-        }
-
-        // ======= 圖片沙盒快取（確保完全斷網時張相正常顯示） =======
-        async function initOfflineImage() {
-            try {
-                if ('caches' in window) {
-                    const cache = await caches.open('cat-img-cache');
-                    let res = await cache.match('https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG');
-                    if (!res) {
-                        await cache.add('https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG');
-                        res = await cache.match('https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG');
-                    }
-                    if (res) {
-                        const blobData = await res.blob();
-                        document.getElementById('catImg').src = URL.createObjectURL(blobData);
-                    }
-                }
-            } catch (e) {}
-        }
-        window.addEventListener('load', initOfflineImage);
 
 </body>
 </html>
