@@ -235,7 +235,7 @@
     <div id="guideOverlay" class="overlay">
         <div class="overlay-content">
             <div id="guideBox">
-                <h2>🐱 玩貓教學：(dev id 02)</h2>
+                <h2>🐱 玩貓教學：(dev id 03)</h2>
                 <p>• <b>理吓隻貓</b>：撳隻貓會打關斗，消耗1個⚡️體力。如果體力耗盡，就打唔到關斗，要餵貓補充返⚡️體力！</p>
                 <p>• <b>沉悶倒數</b>：記得每一刻每一秒都要理吓你隻貓，如果唔係佢會發大脾氣！</p>
                 <p>• <b>基本食物</b>：一般會出現 🐟魚魚 、 🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
@@ -300,49 +300,50 @@
     </div>
 
     <script>
-        // ======= 單檔 Service Worker 註冊 (離線及預先下載) =======
+        // ======= 單檔 Service Worker 註冊 (離線使用及快取) =======
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = "cat-image-cache-v2";
-                    const ASSETS = [
-                        "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG"
-                    ];
+            const swCode = `
+                const CACHE_NAME = 'cat-game-cache-v1';
+                const urlsToCache = [
+                    'https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG',
+                    location.href
+                ];
 
-                    self.addEventListener('install', event => {
-                        event.waitUntil(
-                            caches.open(CACHE_NAME).then(cache => {
-                                return cache.addAll(ASSETS);
-                            })
-                        );
-                        self.skipWaiting();
-                    });
-
-                    self.addEventListener('fetch', event => {
-                        event.respondWith(
-                            caches.match(event.request).then(response => {
-                                // 如果有緩存就回傳緩存，否則透過網路抓取並存入緩存
-                                return response || fetch(event.request).then(netRes => {
-                                    return caches.open(CACHE_NAME).then(cache => {
-                                        cache.put(event.request, netRes.clone());
-                                        return netRes;
-                                    });
-                                });
-                            })
-                        );
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-
-                navigator.serviceWorker.register(swUrl).then(() => {
-                    console.log('Service Worker 註冊成功 (離線支援已啟動)');
-                }).catch(err => {
-                    console.log('Service Worker 註冊受限 (本機直接開啟 HTML 可能無法註冊 SW):', err);
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                    );
+                    self.skipWaiting();
                 });
+
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request).then(response => {
+                            return response || fetch(event.request).then(fetchRes => {
+                                return caches.open(CACHE_NAME).then(cache => {
+                                    cache.put(event.request, fetchRes.clone());
+                                    return fetchRes;
+                                });
+                            });
+                        }).catch(() => {
+                            // 如果斷網且無法取得資源，嘗試回傳當前頁面
+                            if (event.request.mode === 'navigate') {
+                                return caches.match(location.href);
+                            }
+                        })
+                    );
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl).then(reg => {
+                console.log('Service Worker 註冊成功，支援離線遊玩');
+            }).catch(err => {
+                console.log('Service Worker 註冊失敗 (如在本地 file:// 開啟屬正常現象):', err);
             });
         }
-        // ========================================================
+        // ==========================================================
 
         const defaultConfig = "7,5,7,100,3,0,0";
         const CAT_IMAGE_URL = "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG";
@@ -478,7 +479,6 @@
             resetGame();
         }
 
-        // 強制預先下載並存入 Cache API 供即時使用
         async function warmImageCache() {
             try {
                 if (navigator.storage && navigator.storage.persist) {
@@ -763,8 +763,6 @@
                 cb.style.left = (Math.random() * 80 + 10) + "%";
                 cb.style.top = (Math.random() * 70 + 15) + "%";
             }, (poison || hitCount > 0) ? 50 : 100);
-            
-            updateUI();
         }
 
         function hitCat(e) {
