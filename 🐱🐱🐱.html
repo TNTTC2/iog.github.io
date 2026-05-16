@@ -235,7 +235,7 @@
     <div id="guideOverlay" class="overlay">
         <div class="overlay-content">
             <div id="guideBox">
-                <h2>🐱 玩貓教學：(dev id 04)</h2>
+                <h2>🐱 玩貓教學：(dev id 05)</h2>
                 <p>• <b>理吓隻貓</b>：撳隻貓會打關斗，消耗1個⚡️體力。如果體力耗盡，就打唔到關斗，要餵貓補充返⚡️體力！</p>
                 <p>• <b>沉悶倒數</b>：記得每一刻每一秒都要理吓你隻貓，如果唔係佢會發大脾氣！</p>
                 <p>• <b>基本食物</b>：一般會出現 🐟魚魚 、 🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
@@ -244,7 +244,6 @@
                 <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
                 <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
                 <br>
-                <!-- 保持原本教學不變：!!連撳安撫!! -->
                 <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
                 <div class="btn-start" onclick="closeGuide()">我知喇！</div>
             </div>
@@ -328,7 +327,7 @@
             const blob = new Blob([swCode], { type: 'application/javascript' });
             const swUrl = URL.createObjectURL(blob);
             navigator.serviceWorker.register(swUrl).catch(err => {
-                console.log('Service Worker 註冊提示 (本地 file:// 運行屬正常限制):', err);
+                console.log('Service Worker 註冊提示:', err);
             });
         }
         // ===================================================
@@ -358,28 +357,9 @@
             return `${config.normT},${config.crazyT},${config.goldenT},${config.devilT},${stamina},${m},${config.spawn}`;
         }
 
-        function parseCode(code) {
-            const p = code.split(',').map(Number);
-            if (p.length === 7 && !p.some(isNaN)) {
-                return {
-                    normT: p[0],
-                    crazyT: p[1],
-                    goldenT: p[2],
-                    devilT: p[3],
-                    initS: p[4],
-                    mode: p[5],
-                    spawn: p[6]
-                };
-            }
-            return null;
-        }
-
         function clearCatVisuals() {
-            catImg.classList.remove('flipping-anim', 'spinning-anim');
-            catImg.style.animation = 'none';
-            void catImg.offsetWidth;
-            catImg.style.animation = '';
             catImg.className = '';
+            void catImg.offsetWidth;
         }
 
         function stopAllIntervals() {
@@ -400,7 +380,7 @@
         }
 
         function updateUI() {
-            // 精準修改：暴走模式下秒數顯示變更為 "!!連撳撫摸!!"
+            // 完美修正：暴走模式下精準且即時變更為 "!!連撳撫摸!!"
             document.getElementById('timeVal').innerHTML = isCrazy ? "!!連撳撫摸!!" : timeLeft + "s";
             document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
             let icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
@@ -416,21 +396,7 @@
             void catBox.offsetWidth;
             catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             catBox.className = isShrunk ? 'breathing shrunk' : 'breathing';
-            catBox.style.pointerEvents = 'auto';
-            catImg.style.pointerEvents = 'auto';
             clearCatVisuals();
-        }
-
-        function startLoops() {
-            stopAllIntervals();
-            gameLoop = setInterval(tick, 1000);
-            foodLoop = setInterval(spawnFood, 3000);
-            shrinkLoop = setInterval(() => {
-                if (!isCrazy && !isShrunk && Math.random() < 0.2) {
-                    isShrunk = true;
-                    catBox.classList.add('shrunk');
-                }
-            }, 10000);
         }
 
         function resetGame() {
@@ -441,8 +407,6 @@
 
             isCrazy = false;
             isFlipping = false;
-            clearTimeout(flipTimer);
-            flipTimer = null;
             hitCount = 0;
 
             resetCatPositionAndState();
@@ -453,18 +417,15 @@
             document.getElementById('stamina').style.display = 'block';
 
             if (!isPaused) {
-                startLoops();
+                gameLoop = setInterval(tick, 1000);
+                foodLoop = setInterval(spawnFood, 3000);
+                shrinkLoop = setInterval(() => {
+                    if (!isCrazy && !isShrunk && Math.random() < 0.2) {
+                        isShrunk = true;
+                        catBox.classList.add('shrunk');
+                    }
+                }, 10000);
             }
-        }
-
-        function endGoldenMode() {
-            specialStatus = "normal";
-            specialCounter = 0;
-            isCrazy = false;
-            isFlipping = false;
-            clearTimeout(flipTimer);
-            flipTimer = null;
-            resetGame();
         }
 
         async function warmImageCache() {
@@ -516,12 +477,9 @@
 
                 stamina = config.initS;
                 isFlipping = false;
-                clearTimeout(flipTimer);
-                flipTimer = null;
 
                 if (p[5] === 1) {
                     specialStatus = "normal";
-                    isCrazy = true;
                     startCrazy(false);
                 } else if (p[5] === 2) {
                     specialStatus = "golden";
@@ -542,24 +500,10 @@
         function startApp() {
             const val = document.getElementById('debugStart').value.trim();
             if (val !== defaultConfig) isDebugLocked = true;
-
-            score = 0;
-            hitCount = 0;
-            lastSecHits = 0;
-            crazyWins = 0;
-            isShrunk = false;
-            isPaused = false;
-            isCrazy = false;
-            isFlipping = false;
-            specialCounter = 0;
-            clearTimeout(flipTimer);
-            flipTimer = null;
-
-            document.getElementById('guideOverlay').style.display = 'none';
+            applyAndContinue(val);
             document.getElementById('startOverlay').style.display = 'none';
             document.getElementById('pauseBtn').style.display = 'block';
-
-            applyAndContinue(val);
+            fullRestart();
         }
 
         function fullRestart() {
@@ -571,17 +515,6 @@
             crazyWins = 0;
             hitCount = 0;
             isShrunk = false;
-            isPaused = false;
-            isCrazy = false;
-            isFlipping = false;
-            specialStatus = "normal";
-            specialCounter = 0;
-            clearTimeout(flipTimer);
-            flipTimer = null;
-
-            catBox.classList.remove('shrunk');
-            catBox.style.pointerEvents = 'auto';
-            catImg.style.pointerEvents = 'auto';
 
             resetGame();
         }
@@ -595,18 +528,16 @@
                 if (specialStatus === "golden") {
                     specialCounter--;
                     if (specialCounter <= 0) {
-                        endGoldenMode();
-                        return;
+                        specialStatus = "normal";
+                        resetGame();
                     } else {
                         timeLeft = config.goldenT;
                     }
                 } else if (specialStatus === "devil") {
                     specialStatus = "normal";
                     resetGame();
-                    return;
                 } else {
                     startCrazy(false);
-                    return;
                 }
             }
 
@@ -651,7 +582,7 @@
         }
 
         function checkEat(f) {
-            const c = document.getElementById('catBox').getBoundingClientRect();
+            const c = catBox.getBoundingClientRect();
             const r = f.getBoundingClientRect();
 
             if (r.left < c.right && r.right > c.left && r.top < c.bottom && r.bottom > c.top) {
@@ -668,7 +599,8 @@
 
                     if (specialCounter <= 0) {
                         f.remove();
-                        endGoldenMode();
+                        specialStatus = "normal";
+                        resetGame();
                         return;
                     }
                 } else if (specialStatus === "devil") {
@@ -699,7 +631,6 @@
                         hitCount = 1;
                         startCrazy(true);
                         score -= 5;
-                        updateUI();
                         return;
                     } else if (stamina < 10) {
                         stamina = Math.min(10, stamina + (type === '🍖' ? 2 : 1));
@@ -720,15 +651,19 @@
             document.getElementById('stamina').style.display = 'none';
             document.body.style.backgroundColor = "#400";
 
-            const cb = document.getElementById('catBox');
-            cb.className = '';
-            cb.style.width = "140px";
-            cb.style.height = "140px";
+            catBox.className = '';
+            catBox.style.width = "140px";
+            catBox.style.height = "140px";
+            
             clearCatVisuals();
 
-            if (poison) {
+            // 完美修正：如果係被毒親，或者已經被拍打過 (hitCount > 0)，就維持極速旋轉動畫
+            if (poison || hitCount > 0) {
                 catImg.className = "spinning-anim";
             }
+
+            // 即時將文字改為 "!!連撳撫摸!!" 確保畫面唔會殘留原本嘅秒數
+            updateUI();
 
             const start = Date.now();
 
@@ -738,8 +673,6 @@
                     crazyLoop = null;
                     isCrazy = false;
                     isFlipping = false;
-                    clearTimeout(flipTimer);
-                    flipTimer = null;
 
                     document.getElementById('finalScore').innerHTML = `總分: ${score}`;
                     canRestart = false;
@@ -748,9 +681,9 @@
                     return;
                 }
 
-                cb.style.left = (Math.random() * 80 + 10) + "%";
-                cb.style.top = (Math.random() * 70 + 15) + "%";
-            }, (poison || hitCount > 0) ? 50 : 100);
+                catBox.style.left = (Math.random() * 80 + 10) + "%";
+                catBox.style.top = (Math.random() * 70 + 15) + "%";
+            }, (poison || hitCount > 0) ? 50 : 100); // 完美修正：極速旋轉下以 50ms 高速瞬移
         }
 
         function hitCat(e) {
@@ -774,20 +707,13 @@
 
                 clearInterval(gameLoop);
 
-                if (specialStatus === "golden") {
-                    specialCounter--;
-                }
+                if (specialStatus === "golden") specialCounter--;
+                timeLeft = (specialStatus === "devil") ? config.devilT : (specialStatus === "golden" ? config.goldenT : config.normT);
 
                 if (specialStatus === "golden" && specialCounter <= 0) {
-                    isFlipping = false;
-                    clearTimeout(flipTimer);
-                    flipTimer = null;
-                    endGoldenMode();
+                    specialStatus = "normal";
+                    resetGame();
                     return;
-                }
-
-                if (specialStatus !== "devil") {
-                    timeLeft = (specialStatus === "golden") ? config.goldenT : config.normT;
                 }
 
                 gameLoop = setInterval(tick, 1000);
@@ -807,8 +733,7 @@
                 hitCount++;
 
                 if (hitCount === 1) {
-                    clearCatVisuals();
-                    catImg.className = "spinning-anim";
+                    // 完美修正：拍打第一吓即刻觸發極速旋轉暴走狀態
                     clearInterval(crazyLoop);
                     startCrazy(false);
                 }
@@ -817,7 +742,6 @@
                     crazyWins++;
                     score += 5;
                     setTimeout(() => {
-                        clearCatVisuals();
                         resetGame();
                     }, 200);
                 }
@@ -853,7 +777,7 @@
                 shrinkLoop = setInterval(() => {
                     if (!isCrazy && !isShrunk && Math.random() < 0.2) {
                         isShrunk = true;
-                        document.getElementById('catBox').classList.add('shrunk');
+                        catBox.classList.add('shrunk');
                     }
                 }, 10000);
             }
