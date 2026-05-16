@@ -8,9 +8,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
-
-    <link rel="preload" as="image" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
-    <link rel="prefetch" as="image" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
     <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
     <link rel="icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
 
@@ -25,12 +22,12 @@
             user-select: none;
         }
 
-        html, body {
+        body, html {
             width: 100%;
             height: 100%;
             background-color: #000;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: sans-serif;
             transition: background-color 0.8s;
         }
 
@@ -106,9 +103,8 @@
 
         #catImg {
             width: 100%;
-            height: 100%;
+            height: auto;
             display: block;
-            object-fit: contain;
             will-change: transform;
             pointer-events: auto;
             transform-origin: center center;
@@ -232,10 +228,6 @@
             font-weight: bold;
             cursor: pointer;
         }
-
-        .hidden {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
@@ -243,14 +235,14 @@
     <div id="guideOverlay" class="overlay">
         <div class="overlay-content">
             <div id="guideBox">
-                <h2>🐱 玩貓教學：</h2>
+                <h2>🐱 玩貓教學：(dev id 01)</h2>
                 <p>• <b>理吓隻貓</b>：撳隻貓會打關斗，消耗1個⚡️體力。如果體力耗盡，就打唔到關斗，要餵貓補充返⚡️體力！</p>
                 <p>• <b>沉悶倒數</b>：記得每一刻每一秒都要理吓你隻貓，如果唔係佢會發大脾氣！</p>
-                <p>• <b>基本食物</b>：一般會出現 🐟魚魚、🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
+                <p>• <b>基本食物</b>：一般會出現 🐟魚魚 、 🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
                 <br>
                 <p>🌟<b>特別玩法</b>🌟：</p>
-                <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現。</p>
-                <p>• 隻貓成日發嬲，你多次安撫隻貓，<b>🦈惡魔魚</b> 將會降臨。</p>
+                <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現，令隻貓處於愉快、活潑、抗毒...</p>
+                <p>• 隻貓成日發嬲，你多次安撫隻貓， <b>🦈惡魔魚</b> 將會降臨，貓會變得非常平靜、時間變得非常緩慢、美味嘅大餐將會來臨...</p>
                 <br>
                 <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
                 <div class="btn-start" onclick="closeGuide()">我知喇！</div>
@@ -303,35 +295,20 @@
     </div>
 
     <div id="catBox" class="breathing">
-        <img id="catImg" alt="cat">
+        <img id="catImg" src="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG" draggable="false" onpointerdown="hitCat(event)">
     </div>
 
     <script>
-        const CAT_IMAGE_URL = 'https://tnttc2.github.io/iog.github.io/%F0%9F%90%B1%F0%9F%90%B1%F0%9F%90%B1.PNG';
-        const CACHE_NAME = 'cat-game-cache-v3';
         const defaultConfig = "7,5,7,100,3,0,0";
+        const CAT_IMAGE_URL = "https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG";
+        const IMAGE_CACHE_NAME = "cat-image-cache-v1";
 
         let config = { normT: 7, crazyT: 5, goldenT: 7, devilT: 100, initS: 3, mode: 0, spawn: 0 };
-        let timeLeft = 7;
-        let stamina = 3;
-        let score = 0;
-        let hitCount = 0;
-        let isCrazy = false;
-        let isFlipping = false;
-        let isPaused = false;
-        let isDebugLocked = false;
-        let isShrunk = false;
-        let lastSecHits = 0;
-        let crazyWins = 0;
-        let specialStatus = "normal"; // normal / golden / devil
-        let specialCounter = 0;
-        let gameLoop = null;
-        let foodLoop = null;
-        let shrinkLoop = null;
-        let crazyLoop = null;
-        let flipTimer = null;
-        let prePauseCode = "";
+        let timeLeft, stamina, score = 0, hitCount = 0, isCrazy = false, isFlipping = false, isPaused = false;
+        let isDebugLocked = false, isShrunk = false, lastSecHits = 0, crazyWins = 0, specialStatus = "normal", specialCounter = 0;
+        let gameLoop, foodLoop, shrinkLoop, crazyLoop, prePauseCode = "";
         let canRestart = true;
+        let flipTimer = null;
         let currentObjectUrl = "";
 
         const catImg = document.getElementById('catImg');
@@ -340,6 +317,27 @@
         function closeGuide() {
             document.getElementById('guideOverlay').style.display = 'none';
             document.getElementById('startOverlay').style.display = 'flex';
+        }
+
+        function getCurrentCode() {
+            let m = isCrazy ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
+            return `${config.normT},${config.crazyT},${config.goldenT},${config.devilT},${stamina},${m},${config.spawn}`;
+        }
+
+        function parseCode(code) {
+            const p = code.split(',').map(Number);
+            if (p.length === 7 && !p.some(isNaN)) {
+                return {
+                    normT: p[0],
+                    crazyT: p[1],
+                    goldenT: p[2],
+                    devilT: p[3],
+                    initS: p[4],
+                    mode: p[5],
+                    spawn: p[6]
+                };
+            }
+            return null;
         }
 
         function clearCatVisuals() {
@@ -364,34 +362,14 @@
         }
 
         function applyBg() {
-            document.body.style.backgroundColor =
-                specialStatus === "golden" ? "#4a3c00" :
-                (specialStatus === "devil" ? "#1a0033" : "#000");
+            document.body.style.backgroundColor = specialStatus === "golden" ? "#4a3c00" : (specialStatus === "devil" ? "#1a0033" : "#000");
         }
 
         function updateUI() {
             document.getElementById('timeVal').innerHTML = isCrazy ? "!!連撳安撫!!" : timeLeft + "s";
             document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
-
-            const icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
+            let icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
             document.getElementById('stamina').innerHTML = icon + stamina;
-        }
-
-        function getCurrentCode() {
-            const m = isCrazy ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
-            return `${config.normT},${config.crazyT},${config.goldenT},${config.devilT},${stamina},${m},${config.spawn}`;
-        }
-
-        function startLoops() {
-            stopAllIntervals();
-            gameLoop = setInterval(tick, 1000);
-            foodLoop = setInterval(spawnFood, 3000);
-            shrinkLoop = setInterval(() => {
-                if (!isCrazy && !isShrunk && Math.random() < 0.2) {
-                    isShrunk = true;
-                    catBox.classList.add('shrunk');
-                }
-            }, 10000);
         }
 
         function resetCatPositionAndState() {
@@ -408,6 +386,18 @@
             clearCatVisuals();
         }
 
+        function startLoops() {
+            stopAllIntervals();
+            gameLoop = setInterval(tick, 1000);
+            foodLoop = setInterval(spawnFood, 3000);
+            shrinkLoop = setInterval(() => {
+                if (!isCrazy && !isShrunk && Math.random() < 0.2) {
+                    isShrunk = true;
+                    catBox.classList.add('shrunk');
+                }
+            }, 10000);
+        }
+
         function resetGame() {
             stopAllIntervals();
 
@@ -416,17 +406,16 @@
 
             isCrazy = false;
             isFlipping = false;
+            clearTimeout(flipTimer);
+            flipTimer = null;
             hitCount = 0;
-            document.getElementById('stamina').style.display = 'block';
 
             resetCatPositionAndState();
 
-            timeLeft = (specialStatus === "devil")
-                ? config.devilT
-                : (specialStatus === "golden" ? config.goldenT : config.normT);
-
+            timeLeft = (specialStatus === "devil") ? config.devilT : (specialStatus === "golden" ? config.goldenT : config.normT);
             applyBg();
             updateUI();
+            document.getElementById('stamina').style.display = 'block';
 
             if (!isPaused) {
                 startLoops();
@@ -443,14 +432,7 @@
             resetGame();
         }
 
-        function clearObjectUrl() {
-            if (currentObjectUrl) {
-                URL.revokeObjectURL(currentObjectUrl);
-                currentObjectUrl = "";
-            }
-        }
-
-        async function primeImageCache() {
+        async function warmImageCache() {
             try {
                 if (navigator.storage && navigator.storage.persist) {
                     await navigator.storage.persist();
@@ -459,40 +441,23 @@
 
             try {
                 if ('caches' in window) {
-                    const cache = await caches.open(CACHE_NAME);
-                    const cached = await cache.match(CAT_IMAGE_URL);
+                    const cache = await caches.open(IMAGE_CACHE_NAME);
+                    let res = await cache.match(CAT_IMAGE_URL);
 
-                    if (!cached) {
-                        const res = await fetch(CAT_IMAGE_URL, { cache: 'reload' });
-                        if (res && res.ok) {
-                            await cache.put(CAT_IMAGE_URL, res.clone());
-                        }
-                    }
-                }
-            } catch (_) {
-                // 失敗都照樣用原圖
-            }
-        }
-
-        async function loadCatImage() {
-            try {
-                if ('caches' in window) {
-                    const cache = await caches.open(CACHE_NAME);
-                    let response = await cache.match(CAT_IMAGE_URL);
-
-                    if (!response) {
+                    if (!res) {
                         const fetched = await fetch(CAT_IMAGE_URL, { cache: 'reload' });
                         if (fetched && fetched.ok) {
                             await cache.put(CAT_IMAGE_URL, fetched.clone());
-                            response = fetched;
+                            res = fetched;
                         }
                     }
 
-                    if (response) {
-                        const blob = await response.blob();
-                        clearObjectUrl();
-                        currentObjectUrl = URL.createObjectURL(blob);
-                        catImg.src = currentObjectUrl;
+                    if (res) {
+                        const blob = await res.blob();
+                        const obj = URL.createObjectURL(blob);
+                        if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+                        currentObjectUrl = obj;
+                        catImg.src = obj;
                         return;
                     }
                 }
@@ -503,7 +468,6 @@
 
         function applyAndContinue(code) {
             const p = code.split(',').map(Number);
-
             if (p.length === 7 && !p.some(isNaN)) {
                 config = {
                     normT: p[0],
@@ -516,8 +480,12 @@
                 };
 
                 stamina = config.initS;
+                isFlipping = false;
+                clearTimeout(flipTimer);
+                flipTimer = null;
 
                 if (p[5] === 1) {
+                    specialStatus = "normal";
                     isCrazy = true;
                     startCrazy(false);
                 } else if (p[5] === 2) {
@@ -533,8 +501,30 @@
                     resetGame();
                 }
             }
-
             updateUI();
+        }
+
+        function startApp() {
+            const val = document.getElementById('debugStart').value.trim();
+            if (val !== defaultConfig) isDebugLocked = true;
+
+            score = 0;
+            hitCount = 0;
+            lastSecHits = 0;
+            crazyWins = 0;
+            isShrunk = false;
+            isPaused = false;
+            isCrazy = false;
+            isFlipping = false;
+            specialCounter = 0;
+            clearTimeout(flipTimer);
+            flipTimer = null;
+
+            document.getElementById('guideOverlay').style.display = 'none';
+            document.getElementById('startOverlay').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'block';
+
+            applyAndContinue(val);
         }
 
         function fullRestart() {
@@ -546,8 +536,11 @@
             crazyWins = 0;
             hitCount = 0;
             isShrunk = false;
-            isFlipping = false;
+            isPaused = false;
             isCrazy = false;
+            isFlipping = false;
+            specialStatus = "normal";
+            specialCounter = 0;
             clearTimeout(flipTimer);
             flipTimer = null;
 
@@ -569,8 +562,9 @@
                     if (specialCounter <= 0) {
                         endGoldenMode();
                         return;
+                    } else {
+                        timeLeft = config.goldenT;
                     }
-                    timeLeft = config.goldenT;
                 } else if (specialStatus === "devil") {
                     specialStatus = "normal";
                     resetGame();
@@ -607,10 +601,11 @@
             document.body.appendChild(f);
 
             f.onpointerdown = (e) => {
+                e.preventDefault();
                 try { f.setPointerCapture(e.pointerId); } catch (_) {}
                 f.onpointermove = (ev) => {
-                    f.style.left = (ev.clientX - 30) + 'px';
-                    f.style.top = (ev.clientY - 30) + 'px';
+                    f.style.left = ev.clientX - 30 + 'px';
+                    f.style.top = ev.clientY - 30 + 'px';
                     checkEat(f);
                 };
             };
@@ -621,7 +616,7 @@
         }
 
         function checkEat(f) {
-            const c = catBox.getBoundingClientRect();
+            const c = document.getElementById('catBox').getBoundingClientRect();
             const r = f.getBoundingClientRect();
 
             if (r.left < c.right && r.right > c.left && r.top < c.bottom && r.bottom > c.top) {
@@ -648,7 +643,6 @@
                         resetGame();
                         return;
                     }
-
                     if (stamina < 50) {
                         stamina = Math.min(50, stamina + 5);
                         canAdd = true;
@@ -678,10 +672,7 @@
                     }
                 }
 
-                if (canAdd) {
-                    score += (specialStatus === "golden" ? 5 : (specialStatus === "devil" ? 10 : 1));
-                }
-
+                if (canAdd) score += (specialStatus === "golden" ? 5 : (specialStatus === "devil" ? 10 : 1));
                 f.remove();
                 updateUI();
                 applyBg();
@@ -694,9 +685,10 @@
             document.getElementById('stamina').style.display = 'none';
             document.body.style.backgroundColor = "#400";
 
-            catBox.className = '';
-            catBox.style.width = "140px";
-            catBox.style.height = "140px";
+            const cb = document.getElementById('catBox');
+            cb.className = '';
+            cb.style.width = "140px";
+            cb.style.height = "140px";
             clearCatVisuals();
 
             if (poison) {
@@ -709,6 +701,11 @@
                 if ((Date.now() - start) > config.crazyT * 1000) {
                     clearInterval(crazyLoop);
                     crazyLoop = null;
+                    isCrazy = false;
+                    isFlipping = false;
+                    clearTimeout(flipTimer);
+                    flipTimer = null;
+
                     document.getElementById('finalScore').innerHTML = `總分: ${score}`;
                     canRestart = false;
                     setTimeout(() => { canRestart = true; }, 5000);
@@ -716,12 +713,13 @@
                     return;
                 }
 
-                catBox.style.left = (Math.random() * 80 + 10) + "%";
-                catBox.style.top = (Math.random() * 70 + 15) + "%";
+                cb.style.left = (Math.random() * 80 + 10) + "%";
+                cb.style.top = (Math.random() * 70 + 15) + "%";
             }, (poison || hitCount > 0) ? 50 : 100);
         }
 
         function hitCat(e) {
+            e.preventDefault();
             if (isPaused) return;
 
             if (isShrunk) {
@@ -753,7 +751,7 @@
                     return;
                 }
 
-                // 惡魔模式唔重設時間
+                // 惡魔模式唔重新計算時間，保留現有 timeLeft
                 if (specialStatus !== "devil") {
                     timeLeft = (specialStatus === "golden") ? config.goldenT : config.normT;
                 }
@@ -816,39 +814,28 @@
             if (isCrazy) {
                 startCrazy(hitCount >= 1);
             } else {
-                startLoops();
+                gameLoop = setInterval(tick, 1000);
+                foodLoop = setInterval(spawnFood, 3000);
+                shrinkLoop = setInterval(() => {
+                    if (!isCrazy && !isShrunk && Math.random() < 0.2) {
+                        isShrunk = true;
+                        document.getElementById('catBox').classList.add('shrunk');
+                    }
+                }, 10000);
             }
 
             updateUI();
         }
 
-        function startApp() {
-            const val = document.getElementById('debugStart').value.trim();
-            if (val !== defaultConfig) isDebugLocked = true;
-
-            applyAndContinue(val);
-            document.getElementById('startOverlay').style.display = 'none';
-            document.getElementById('pauseBtn').style.display = 'block';
-
-            fullRestart();
-        }
-
-        // 預先下載圖片入快取
+        // 預載圖片，盡量快取到瀏覽器
         window.addEventListener('load', async () => {
-            await primeImageCache();
-            await loadCatImage();
-
-            if (!catImg.src) {
+            try {
+                await warmImageCache();
+            } catch (_) {
                 catImg.src = CAT_IMAGE_URL;
             }
         });
 
-        // 離線/回線時盡量再補一次
-        window.addEventListener('online', () => {
-            primeImageCache().then(loadCatImage).catch(() => {});
-        });
-
-        // 初始畫面
         applyBg();
         updateUI();
     </script>
