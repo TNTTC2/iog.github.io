@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🐱🐱🐱</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="🐱🐱🐱">
+
+    <link rel="preload" as="image" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+    <link rel="prefetch" as="image" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+    <link rel="apple-touch-icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+    <link rel="icon" href="https://tnttc2.github.io/iog.github.io/🐱🐱🐱.PNG">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            transition: background-color 0.8s;
+        }
+
+        #timer {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            color: #666;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 100;
+            text-align: right;
+        }
+
+        #debugTag {
+            font-size: 12px;
+            color: #ff3300;
+            display: block;
+            margin-top: 5px;
+        }
+
+        #pauseBtn {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            font-size: 30px;
+            z-index: 500;
+            cursor: pointer;
+            display: none;
+        }
+
+        #stamina {
+            position: absolute;
+            bottom: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            z-index: 100;
+            text-shadow: 0 0 10px #000;
+            pointer-events: none;
+        }
+
+        #catBox {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        #catBox.shrunk {
+            width: 110px !important;
+            height: 110px !important;
+            opacity: 0.7;
+        }
+
+        .breathing {
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.9); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        #catImg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            will-change: transform;
+            pointer-events: auto;
+            transform-origin: center center;
+        }
+
+        .flipping-anim {
+            animation: rotateFull 0.8s ease-in-out;
+        }
+
+        .spinning-anim {
+            animation: rotateInfinite 0.3s infinite linear;
+        }
+
+        @keyframes rotateFull {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateInfinite {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .food {
+            position: absolute;
+            font-size: 45px;
+            cursor: move;
+            z-index: 200;
+            transition: opacity 0.3s;
+            padding: 10px;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .overlay-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .finger-emoji {
+            font-size: 60px;
+            display: inline-block;
+            animation: fingerBounce 1s infinite ease-in-out;
+            margin-top: 20px;
+        }
+
+        @keyframes fingerBounce {
+            0%, 100% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.2); }
+        }
+
+        .debug-section {
+            width: 100%;
+            padding: 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            background: rgba(30, 30, 30, 0.9);
+            border-top: 1px solid #444;
+            margin-top: auto;
+        }
+
+        .debug-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .debug-input {
+            width: 90%;
+            max-width: 350px;
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 8px;
+            font-family: monospace;
+            outline: none;
+        }
+
+        #guideBox {
+            color: #eee;
+            text-align: left;
+            max-width: 360px;
+            font-size: 14px;
+            line-height: 1.5;
+            background: rgba(34, 34, 34, 0.98);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #555;
+            overflow-y: auto;
+            max-height: 75vh;
+        }
+
+        .btn-start {
+            display: block;
+            background: #fff;
+            color: #000;
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="guideOverlay" class="overlay">
+        <div class="overlay-content">
+            <div id="guideBox">
+                <h2>🐱 玩貓教學：</h2>
+                <p>• <b>理吓隻貓</b>：撳隻貓會打關斗，消耗1個⚡️體力。如果體力耗盡，就打唔到關斗，要餵貓補充返⚡️體力！</p>
+                <p>• <b>沉悶倒數</b>：記得每一刻每一秒都要理吓你隻貓，如果唔係佢會發大脾氣！</p>
+                <p>• <b>基本食物</b>：一般會出現 🐟魚魚、🍖肉肉 或者 🐡雞泡魚，拉去隻貓嗰度可以補充⚡️體力，但係 🐡雞泡魚喺一般情況非常有毒，唔好餵貓！</p>
+                <br>
+                <p>🌟<b>特別玩法</b>🌟：</p>
+                <p>• 當你每1秒都唔放過努力去理吓隻貓，<b>🐠黃金魚</b> 就會顯現。</p>
+                <p>• 隻貓成日發嬲，你多次安撫隻貓，<b>🦈惡魔魚</b> 將會降臨。</p>
+                <br>
+                <p style="color:#ff3300; font-weight:bold;">!!連撳安撫!!： 隻貓成日發嬲點補救？快啲係咁摸佢直到佢原諒你啦！</p>
+                <div class="btn-start" onclick="closeGuide()">我知喇！</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pauseBtn" onclick="togglePause()">⏸️</div>
+
+    <div id="timer">
+        <span id="timeVal">7s</span>
+        <div id="debugTag" style="display:none;">DEBUG MODE</div>
+    </div>
+
+    <div id="stamina">⚡️ 3</div>
+
+    <div id="startOverlay" class="overlay" style="display:none;" onclick="startApp()">
+        <div class="overlay-content">
+            <div style="color:white; font-size:32px; font-weight:bold;">篤一下隻貓</div>
+            <div class="finger-emoji">👆</div>
+        </div>
+        <div class="debug-section" onclick="event.stopPropagation()">
+            <div class="debug-label">除錯功能</div>
+            <input type="text" id="debugStart" class="debug-input" value="7,5,7,100,3,0,0">
+        </div>
+    </div>
+
+    <div id="pauseOverlay" class="overlay" style="display:none;" onclick="resumeGame()">
+        <div class="overlay-content">
+            <div style="color:white; font-size:32px; font-weight:bold;">篤一下繼續玩貓</div>
+            <div class="finger-emoji">👆</div>
+        </div>
+        <div class="debug-section" onclick="event.stopPropagation()">
+            <div class="debug-label">除錯功能</div>
+            <input type="text" id="debugPause" class="debug-input" value="">
+        </div>
+    </div>
+
+    <div id="angryOverlay" class="overlay" style="display:none;" onclick="fullRestart()">
+        <div class="overlay-content">
+            <div style="color:white; font-size:32px; font-weight:bold;">隻貓嬲咗</div>
+            <div id="finalScore" style="color:#ffcc00; font-size:26px; margin-top:10px; font-weight:bold;">總分: 0</div>
+            <div style="color:#fff; font-size:18px; margin-top:5px;">篤一下再補救</div>
+            <div class="finger-emoji">👆</div>
+        </div>
+        <div class="debug-section" onclick="event.stopPropagation()">
+            <div class="debug-label">除錯功能</div>
+            <input type="text" id="debugEnd" class="debug-input" value="7,5,7,100,3,0,0">
+        </div>
+    </div>
+
+    <div id="catBox" class="breathing">
+        <img id="catImg" alt="cat">
+    </div>
+
+    <script>
+        const CAT_IMAGE_URL = 'https://tnttc2.github.io/iog.github.io/%F0%9F%90%B1%F0%9F%90%B1%F0%9F%90%B1.PNG';
+        const CACHE_NAME = 'cat-game-cache-v3';
+        const defaultConfig = "7,5,7,100,3,0,0";
+
+        let config = { normT: 7, crazyT: 5, goldenT: 7, devilT: 100, initS: 3, mode: 0, spawn: 0 };
+        let timeLeft = 7;
+        let stamina = 3;
+        let score = 0;
+        let hitCount = 0;
+        let isCrazy = false;
+        let isFlipping = false;
+        let isPaused = false;
+        let isDebugLocked = false;
+        let isShrunk = false;
+        let lastSecHits = 0;
+        let crazyWins = 0;
+        let specialStatus = "normal"; // normal / golden / devil
+        let specialCounter = 0;
+        let gameLoop = null;
+        let foodLoop = null;
+        let shrinkLoop = null;
+        let crazyLoop = null;
+        let flipTimer = null;
+        let prePauseCode = "";
+        let canRestart = true;
+        let currentObjectUrl = "";
+
+        const catImg = document.getElementById('catImg');
+        const catBox = document.getElementById('catBox');
+
+        function closeGuide() {
+            document.getElementById('guideOverlay').style.display = 'none';
+            document.getElementById('startOverlay').style.display = 'flex';
+        }
+
+        function clearCatVisuals() {
+            catImg.classList.remove('flipping-anim', 'spinning-anim');
+            catImg.style.animation = 'none';
+            void catImg.offsetWidth;
+            catImg.style.animation = '';
+            catImg.className = '';
+        }
+
+        function stopAllIntervals() {
+            clearInterval(gameLoop);
+            clearInterval(foodLoop);
+            clearInterval(shrinkLoop);
+            clearInterval(crazyLoop);
+            clearTimeout(flipTimer);
+            gameLoop = null;
+            foodLoop = null;
+            shrinkLoop = null;
+            crazyLoop = null;
+            flipTimer = null;
+        }
+
+        function applyBg() {
+            document.body.style.backgroundColor =
+                specialStatus === "golden" ? "#4a3c00" :
+                (specialStatus === "devil" ? "#1a0033" : "#000");
+        }
+
+        function updateUI() {
+            document.getElementById('timeVal').innerHTML = isCrazy ? "!!連撳安撫!!" : timeLeft + "s";
+            document.getElementById('debugTag').style.display = isDebugLocked ? 'block' : 'none';
+
+            const icon = (specialStatus === "golden") ? "☀️ " : (specialStatus === "devil" ? "🌙 " : "⚡️ ");
+            document.getElementById('stamina').innerHTML = icon + stamina;
+        }
+
+        function getCurrentCode() {
+            const m = isCrazy ? 1 : (specialStatus === "golden" ? 2 : (specialStatus === "devil" ? 3 : 0));
+            return `${config.normT},${config.crazyT},${config.goldenT},${config.devilT},${stamina},${m},${config.spawn}`;
+        }
+
+        function startLoops() {
+            stopAllIntervals();
+            gameLoop = setInterval(tick, 1000);
+            foodLoop = setInterval(spawnFood, 3000);
+            shrinkLoop = setInterval(() => {
+                if (!isCrazy && !isShrunk && Math.random() < 0.2) {
+                    isShrunk = true;
+                    catBox.classList.add('shrunk');
+                }
+            }, 10000);
+        }
+
+        function resetCatPositionAndState() {
+            catBox.style.transition = "none";
+            catBox.style.left = "50%";
+            catBox.style.top = "50%";
+            catBox.style.width = isShrunk ? "110px" : "280px";
+            catBox.style.height = isShrunk ? "110px" : "280px";
+            void catBox.offsetWidth;
+            catBox.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            catBox.className = isShrunk ? 'breathing shrunk' : 'breathing';
+            catBox.style.pointerEvents = 'auto';
+            catImg.style.pointerEvents = 'auto';
+            clearCatVisuals();
+        }
+
+        function resetGame() {
+            stopAllIntervals();
+
+            document.getElementById('angryOverlay').style.display = 'none';
+            document.querySelectorAll('.food').forEach(f => f.remove());
+
+            isCrazy = false;
+            isFlipping = false;
+            hitCount = 0;
+            document.getElementById('stamina').style.display = 'block';
+
+            resetCatPositionAndState();
+
+            timeLeft = (specialStatus === "devil")
+                ? config.devilT
+                : (specialStatus === "golden" ? config.goldenT : config.normT);
+
+            applyBg();
+            updateUI();
+
+            if (!isPaused) {
+                startLoops();
+            }
+        }
+
+        function endGoldenMode() {
+            specialStatus = "normal";
+            specialCounter = 0;
+            isCrazy = false;
+            isFlipping = false;
+            clearTimeout(flipTimer);
+            flipTimer = null;
+            resetGame();
+        }
+
+        function clearObjectUrl() {
+            if (currentObjectUrl) {
+                URL.revokeObjectURL(currentObjectUrl);
+                currentObjectUrl = "";
+            }
+        }
+
+        async function primeImageCache() {
+            try {
+                if (navigator.storage && navigator.storage.persist) {
+                    await navigator.storage.persist();
+                }
+            } catch (_) {}
+
+            try {
+                if ('caches' in window) {
+                    const cache = await caches.open(CACHE_NAME);
+                    const cached = await cache.match(CAT_IMAGE_URL);
+
+                    if (!cached) {
+                        const res = await fetch(CAT_IMAGE_URL, { cache: 'reload' });
+                        if (res && res.ok) {
+                            await cache.put(CAT_IMAGE_URL, res.clone());
+                        }
+                    }
+                }
+            } catch (_) {
+                // 失敗都照樣用原圖
+            }
+        }
+
+        async function loadCatImage() {
+            try {
+                if ('caches' in window) {
+                    const cache = await caches.open(CACHE_NAME);
+                    let response = await cache.match(CAT_IMAGE_URL);
+
+                    if (!response) {
+                        const fetched = await fetch(CAT_IMAGE_URL, { cache: 'reload' });
+                        if (fetched && fetched.ok) {
+                            await cache.put(CAT_IMAGE_URL, fetched.clone());
+                            response = fetched;
+                        }
+                    }
+
+                    if (response) {
+                        const blob = await response.blob();
+                        clearObjectUrl();
+                        currentObjectUrl = URL.createObjectURL(blob);
+                        catImg.src = currentObjectUrl;
+                        return;
+                    }
+                }
+            } catch (_) {}
+
+            catImg.src = CAT_IMAGE_URL;
+        }
+
+        function applyAndContinue(code) {
+            const p = code.split(',').map(Number);
+
+            if (p.length === 7 && !p.some(isNaN)) {
+                config = {
+                    normT: p[0],
+                    crazyT: p[1],
+                    goldenT: p[2],
+                    devilT: p[3],
+                    initS: p[4],
+                    mode: p[5],
+                    spawn: p[6]
+                };
+
+                stamina = config.initS;
+
+                if (p[5] === 1) {
+                    isCrazy = true;
+                    startCrazy(false);
+                } else if (p[5] === 2) {
+                    specialStatus = "golden";
+                    specialCounter = 10;
+                    resetGame();
+                } else if (p[5] === 3) {
+                    specialStatus = "devil";
+                    resetGame();
+                } else {
+                    specialStatus = "normal";
+                    isCrazy = false;
+                    resetGame();
+                }
+            }
+
+            updateUI();
+        }
+
+        function fullRestart() {
+            if (!canRestart) return;
+
+            score = 0;
+            stamina = config.initS;
+            lastSecHits = 0;
+            crazyWins = 0;
+            hitCount = 0;
+            isShrunk = false;
+            isFlipping = false;
+            isCrazy = false;
+            clearTimeout(flipTimer);
+            flipTimer = null;
+
+            catBox.classList.remove('shrunk');
+            catBox.style.pointerEvents = 'auto';
+            catImg.style.pointerEvents = 'auto';
+
+            resetGame();
+        }
+
+        function tick() {
+            if (isPaused) return;
+
+            timeLeft--;
+
+            if (timeLeft <= 0) {
+                if (specialStatus === "golden") {
+                    specialCounter--;
+                    if (specialCounter <= 0) {
+                        endGoldenMode();
+                        return;
+                    }
+                    timeLeft = config.goldenT;
+                } else if (specialStatus === "devil") {
+                    specialStatus = "normal";
+                    resetGame();
+                    return;
+                } else {
+                    startCrazy(false);
+                    return;
+                }
+            }
+
+            updateUI();
+        }
+
+        function spawnFood() {
+            if (isCrazy || isPaused || isShrunk) return;
+
+            const f = document.createElement('div');
+            f.className = 'food';
+
+            if (specialStatus === "devil") {
+                f.innerHTML = ['🐟', '🍖', '🐡', '🐠'][Math.floor(Math.random() * 4)];
+            } else if (crazyWins >= 10) {
+                f.innerHTML = '🦈';
+                crazyWins = 0;
+            } else if (lastSecHits >= 5 && specialStatus !== "golden") {
+                f.innerHTML = '🐠';
+                lastSecHits = 0;
+            } else {
+                f.innerHTML = ['🐟', '🍖', '🐡'][Math.floor(Math.random() * 3)];
+            }
+
+            f.style.left = (Math.random() * 80 + 10) + "%";
+            f.style.top = (Math.random() * 60 + 20) + "%";
+            document.body.appendChild(f);
+
+            f.onpointerdown = (e) => {
+                try { f.setPointerCapture(e.pointerId); } catch (_) {}
+                f.onpointermove = (ev) => {
+                    f.style.left = (ev.clientX - 30) + 'px';
+                    f.style.top = (ev.clientY - 30) + 'px';
+                    checkEat(f);
+                };
+            };
+
+            setTimeout(() => {
+                if (f.parentNode) f.remove();
+            }, 2500);
+        }
+
+        function checkEat(f) {
+            const c = catBox.getBoundingClientRect();
+            const r = f.getBoundingClientRect();
+
+            if (r.left < c.right && r.right > c.left && r.top < c.bottom && r.bottom > c.top) {
+                const type = f.innerHTML;
+                let canAdd = false;
+
+                if (specialStatus === "golden") {
+                    if (stamina < 30) {
+                        stamina = Math.min(30, stamina + (type === '🐡' ? 3 : (type === '🍖' ? 2 : 1)));
+                        canAdd = true;
+                    }
+
+                    if (type === '🐡') specialCounter--;
+
+                    if (specialCounter <= 0) {
+                        f.remove();
+                        endGoldenMode();
+                        return;
+                    }
+                } else if (specialStatus === "devil") {
+                    if (type === '🐠') {
+                        f.remove();
+                        specialStatus = "normal";
+                        resetGame();
+                        return;
+                    }
+
+                    if (stamina < 50) {
+                        stamina = Math.min(50, stamina + 5);
+                        canAdd = true;
+                    }
+                } else {
+                    if (type === '🐠') {
+                        f.remove();
+                        specialStatus = "golden";
+                        specialCounter = 10;
+                        resetGame();
+                        return;
+                    } else if (type === '🦈') {
+                        f.remove();
+                        specialStatus = "devil";
+                        resetGame();
+                        return;
+                    } else if (type === '🐡') {
+                        f.remove();
+                        hitCount = 1;
+                        startCrazy(true);
+                        score -= 5;
+                        updateUI();
+                        return;
+                    } else if (stamina < 10) {
+                        stamina = Math.min(10, stamina + (type === '🍖' ? 2 : 1));
+                        canAdd = true;
+                    }
+                }
+
+                if (canAdd) {
+                    score += (specialStatus === "golden" ? 5 : (specialStatus === "devil" ? 10 : 1));
+                }
+
+                f.remove();
+                updateUI();
+                applyBg();
+            }
+        }
+
+        function startCrazy(poison) {
+            stopAllIntervals();
+            isCrazy = true;
+            document.getElementById('stamina').style.display = 'none';
+            document.body.style.backgroundColor = "#400";
+
+            catBox.className = '';
+            catBox.style.width = "140px";
+            catBox.style.height = "140px";
+            clearCatVisuals();
+
+            if (poison) {
+                catImg.className = "spinning-anim";
+            }
+
+            const start = Date.now();
+
+            crazyLoop = setInterval(() => {
+                if ((Date.now() - start) > config.crazyT * 1000) {
+                    clearInterval(crazyLoop);
+                    crazyLoop = null;
+                    document.getElementById('finalScore').innerHTML = `總分: ${score}`;
+                    canRestart = false;
+                    setTimeout(() => { canRestart = true; }, 5000);
+                    document.getElementById('angryOverlay').style.display = 'flex';
+                    return;
+                }
+
+                catBox.style.left = (Math.random() * 80 + 10) + "%";
+                catBox.style.top = (Math.random() * 70 + 15) + "%";
+            }, (poison || hitCount > 0) ? 50 : 100);
+        }
+
+        function hitCat(e) {
+            if (isPaused) return;
+
+            if (isShrunk) {
+                isShrunk = false;
+                resetGame();
+                return;
+            }
+
+            if (!isCrazy) {
+                if (isFlipping || stamina <= 0) return;
+
+                isFlipping = true;
+                stamina--;
+                score++;
+
+                if (timeLeft <= 1.5) lastSecHits++;
+
+                clearInterval(gameLoop);
+
+                if (specialStatus === "golden") {
+                    specialCounter--;
+                }
+
+                if (specialStatus === "golden" && specialCounter <= 0) {
+                    isFlipping = false;
+                    clearTimeout(flipTimer);
+                    flipTimer = null;
+                    endGoldenMode();
+                    return;
+                }
+
+                // 惡魔模式唔重設時間
+                if (specialStatus !== "devil") {
+                    timeLeft = (specialStatus === "golden") ? config.goldenT : config.normT;
+                }
+
+                gameLoop = setInterval(tick, 1000);
+
+                clearCatVisuals();
+                catImg.className = "flipping-anim";
+
+                clearTimeout(flipTimer);
+                flipTimer = setTimeout(() => {
+                    clearCatVisuals();
+                    isFlipping = false;
+                    flipTimer = null;
+                }, 800);
+
+                updateUI();
+            } else {
+                hitCount++;
+
+                if (hitCount === 1) {
+                    clearCatVisuals();
+                    catImg.className = "spinning-anim";
+                    clearInterval(crazyLoop);
+                    startCrazy(false);
+                }
+
+                if (hitCount >= 3) {
+                    crazyWins++;
+                    score += 5;
+                    setTimeout(() => {
+                        clearCatVisuals();
+                        resetGame();
+                    }, 200);
+                }
+            }
+        }
+
+        function togglePause() {
+            if (isCrazy && document.getElementById('angryOverlay').style.display === 'flex') return;
+
+            isPaused = true;
+            stopAllIntervals();
+            prePauseCode = getCurrentCode();
+            document.getElementById('debugPause').value = prePauseCode;
+            document.getElementById('pauseOverlay').style.display = 'flex';
+        }
+
+        function resumeGame() {
+            const val = document.getElementById('debugPause').value.trim();
+            isPaused = false;
+            document.getElementById('pauseOverlay').style.display = 'none';
+
+            if (val !== prePauseCode && val !== "") {
+                isDebugLocked = true;
+                applyAndContinue(val);
+                return;
+            }
+
+            if (isCrazy) {
+                startCrazy(hitCount >= 1);
+            } else {
+                startLoops();
+            }
+
+            updateUI();
+        }
+
+        function startApp() {
+            const val = document.getElementById('debugStart').value.trim();
+            if (val !== defaultConfig) isDebugLocked = true;
+
+            applyAndContinue(val);
+            document.getElementById('startOverlay').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'block';
+
+            fullRestart();
+        }
+
+        // 預先下載圖片入快取
+        window.addEventListener('load', async () => {
+            await primeImageCache();
+            await loadCatImage();
+
+            if (!catImg.src) {
+                catImg.src = CAT_IMAGE_URL;
+            }
+        });
+
+        // 離線/回線時盡量再補一次
+        window.addEventListener('online', () => {
+            primeImageCache().then(loadCatImage).catch(() => {});
+        });
+
+        // 初始畫面
+        applyBg();
+        updateUI();
+    </script>
+</body>
+</html>
